@@ -11,7 +11,7 @@ public class GenomicRegion {
 		end=e;
 	}
 	
-	private long size(){
+	public long size(){
 		return start.distance(end) + 1;
 	}
 	

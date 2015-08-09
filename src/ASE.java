@@ -1,5 +1,10 @@
 import java.util.HashMap;
 
+import gene.*;
+import genome.*;
+import run.*;
+import sample.*;
+import snp.*;
 
 public class ASE {
 	

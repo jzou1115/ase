@@ -53,7 +53,7 @@ public class GenomicCoordinate {
 		return false;
 	}
 
-	protected int compareTo(GenomicCoordinate o){
+	public int compareTo(GenomicCoordinate o){
 		int chrComp = chromosome - o.chromosome;
 		if(chrComp != 0) return chrComp;
 		if(coord > o.coord){
