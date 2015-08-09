@@ -31,7 +31,7 @@ public class SNPgroup implements Iterable<SNP>{
 		return snpg.iterator();
 	}
 
-	public SNPgroup readSNPGroup(InputStream in){
+	public static SNPgroup readSNPGroup(InputStream in){
 		List<SNP> snps = new ArrayList<SNP>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
@@ -63,6 +63,10 @@ public class SNPgroup implements Iterable<SNP>{
 	
 	public SNP getSNP(int index){
 		return snpg.get(index);
+	}
+	
+	public void sort(){
+		Collections.sort(snpg);
 	}
 	
 	@Override

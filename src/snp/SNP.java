@@ -1,25 +1,32 @@
 package snp;
+import genome.GenomicCoordinate;
 import sample.*;
 
 public class SNP implements Comparable<SNP>{
 	//parsed from *.map files
 	String id;
-	int chromosome;
-	int location;
+	GenomicCoordinate location;
 	int num;
 	
 	GenoSample[] gsamples;
 	
-	SNP(String i, int c, int l, int n){
+	SNP(String i, int c, long l, int n){
 		id=i;
-		chromosome=c;
-		location=l;
+		location = new GenomicCoordinate(c, l);
 		num= n;
 	}
 
 	@Override
-	public int compareTo(SNP arg0) {
-		return this.id.compareTo(arg0.id);
+	public int compareTo(SNP other) {
+		int chrComp = this.location.getChromosome() - other.location.getChromosome();
+		if(chrComp != 0) return chrComp;
+		if(this.location.getCoord() > other.location.getCoord()){
+			return 1;
+		}
+		if(this.location.getCoord() < other.location.getCoord()){
+			return -1;
+		}
+		return 0;
 	}
 
 	public String toString(){

@@ -2,11 +2,13 @@ package genome;
 
 import java.util.Iterator;
 
+import snp.SNP;
+
 public class GenomicRegion {
 	GenomicCoordinate start;
 	GenomicCoordinate end;
 
-	GenomicRegion(GenomicCoordinate s, GenomicCoordinate e){
+	public GenomicRegion(GenomicCoordinate s, GenomicCoordinate e){
 		start=s;
 		end=e;
 	}
@@ -135,6 +137,10 @@ public class GenomicRegion {
 			return start.equals(other.start) && end.equals(other.end);
 		}
 		return false;
+	}
+	
+	public int compareTo(GenomicRegion other) {
+		return this.getStart().compareTo(other.getStart());
 	}
 	
 	@Override

@@ -1,4 +1,9 @@
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import gene.*;
 import genome.*;
@@ -7,85 +12,36 @@ import sample.*;
 import snp.*;
 
 public class ASE {
+	SNPgroup snps;
+	GeneGroup genes;
 	
-	int[][] hasASE;
-	int[][] isHetero;
-	int threshold;
-	HashMap<String, String> map;
-	HashMap<Integer, String> snpName;
-	HashMap<String, Integer> geneNum;
-	int numIncorrect[];
-	int numSamples;
-	
-	public void setThreshold(int i){
-		threshold=i;
+	public void parseSnps(FileInputStream snpData){
+		snps = SNPgroup.readSNPGroup(snpData);
+		snps.sort();
+		System.out.println(snps.toString());
 	}
 	
-	public void parseASE(String s){
-		
+	public void parseGenes(FileInputStream geneData){
+		genes = GeneGroup.readGeneGroup(geneData);
+		genes.sort();
+		System.out.println(genes.toString());
 	}
 	
-	public void parseGeno(String s){
-		
-	}
-	
-	public void parseMap(String s){
-		
-	}
-	
-	public int findGene(String snp){
-		String ens= map.get(snp);
-		return geneNum.get(ens);	
-	}
-	
-	public void findVariants(){
-		for(int i=0; i<isHetero.length; i++){
-			String snp= snpName.get(i);
-			int gene= findGene(snp);
-			
-			int correct=0;
-			int incorrect=0;
-			for(int j=0; j<isHetero[0].length; j++){
-				if(isHetero[i][j] == hasASE[gene][j]){
-					correct++;
-				}
-				else{
-					incorrect++;
-				}
-			}
-			if(correct+incorrect!=numSamples){
-				throw new RuntimeException();
-			}
-			
-			numIncorrect[i]= incorrect;
-		}
-	}
-	
-	public void printVariants(){
-		for(int i=0; i<numIncorrect.length;i++){
-			if(i<=threshold){
-				System.out.println(snpName.get(i));
-			}
-		}
-	}
-	
-	
-	
-	public static void main(String args[]){
+	public static void main(String args[]) throws FileNotFoundException{
 		ASE a= new ASE();
 		
-		String aseFile= args[0];
-		a.parseASE(aseFile);
-		String genoFile= args[1];
-		a.parseGeno(genoFile);
+		//String snpData = args[0];
+		FileInputStream snpData = new FileInputStream(new File("/home/david/Documents/Jennifer/workspace/ase/test/snp.map"));
+		a.parseSnps(snpData);
 		
-		a.setThreshold(Integer.parseInt(args[2]));
+		//String geneData = args[1];
+		FileInputStream geneData = new FileInputStream(new File("/home/david/Documents/Jennifer/workspace/ase/test/geneLoc.txt"));
+		a.parseGenes(geneData);
 		
-		String map= args[3];
-		a.parseMap(map);
+		//String genotypeData = args[2];
+		FileInputStream genotypeData = new FileInputStream(new File("/home/david/Documents/Jennifer/workspace/ase/test/isHetero.txt"));
 		
-		a.findVariants();
-		
-		a.printVariants();
+		//String expData = args[2];
+		FileInputStream expData = new FileInputStream(new File("/home/david/Documents/Jennifer/workspace/ase/test/hasASE.txt"));
 	}
 }

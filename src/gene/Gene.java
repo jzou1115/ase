@@ -1,42 +1,42 @@
 package gene;
 
+import genome.GenomicCoordinate;
+import genome.GenomicRegion;
+
 import java.util.ArrayList;
 import sample.*;
 import snp.SNP;
 
 public class Gene implements Comparable<Gene>{
 	String id;
-	int chrom;
-	int location;
-	String[] snpIDs;
+	GenomicRegion region;
 	
 	ExpSample[] esamples;
 	
-	Gene(String i, int c, int l){
+	Gene(String i, GenomicCoordinate start, GenomicCoordinate end){
 		id=i;
-		chrom=c;
-		location=l;
+		region = new GenomicRegion(start, end);
 	}
 	
 	@Override
 	public int compareTo(Gene o) {
-		return this.id.compareTo(o.id);
+		return this.region.compareTo(o.region);
 	}
 	
-	public ArrayList<String> getGenes(){
-		ArrayList<String> ret = new ArrayList<String>();
-		return ret;
-	}
 
 	public String toString(){
 		return id;
 	}
-	
-	/**
+
 	public static Gene parseGene(String line, int n){
 		String[] tokens = line.split("\\s+");
-		
-		return ;
+		String chromosome = tokens[0];
+		int chr = Integer.parseInt(chromosome.substring(3,chromosome.length()));
+		long s = Long.parseLong(tokens[1]);
+		long e = Long.parseLong(tokens[2]);
+		GenomicCoordinate start = new GenomicCoordinate(chr, s);
+		GenomicCoordinate end = new GenomicCoordinate(chr, e);
+		String id = tokens[3];
+		return new Gene(id, start, end);
 	}
-	**/
 }

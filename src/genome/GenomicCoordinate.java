@@ -4,7 +4,7 @@ public class GenomicCoordinate {
 	private final int chromosome;
 	private final long coord;
 	
-	GenomicCoordinate(int i, long newIndex){
+	public GenomicCoordinate(int i, long newIndex){
 		chromosome = i;
 		coord = newIndex;
 	}
