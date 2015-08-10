@@ -7,29 +7,25 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 
-public class SNPgroup implements Iterable<SNP>{
-	private final List<SNP> snpg;
+public class SNPgroup{
+	private final HashMap<String, SNP> snpg;
 	
 	public SNPgroup(){
-		snpg= new ArrayList<SNP>();
+		snpg= new HashMap<String,SNP>();
 	}
 	
 	public SNPgroup(Collection<SNP> snps){
-		snpg= new ArrayList<SNP>();
+		snpg= new HashMap<String, SNP>();
 		for(SNP s : snps){
-			snpg.add(s);
+			snpg.put(s.id,s);
 		}
 	}
 	
-	@Override
-	public Iterator<SNP> iterator() {
-		// TODO Auto-generated method stub
-		return snpg.iterator();
-	}
 
 	public static SNPgroup readSNPGroup(InputStream in){
 		List<SNP> snps = new ArrayList<SNP>();
@@ -53,29 +49,12 @@ public class SNPgroup implements Iterable<SNP>{
 		return new SNPgroup(snps);
 	}
 	
-	public List<SNP> toList(){
-		return new ArrayList<SNP>(snpg);
-	}
-	
 	public int size(){
-		return snpg.size();
+		return snpg.keySet().size();
 	}
 	
-	public SNP getSNP(int index){
-		return snpg.get(index);
+	public SNP getSNP(String s){
+		return snpg.get(s);
 	}
 	
-	public void sort(){
-		Collections.sort(snpg);
-	}
-	
-	@Override
-	public String toString(){
-		String s = "";
-		for(int i=0; i<snpg.size(); i++){
-			SNP p = snpg.get(i);
-			s += p.toString() + "\n";
-		}
-		return s;
-	}
 }

@@ -1,4 +1,6 @@
 package snp;
+import java.util.HashMap;
+
 import genome.GenomicCoordinate;
 import sample.*;
 
@@ -8,12 +10,13 @@ public class SNP implements Comparable<SNP>{
 	GenomicCoordinate location;
 	int num;
 	
-	GenoSample[] gsamples;
+	HashMap<String, GenoSample> gsamples;
 	
 	SNP(String i, int c, long l, int n){
 		id=i;
 		location = new GenomicCoordinate(c, l);
 		num= n;
+		gsamples= new HashMap<String, GenoSample>();
 	}
 
 	@Override
