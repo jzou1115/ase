@@ -7,4 +7,8 @@ public class ExpSample extends Sample{
 		id = s;
 		hasASE = b;
 	}
+	
+	public String toString(){
+		return id+"\t"+hasASE;
+	}
 }

@@ -13,7 +13,7 @@ public class Run {
 	GeneGroup genes;
 	Map<SNP,Gene> map;
 	
-	Result[] results;
+	HashMap<String, Result> results;
 	
 	Run(SNPgroup s, GeneGroup g, Map<SNP,Gene> m, float t){
 		snps=s;

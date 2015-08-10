@@ -26,6 +26,7 @@ public class ASE {
 		hasASE = GeneGroup.readGeneGroup(geneData);
 	}
 	
+
 	public void parseGenotypes(FileInputStream genotypes) throws IOException{
 		BufferedReader br = new BufferedReader(new InputStreamReader(genotypes));
 		String line = br.readLine();
@@ -35,12 +36,14 @@ public class ASE {
 			while((line = br.readLine()) != null){
 				try{
 					String[] tokens = line.split("\\s+");
-					String gene = tokens[0].trim();
-					Gene g = hasASE.getGene(gene);
+					String snp = tokens[0].trim();
+					SNP s = isHetero.getSNP(snp);
 					for(int i=1; i<tokens.length;i++){
-						ExpSample e = new ExpSample(sampleNames[i], Integer.parseInt(tokens[i]));
-						g.addSample(sampleNames[i], e);
+						GenoSample g = new GenoSample(sampleNames[i], Math.round(Float.parseFloat(tokens[i])%2));
+						s.addSample(sampleNames[i], g);
+						//System.out.println(g.toString());
 					}
+					//System.out.println(snp+"\t"+s.getNumSamples());
 				} catch (Exception e){
 					//do nothing
 				}
@@ -63,12 +66,16 @@ public class ASE {
 			while((line = br.readLine()) != null){
 				try{
 					String[] tokens = line.split("\\s+");
-					String snp = tokens[0].trim();
-					SNP s = isHetero.getSNP(snp);
+					
+					String gene = tokens[0].trim();
+					Gene g = hasASE.getGene(gene);
 					for(int i=1; i<tokens.length;i++){
-						GenoSample g = new GenoSample(sampleNames[i], Integer.parseInt(tokens[i]));
-						s.addSample(sampleNames[i], g);
+						ExpSample e = new ExpSample(sampleNames[i], Integer.parseInt(tokens[i]));
+						g.addSample(sampleNames[i], e);
+						//System.out.println(e.toString());
 					}
+					//System.out.println(gene+"\t"+g.getNumSamples());
+					
 				} catch (Exception e){
 					//do nothing
 				}

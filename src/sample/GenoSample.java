@@ -7,4 +7,8 @@ public class GenoSample extends Sample{
 		id = s;
 		isHetero = b;
 	}
+	
+	public String toString(){
+		return id+"\t"+isHetero;
+	}
 }

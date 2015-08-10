@@ -23,6 +23,10 @@ public class SNP implements Comparable<SNP>{
 		gsamples.put(s, g);
 	}
 	
+	public int getNumSamples(){
+		return gsamples.keySet().size();
+	}
+	
 	@Override
 	public int compareTo(SNP other) {
 		int chrComp = this.location.getChromosome() - other.location.getChromosome();

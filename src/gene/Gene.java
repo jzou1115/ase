@@ -24,6 +24,10 @@ public class Gene implements Comparable<Gene>{
 	public void addSample(String s, ExpSample e){
 		esamples.put(s, e);
 	}
+	
+	public int getNumSamples(){
+		return esamples.keySet().size();
+	}
 	@Override
 	public int compareTo(Gene o) {
 		return this.region.compareTo(o.region);
