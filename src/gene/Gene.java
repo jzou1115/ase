@@ -21,6 +21,9 @@ public class Gene implements Comparable<Gene>{
 		esamples = new HashMap<String, ExpSample>();
 	}
 	
+	public void addSample(String s, ExpSample e){
+		esamples.put(s, e);
+	}
 	@Override
 	public int compareTo(Gene o) {
 		return this.region.compareTo(o.region);

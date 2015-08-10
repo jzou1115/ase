@@ -11,7 +11,7 @@ import gene.GeneGroup;
 public class Simulation {
 
 	int trials;
-	
+	/**
 	public GeneGroup simulate(GeneGroup g){
 		
 		Random rand = new Random();
@@ -26,6 +26,7 @@ public class Simulation {
 		
 		return ret;
 	}
+	**/
 
 	
 }

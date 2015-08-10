@@ -19,6 +19,10 @@ public class SNP implements Comparable<SNP>{
 		gsamples= new HashMap<String, GenoSample>();
 	}
 
+	public void addSample(String s, GenoSample g){
+		gsamples.put(s, g);
+	}
+	
 	@Override
 	public int compareTo(SNP other) {
 		int chrComp = this.location.getChromosome() - other.location.getChromosome();

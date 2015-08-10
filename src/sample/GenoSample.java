@@ -1,5 +1,10 @@
 package sample;
 
 public class GenoSample extends Sample{
-	boolean isHetero;
+	int isHetero;
+	
+	public GenoSample(String s, int b){
+		id = s;
+		isHetero = b;
+	}
 }
