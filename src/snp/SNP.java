@@ -26,6 +26,15 @@ public class SNP implements Comparable<SNP>{
 	public int getNumSamples(){
 		return gsamples.keySet().size();
 	}
+	public HashMap<String, GenoSample> getGenosamples(){
+		return gsamples;
+	}
+	public String getId(){
+		return id;
+	}
+	public GenomicCoordinate getLocation(){
+		return location;
+	}
 	
 	@Override
 	public int compareTo(SNP other) {

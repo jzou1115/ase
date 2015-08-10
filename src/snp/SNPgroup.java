@@ -25,8 +25,14 @@ public class SNPgroup{
 			snpg.put(s.id,s);
 		}
 	}
-	
 
+	public List<SNP> getSnps(){
+		List<SNP> ret = new ArrayList<SNP>();
+		for(String s:snpg.keySet()){
+			ret.add(snpg.get(s));
+		}
+		return ret;
+	}
 	public static SNPgroup readSNPGroup(InputStream in){
 		List<SNP> snps = new ArrayList<SNP>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));

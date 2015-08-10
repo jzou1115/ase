@@ -11,7 +11,7 @@ import snp.SNP;
 
 public class Gene implements Comparable<Gene>{
 	String id;
-	GenomicRegion region;
+	public GenomicRegion region;
 	
 	HashMap<String,ExpSample> esamples;
 	
@@ -21,8 +21,16 @@ public class Gene implements Comparable<Gene>{
 		esamples = new HashMap<String, ExpSample>();
 	}
 	
+	public HashMap<String, ExpSample> getExpsamples(){
+		return esamples;
+	}
+	
 	public void addSample(String s, ExpSample e){
 		esamples.put(s, e);
+	}
+	
+	public String getId(){
+		return id;
 	}
 	
 	public int getNumSamples(){

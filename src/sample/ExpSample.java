@@ -11,4 +11,8 @@ public class ExpSample extends Sample{
 	public String toString(){
 		return id+"\t"+hasASE;
 	}
+	
+	public int getASE(){
+		return hasASE;
+	}
 }

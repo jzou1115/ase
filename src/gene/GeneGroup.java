@@ -11,10 +11,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import snp.SNP;
+
 
 public class GeneGroup{
 
 	private final HashMap<String, Gene> geneg;
+	
 	
 	public GeneGroup(){
 		geneg= new HashMap<String, Gene>();
@@ -27,6 +30,13 @@ public class GeneGroup{
 		}
 	}
 
+	public List<Gene> getGenes(){
+		List<Gene> ret = new ArrayList<Gene>();
+		for(String g:geneg.keySet()){
+			ret.add(geneg.get(g));
+		}
+		return ret;
+	}
 	public static GeneGroup readGeneGroup(InputStream in){
 		List<Gene> snps = new ArrayList<Gene>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));

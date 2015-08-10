@@ -87,13 +87,23 @@ public class ASE {
 		}
 	}
 	
+	public void simulate(double threshold, int i){
+		Run r = new Run(isHetero, hasASE, threshold); 
+		//do run with real data
+		r.run();
+		//do run with permuted data x n number of repetitions
+		r.runAll(i);
+	}
+	
+	
 	public static void main(String args[]) throws IOException{
 		ASE a= new ASE();
 		
+		/** Parse all data files **/
 		//String snpData = args[0];
 		FileInputStream snpData = new FileInputStream(new File("/home/jennifer/ase/test/snp.map"));
 		a.parseSnps(snpData);
-		
+
 		//String geneData = args[1];
 		FileInputStream geneData = new FileInputStream(new File("/home/jennifer/ase/test/geneLoc.txt"));
 		a.parseGenes(geneData);
@@ -102,8 +112,14 @@ public class ASE {
 		FileInputStream genotypeData = new FileInputStream(new File("/home/jennifer/ase/test/isHetero.txt"));
 		a.parseGenotypes(genotypeData);
 		
-		//String expData = args[2];
+		//String expData = args[3];
 		FileInputStream expData = new FileInputStream(new File("/home/jennifer/ase/test/hasASE.txt"));
 		a.parseExpressions(expData);
+		
+		/** Launch simulation **/
+		//int numSimulations = args[4]
+		//int threshold = args[5]
+		a.simulate(.6666,100);
+		
 	}
 }

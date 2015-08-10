@@ -11,4 +11,8 @@ public class GenoSample extends Sample{
 	public String toString(){
 		return id+"\t"+isHetero;
 	}
+	
+	public int getHetero(){
+		return isHetero;
+	}
 }

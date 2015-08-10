@@ -37,6 +37,11 @@ public class GenomicRegion {
 		return new GenomicRegion(start.decrement(numBases), end.decrement(numBases));
 	}
 	
+	//make sure this has genomic relevance
+	public GenomicRegion expand(int numBases){
+		return new GenomicRegion(start.decrement(numBases), end.increment(numBases));
+	}
+	
 	public int toIndex(GenomicCoordinate c){
 		if(!this.contains(c)){
 			throw new RuntimeException("Region "+this+" does not contain coordinate "+c+".");
