@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.tools.javac.util.Paths;
+
 import gene.*;
 import genome.*;
 import run.*;
@@ -147,19 +149,19 @@ public class ASE {
 		
 		/** Parse all data files **/
 		//String snpData = args[0];
-		FileInputStream snpData = new FileInputStream(new File("/home/jennifer/ase/test/snp.map"));
+		FileInputStream snpData = new FileInputStream(new File("./test/snp.map"));
 		a.parseSnps(snpData);
 
 		//String geneData = args[1];
-		FileInputStream geneData = new FileInputStream(new File("/home/jennifer/ase/test/geneLoc.txt"));
+		FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
 		a.parseGenes(geneData);
 		
 		//String genotypeData = args[2];
-		FileInputStream genotypeData = new FileInputStream(new File("/home/jennifer/ase/test/isHetero.txt"));
+		FileInputStream genotypeData = new FileInputStream(new File("./test/isHetero.txt"));
 		a.parseGenotypes(genotypeData);
 		
 		//String expData = args[3];
-		FileInputStream expData = new FileInputStream(new File("/home/jennifer/ase/test/hasASE.txt"));
+		FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
 		a.parseExpressions(expData);
 		
 		a.genesToSnps();
