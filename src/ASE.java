@@ -167,7 +167,7 @@ public class ASE {
 		/** Launch simulation **/
 		//int numSimulations = args[4]
 		//int threshold = args[5]
-		a.simulate(0, 10);
+		a.simulate(0, 1000);
 		
 	}
 }
