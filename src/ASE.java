@@ -4,9 +4,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import gene.*;
 import genome.*;
@@ -17,6 +19,7 @@ import snp.*;
 public class ASE {
 	SNPgroup isHetero;
 	GeneGroup hasASE;
+	Map<Gene,List<SNP>> map;
 	
 	public void parseSnps(FileInputStream snpData){
 		isHetero = SNPgroup.readSNPGroup(snpData);
@@ -39,7 +42,7 @@ public class ASE {
 					String snp = tokens[0].trim();
 					SNP s = isHetero.getSNP(snp);
 					for(int i=1; i<tokens.length;i++){
-						GenoSample g = new GenoSample(sampleNames[i], Math.round(Float.parseFloat(tokens[i])%2));
+						GenoSample g = new GenoSample(sampleNames[i], Math.round(Float.parseFloat(tokens[i]))%2);
 						s.addSample(sampleNames[i], g);
 						//System.out.println(g.toString());
 					}
@@ -87,15 +90,58 @@ public class ASE {
 		}
 	}
 	
-	public void simulate(double threshold, int i){
-		Run r = new Run(isHetero, hasASE, threshold); 
-		//do run with real data
-		r.run();
-		//do run with permuted data x n number of repetitions
-		r.runAll(i);
+	public boolean match(SNP s, Gene g){
+		if(g.region.expand(100).contains(s.getLocation())){
+			return true;
+		}
+		return false;
 	}
 	
+	public void genesToSnps(){
+		map = new HashMap<Gene, List<SNP>>();
+		
+		List<SNP> snpList = isHetero.getSnps();
+		//Collections.sort(snpList);
+		
+		List<Gene> geneList = hasASE.getGenes();
+		//Collections.sort(geneList);
+		
+		for(SNP s:snpList){
+			for(Gene g:geneList){
+				if(match(s,g)){
+					if(map.get(g)==null){
+						List<SNP> val = new ArrayList<SNP>();
+						val.add(s);
+						map.put(g, val);
+					}
+					else{
+						map.get(g).add(s);
+					}
+					break;
+				}
+			}
+		}
+	}
+	/**
+	for(Gene g:map.keySet()){
+		List<SNP> s = map.get(g);
+		for(SNP x:s){
+			System.out.println(x.getId()+"\t"+g.getId());
+		}
+	}
+ 	**/
 	
+	public void simulate(int errors, int reps){
+		for(Gene g: hasASE.getGenes()){
+			int total=0;
+			for(int r=0; r<reps; r++){
+				Run run = new Run(g, map.get(g),errors);
+				int variants = run.runSim();
+				total = total + variants;
+			}
+			System.out.println(g.getId()+"\t"+1.0*total/reps);
+		}
+	}
 	public static void main(String args[]) throws IOException{
 		ASE a= new ASE();
 		
@@ -116,10 +162,12 @@ public class ASE {
 		FileInputStream expData = new FileInputStream(new File("/home/jennifer/ase/test/hasASE.txt"));
 		a.parseExpressions(expData);
 		
+		a.genesToSnps();
+		
 		/** Launch simulation **/
 		//int numSimulations = args[4]
 		//int threshold = args[5]
-		a.simulate(.6666,100);
+		a.simulate(0, 10);
 		
 	}
 }
