@@ -36,20 +36,22 @@ public class Run {
 		int randInt = rand.nextInt(2);
 
 		for(SNP s:snps){
-			Map<String, GenoSample> gmap= s.getGenosamples();
+			ArrayList<GenoSample> gsamples = s.getGenosamples();
 			int correct=0;
 			int incorrect=0;
-			for(String gtexId:gmap.keySet()){
+			for (GenoSample g : gsamples) {
+				String sampleID = g.getSampleID();
+				int isHetero = g.getHetero();
 				randInt = rand.nextInt(2);
 				
-				if(emap.containsKey(gtexId) & (gmap.get(gtexId).getHetero() == randInt)){
+				if(emap.containsKey(sampleID) & (isHetero == randInt)){
 					correct++;
 				}
-				else if(emap.containsKey(gtexId) & (gmap.get(gtexId).getHetero() != randInt)){
+				else if(emap.containsKey(sampleID) & (isHetero != randInt)){
 					incorrect++;
 				}
 				else{
-					System.out.println("Missing data: "+gtexId);
+					System.out.println("Missing data: "+sampleID);
 				}
 			}
 			if(passThreshold(incorrect)){
@@ -64,18 +66,20 @@ public class Run {
 	public int run(){
 		Map<String, ExpSample> emap= gene.getExpsamples();
 		for(SNP s:snps){
-			Map<String, GenoSample> gmap= s.getGenosamples();
+			ArrayList<GenoSample> gsamples= s.getGenosamples();
 			int correct=0;
 			int incorrect=0;
-			for(String gtexId:gmap.keySet()){
-				if(emap.containsKey(gtexId) & (gmap.get(gtexId).getHetero() == emap.get(gtexId).getASE())){
+			for (GenoSample g : gsamples) {
+				String sampleID = g.getSampleID();
+				int isHetero = g.getHetero();
+				if(emap.containsKey(sampleID) & (isHetero == emap.get(sampleID).getASE())){
 					correct++;
 				}
-				else if(emap.containsKey(gtexId) & (gmap.get(gtexId).getHetero() != emap.get(gtexId).getASE())){
+				else if(emap.containsKey(sampleID) & (isHetero != emap.get(sampleID).getASE())){
 					incorrect++;
 				}
 				else{
-					System.out.println("Missing data: "+gtexId);
+					System.out.println("Missing data: "+sampleID);
 				}
 			}
 			if(passThreshold(incorrect)){

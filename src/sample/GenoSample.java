@@ -8,6 +8,10 @@ public class GenoSample extends Sample{
 		isHetero = b;
 	}
 	
+	public String getSampleID(){
+		return id;
+	}
+	
 	public String toString(){
 		return id+"\t"+isHetero;
 	}

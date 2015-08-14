@@ -22,6 +22,7 @@ public class ASE {
 	SNPgroup isHetero;
 	GeneGroup hasASE;
 	Map<Gene,List<SNP>> map;
+	int nSamples = 100;
 	
 	public void parseSnps(FileInputStream snpData){
 		isHetero = SNPgroup.readSNPGroup(snpData);
@@ -43,9 +44,10 @@ public class ASE {
 					String[] tokens = line.split("\\s+");
 					String snp = tokens[0].trim();
 					SNP s = isHetero.getSNP(snp);
-					for(int i=1; i<tokens.length;i++){
+					//TODO: thinkaboutthis nsamples
+					for(int i=1; i<tokens.length & i<nSamples; i++){
 						GenoSample g = new GenoSample(sampleNames[i], Math.round(Float.parseFloat(tokens[i]))%2);
-						s.addSample(sampleNames[i], g);
+						s.addSample(g);
 						//System.out.println(g.toString());
 					}
 					//System.out.println(snp+"\t"+s.getNumSamples());
@@ -147,29 +149,33 @@ public class ASE {
 	public static void main(String args[]) throws IOException{
 		ASE a= new ASE();
 		
+		a.nSamples = Integer.parseInt (args[0]) ;
+		
 		/** Parse all data files **/
 		//String snpData = args[0];
-		FileInputStream snpData = new FileInputStream(new File("./test/snp.map"));
+		FileInputStream snpData = new FileInputStream(new File("./test3/ChrOne.map"));
 		a.parseSnps(snpData);
 
 		//String geneData = args[1];
-		FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
+		FileInputStream geneData = new FileInputStream(new File("./test3/genes.txt"));
 		a.parseGenes(geneData);
 		
 		//String genotypeData = args[2];
-		FileInputStream genotypeData = new FileInputStream(new File("./test/isHetero.txt"));
+		FileInputStream genotypeData = new FileInputStream(new File("./test3/ChrOne.snps.txt"));
 		a.parseGenotypes(genotypeData);
 		
+		/*
 		//String expData = args[3];
 		FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
 		a.parseExpressions(expData);
-		
+		*/
+		//mapping
 		a.genesToSnps();
 		
 		/** Launch simulation **/
 		//int numSimulations = args[4]
 		//int threshold = args[5]
-		a.simulate(0, 1000);
+		a.simulate(0, 10);
 		
 	}
 }

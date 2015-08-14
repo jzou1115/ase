@@ -1,36 +1,40 @@
 package snp;
-import java.util.HashMap;
+import java.util.ArrayList;
+
+import com.sun.tools.javac.util.List;
 
 import genome.GenomicCoordinate;
 import sample.*;
 
 public class SNP implements Comparable<SNP>{
 	//parsed from *.map files
-	String id;
+	String SNPid;
 	GenomicCoordinate location;
 	int num;
 	
-	HashMap<String, GenoSample> gsamples;
+	ArrayList<GenoSample> gsamples;
 	
 	SNP(String i, int c, long l, int n){
-		id=i;
+		SNPid=i;
 		location = new GenomicCoordinate(c, l);
 		num= n;
-		gsamples= new HashMap<String, GenoSample>();
+		gsamples = new ArrayList<GenoSample>();
 	}
 
-	public void addSample(String s, GenoSample g){
-		gsamples.put(s, g);
+	public void addSample(GenoSample g){
+		gsamples.add(g);
 	}
 	
 	public int getNumSamples(){
-		return gsamples.keySet().size();
+		return gsamples.size();
 	}
-	public HashMap<String, GenoSample> getGenosamples(){
+	
+	public ArrayList<GenoSample> getGenosamples(){
 		return gsamples;
 	}
+	
 	public String getId(){
-		return id;
+		return SNPid;
 	}
 	public GenomicCoordinate getLocation(){
 		return location;
@@ -49,9 +53,6 @@ public class SNP implements Comparable<SNP>{
 		return 0;
 	}
 
-	public String toString(){
-		return id;
-	}
 	
 	public static SNP parseSNP(String line, int n){
 		String[] tokens = line.split("\\s+");

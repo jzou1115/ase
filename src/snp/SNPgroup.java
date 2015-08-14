@@ -22,7 +22,7 @@ public class SNPgroup{
 	public SNPgroup(Collection<SNP> snps){
 		snpg= new HashMap<String, SNP>();
 		for(SNP s : snps){
-			snpg.put(s.id,s);
+			snpg.put(s.SNPid,s);
 		}
 	}
 
