@@ -82,17 +82,17 @@ public class ASE {
 			while((line = br.readLine()) != null){
 				try{
 					String[] tokens = line.split("\\s+");
-					String snp = tokens[0].trim();
-					SNP s = isHetero.getSNP(snp);
-					if (s == null)
-						break;
-					//TODO: think about this nsamples
-					for(int i=1; i<tokens.length && i<nSamples; i++){
-						GenoSample g = new GenoSample(sampleNames[i], Math.round(Float.parseFloat(tokens[i]))%2);
-						s.addSample(g);
-						System.out.println(g.toString());
+					String snpId = tokens[0].trim();
+					SNP s = isHetero.getSNP(snpId);
+					if (s != null) {
+						//TODO: think about this nsamples
+						for(int i=1; i<tokens.length && i<nSamples; i++){
+							GenoSample g = new GenoSample(sampleNames[i], Math.round(Float.parseFloat(tokens[i]))%2);
+							s.addSample(g);
+							System.out.println(g.toString());
+						}
+						System.out.println(snpId +"\t"+s.getNumSamples());
 					}
-					System.out.println(snp+"\t"+s.getNumSamples());
 				} catch (Exception e){
 					e.printStackTrace();
 				}
