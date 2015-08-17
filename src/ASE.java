@@ -197,6 +197,14 @@ public class ASE {
 		}
 	}
 
+	public void run(int errors){
+		for(Gene g: hasASE.getGenes()){
+			Run run = new Run(g, map.get(g), errors);
+			int numVariants = run.run();
+			System.out.println(g.getId()+"\t"+ numVariants);
+		}
+	}
+	
 	public static void main(String args[]) throws IOException{
 		ASE a= new ASE();
 				
@@ -219,14 +227,14 @@ public class ASE {
 		a.parseGenotypes(genotypeData);
 		
 		//String expData = args[3];
-		//FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
-		//a.parseExpressions(expData);
+		FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
+		a.parseExpressions(expData);
 		
 
 		/** Launch simulation **/
 		//int numSimulations = args[4]
 		//int threshold = args[5]
-		a.simulate(0, 100);
+		a.run(0);
 		
 	}
 	
