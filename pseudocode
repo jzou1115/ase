@@ -1,0 +1,75 @@
+Genes = collection of genes
+S = collection of snps
+A = ase calls
+G = genotypes
+n = number if samples in subset
+e = maximum number of errors
+p = number of permutations
+
+//for a gene k, with SNPS snps[] (length m), and ase calls a for gene k, and genotypes at all snps in gene g[m][N] (N is total number of samples)
+int Simulation(snps, a, g, n, e)
+
+	//ase[n], genos[m][n]
+	ase, genos = subset(a, g, n)
+
+	variants = []
+	//iterate over snps
+	for s in snps:
+		fit = 0
+		//iterate over samples in subset
+		for int i in n:
+			//if the ase call for sample i matches the genotype at snp s for sample i
+			if ase[i] == genos[s][i]:
+				fit++
+	
+		if fit >= e:
+			variants.add(s)
+
+	return variants
+
+
+//to find variants in genes
+for k in Genes:
+	
+	//real ase call a[N], where N is total number of samples 
+	a = getASE(k)
+
+	//g[m][N], where m is number of snps in gene k, and N is number of samples
+	g = getGenos(k)
+
+	snps = k.getSNPs()
+
+	var = Simulation(snps, a, g, n, e)
+	numVar = var.size()
+
+	//do permutations
+	lessThanRealData = 0
+	for(int i=0; i<p, i++):
+		//permute ase calls
+		shuffled = permute(a)
+		
+		sim = Simulation(snps, shuffled, g, n, e)
+		if sim.size() < numVar:
+			lessThanRealData++
+
+	
+	pval = calculateSignificance(numVar, lessThanRealData/N)
+
+
+//to find power
+//for gene k with SNPS snps
+for s in snps:
+
+	//g[m][N], where m is number of snps in gene k, and N is number of samples
+	g= getGenos(k)
+
+	//generate from genotype data
+	a= generateASE(g,snp)
+
+	f = calculateMAF(g,snp)
+
+	Simulation(snps, 
+
+	
+
+
