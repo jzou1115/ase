@@ -136,7 +136,7 @@ public class ASE {
 	}
 	
 	public boolean match(SNP s, Gene g){
-		if(g.region.expand(100).contains(s.getLocation())){
+		if(g.region.expand(100000).contains(s.getLocation())){
 			return true;
 		}
 		return false;
@@ -213,7 +213,7 @@ public class ASE {
 	
 	public static void main(String args[]) throws IOException{
 		ASE a= new ASE();
-				
+		
 		//String geneData = args[1];
 		//FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
 		FileInputStream geneData = new FileInputStream(new File("./test3/genes.txt"));
@@ -236,7 +236,6 @@ public class ASE {
 		//String expData = args[3];
 		//FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
 		//a.parseExpressions(expData);
-		
 
 		/** Launch simulation **/
 		//int numSimulations = args[4]

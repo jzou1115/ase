@@ -65,6 +65,7 @@ public class Run {
 			for (GenoSample g : gsamples) {
 				String sampleID = g.getSampleID();
 				int isHetero = g.getHetero();
+				//TODO: use a separate case for when emap doesn't exist, so both correct + incorrect = 0
 				if(emap.containsKey(sampleID) && (isHetero == emap.get(sampleID).getASE())){
 					correct++;
 				}

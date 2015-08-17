@@ -17,16 +17,16 @@ public class GenomicCoordinate {
 	}
 	
 	public GenomicCoordinate increment(int numBases){
-		if(numBases == 0) return this;
 		long newIndex = coord + numBases;
-		if(newIndex < 1){
-			throw new RuntimeException("Cannot decrement to a base index less than one");
-		}
 		return new GenomicCoordinate(chromosome, newIndex);
 	}
 	
 	public GenomicCoordinate decrement(int numBases){
-		return this.increment(-numBases);
+		long newIndex = coord - numBases;
+		if(newIndex < 1){
+			return new GenomicCoordinate(chromosome, 0);
+		}
+		return new GenomicCoordinate(chromosome, newIndex);
 	}
 	
 	public int getChromosome(){
