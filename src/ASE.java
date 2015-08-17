@@ -1,20 +1,15 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.tools.javac.util.Paths;
-
 import gene.*;
-import genome.*;
 import run.*;
 import sample.*;
 import snp.*;
@@ -45,7 +40,6 @@ public class ASE {
 			}
 			reader.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		isHetero =  new SNPgroup(snps);
@@ -68,7 +62,6 @@ public class ASE {
 			}
 			reader.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return new SNPgroup(snps);
@@ -91,20 +84,21 @@ public class ASE {
 					String[] tokens = line.split("\\s+");
 					String snp = tokens[0].trim();
 					SNP s = isHetero.getSNP(snp);
-					//TODO: thinkaboutthis nsamples
+					if (s == null)
+						break;
+					//TODO: think about this nsamples
 					for(int i=1; i<tokens.length && i<nSamples; i++){
 						GenoSample g = new GenoSample(sampleNames[i], Math.round(Float.parseFloat(tokens[i]))%2);
 						s.addSample(g);
-						//System.out.println(g.toString());
+						System.out.println(g.toString());
 					}
 					System.out.println(snp+"\t"+s.getNumSamples());
 				} catch (Exception e){
-					//do nothing
+					e.printStackTrace();
 				}
 			}
 			br.close();
 		}catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

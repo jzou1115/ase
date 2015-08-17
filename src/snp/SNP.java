@@ -1,8 +1,6 @@
 package snp;
 import java.util.ArrayList;
 
-import com.sun.tools.javac.util.List;
-
 import genome.GenomicCoordinate;
 import sample.*;
 
