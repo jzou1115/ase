@@ -16,57 +16,72 @@ import snp.SNP;
 
 public class GeneGroup{
 
-	private final HashMap<String, Gene> geneg;
+	private final List<Gene> geneg;
 	
 	
 	public GeneGroup(){
-		geneg= new HashMap<String, Gene>();
+		geneg= new ArrayList<Gene>();
 	}
 	
-	public GeneGroup(Collection<Gene> genes){
-		geneg= new HashMap<String, Gene>();
-		for(Gene g : genes){
-			geneg.put(g.id, g);
-		}
+	public GeneGroup(List<Gene> genes){
+		geneg= genes;
 	}
 
 	public List<Gene> getGenes(){
-		List<Gene> ret = new ArrayList<Gene>();
-		for(String g:geneg.keySet()){
-			ret.add(geneg.get(g));
-		}
-		return ret;
+		return geneg;
 	}
 	public static GeneGroup readGeneGroup(InputStream in){
-		List<Gene> snps = new ArrayList<Gene>();
+		List<Gene> genes = new ArrayList<Gene>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
 		int n=0;
 		try {
 			while((line = reader.readLine()) != null){
 				try{
-					snps.add(Gene.parseGene(line));
+					genes.add(Gene.parseGene(line));
 					n++;
 				} catch (Exception e){
 					//do nothing
+					System.out.println("cannot add Gene");
 				}
 			}
 			reader.close();
 		} catch (IOException e) {
+			System.out.println("no lines");
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new GeneGroup(snps);
+		return new GeneGroup(genes);
 	}
 	
 	
 	public int size(){
-		return geneg.keySet().size();
+		return geneg.size();
+	}
+	
+	public boolean contains(String s){
+		if(geneg.contains(s)){
+			return true;
+		}
+		return false;
 	}
 	
 	public Gene getGene(String s){
-		return geneg.get(s);
+		Gene nogene = new Gene("nogene");
+		for(int i=0; i<geneg.size();i++){
+			if(geneg.get(i).getId().equals(s)){
+				return geneg.get(i);
+			}
+		}
+		return nogene;
 	}
 	
+	public Gene getGene(int i){
+		return geneg.get(i);
+	}
+
+	public void sort(){
+		Collections.sort(geneg);
+	}
 
 }

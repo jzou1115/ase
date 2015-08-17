@@ -13,20 +13,26 @@ public class Gene implements Comparable<Gene>{
 	String id;
 	public GenomicRegion region;
 	
-	HashMap<String,ExpSample> esamples;
+	int[] esamples;
 	
 	Gene(String i, GenomicCoordinate start, GenomicCoordinate end){
 		id=i;
 		region = new GenomicRegion(start, end);
-		esamples = new HashMap<String, ExpSample>();
 	}
 	
-	public HashMap<String, ExpSample> getExpsamples(){
+	Gene(String i){
+		id= i;
+	}
+	public int[] getExpsamples(){
 		return esamples;
 	}
 	
-	public void addSample(String s, ExpSample e){
-		esamples.put(s, e);
+	public GenomicRegion getRegion(){
+		return region;
+	}
+	
+	public void addSample(int[] s){
+		esamples=s;
 	}
 	
 	public String getId(){
@@ -34,7 +40,7 @@ public class Gene implements Comparable<Gene>{
 	}
 	
 	public int getNumSamples(){
-		return esamples.keySet().size();
+		return esamples.length;
 	}
 	@Override
 	public int compareTo(Gene o) {
@@ -48,13 +54,13 @@ public class Gene implements Comparable<Gene>{
 
 	public static Gene parseGene(String line){
 		String[] tokens = line.split("\\s+");
-		String chromosome = tokens[0];
-		int chr = Integer.parseInt(chromosome.substring(3,chromosome.length()));
-		long s = Long.parseLong(tokens[1]);
-		long e = Long.parseLong(tokens[2]);
+		String chromosome = tokens[1];
+		int chr = Integer.parseInt(chromosome);
+		long s = Long.parseLong(tokens[2]);
+		long e = Long.parseLong(tokens[3]);
 		GenomicCoordinate start = new GenomicCoordinate(chr, s);
 		GenomicCoordinate end = new GenomicCoordinate(chr, e);
-		String id = tokens[3];
+		String id = tokens[0];
 		return new Gene(id, start, end);
 	}
 }

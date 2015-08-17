@@ -1,5 +1,9 @@
 package run;
 
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,90 +20,68 @@ import snp.*;
 import genome.*;
 
 public class Run {
-	int threshold;
+	int errors;
 	List<SNP> snps;
 	Gene gene;
+	int num;
+	Map<SNP, int[]> samples;
 	
-	int variants;
-	
-	public Run(Gene g, List<SNP> s, int t){
-		snps=s;
+	public Run(Gene g, 	List<SNP> sn, Map<SNP, int[]> s, int e, int n){
+		samples=s;
 		gene=g;
-		threshold=t;
-		variants = 0;
+		errors=e;
+		num=n;
+		snps=sn;
 	}
 
 	
-	public int runSim(){
-		Map<String, ExpSample> emap= gene.getExpsamples();
+	public List<SNP> runSim() throws FileNotFoundException{
 		Random rand = new Random();
-		int randInt = rand.nextInt(2);
+		
+		int numSamples = 50;
+		List<Integer> randSamples = new ArrayList<Integer>();
+		while(randSamples.size()<num){
+			int randInt = rand.nextInt(numSamples);
+			if(!randSamples.contains(randInt)){
+				randSamples.add(randInt);
+			}
+		}
 
+		//BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("out.txt")));
+		
+		List<SNP> ret = new ArrayList<SNP>();
 		for(SNP s:snps){
-			Map<String, GenoSample> gmap= s.getGenosamples();
+			int[] gmap= samples.get(s);
 			int correct=0;
 			int incorrect=0;
-			for(String gtexId:gmap.keySet()){
-				randInt = rand.nextInt(2);
+			
+			for(int i: randSamples){
+				int randInt = rand.nextInt(2);
 				
-				if(emap.containsKey(gtexId) & (gmap.get(gtexId).getHetero() == randInt)){
+				if(gmap[i] == randInt){
 					correct++;
 				}
-				else if(emap.containsKey(gtexId) & (gmap.get(gtexId).getHetero() != randInt)){
-					incorrect++;
-				}
 				else{
-					System.out.println("Missing data: "+gtexId);
+					incorrect++;
 				}
 			}
 			if(passThreshold(incorrect)){
 				//System.out.println(gene.getId()+"\t"+s.getId());
-				variants++;
+				ret.add(s);
 			}
 		}
-		return variants;
+		return ret;
 	}
 	
 	
-	public int run(){
-		Map<String, ExpSample> emap= gene.getExpsamples();
-		for(SNP s:snps){
-			Map<String, GenoSample> gmap= s.getGenosamples();
-			int correct=0;
-			int incorrect=0;
-			for(String gtexId:gmap.keySet()){
-				if(emap.containsKey(gtexId) & (gmap.get(gtexId).getHetero() == emap.get(gtexId).getASE())){
-					correct++;
-				}
-				else if(emap.containsKey(gtexId) & (gmap.get(gtexId).getHetero() != emap.get(gtexId).getASE())){
-					incorrect++;
-				}
-				else{
-					System.out.println("Missing data: "+gtexId);
-				}
-			}
-			if(passThreshold(incorrect)){
-				//System.out.println(gene.getId()+"\t"+s.getId());
-				variants++;
-			}
-		}
-		return variants;
-	}
-	
-	
+
 	public boolean passThreshold(int incorrect){
-		if(incorrect>threshold){
+		if(incorrect>errors){
 			return false;
 		}
 		return true;
 	}
 	
-	public boolean passThreshold(int correct, int incorrect){
-		if(1.0*correct/incorrect >= threshold){
-			return true;
-		}
-		return false;
-	}
-	
+
 
 }

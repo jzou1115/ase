@@ -39,7 +39,7 @@ public class GenomicRegion {
 	
 	//make sure this has genomic relevance
 	public GenomicRegion expand(int numBases){
-		return new GenomicRegion(start.decrement(numBases), end.increment(numBases));
+		return new GenomicRegion(start.decrement(numBases), end.increment(numBases));		
 	}
 	
 	public int toIndex(GenomicCoordinate c){

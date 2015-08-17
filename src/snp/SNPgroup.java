@@ -1,5 +1,7 @@
 package snp;
 
+import gene.Gene;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,25 +15,18 @@ import java.util.List;
 
 
 public class SNPgroup{
-	private final HashMap<String, SNP> snpg;
+	private final List<SNP> snpg;
 	
 	public SNPgroup(){
-		snpg= new HashMap<String,SNP>();
+		snpg= new ArrayList<SNP>();
 	}
 	
-	public SNPgroup(Collection<SNP> snps){
-		snpg= new HashMap<String, SNP>();
-		for(SNP s : snps){
-			snpg.put(s.id,s);
-		}
+	public SNPgroup(List<SNP> snps){
+		snpg= snps;
 	}
 
 	public List<SNP> getSnps(){
-		List<SNP> ret = new ArrayList<SNP>();
-		for(String s:snpg.keySet()){
-			ret.add(snpg.get(s));
-		}
-		return ret;
+		return snpg;
 	}
 	public static SNPgroup readSNPGroup(InputStream in){
 		List<SNP> snps = new ArrayList<SNP>();
@@ -56,11 +51,32 @@ public class SNPgroup{
 	}
 	
 	public int size(){
-		return snpg.keySet().size();
+		return snpg.size();
 	}
 	
+	public boolean contains(String s){
+		if(snpg.contains(s)){
+			return true;
+		}
+		return false;
+	}
+
+
 	public SNP getSNP(String s){
-		return snpg.get(s);
+		SNP nogene = new SNP("SNP");
+		for(int i=0; i<snpg.size();i++){
+			if(snpg.get(i).getId().equals(s)){
+				return snpg.get(i);
+			}
+		}
+		return nogene;
 	}
 	
+	public SNP getSNP(int i){
+		return snpg.get(i);
+	}
+
+	public void sort(){
+		Collections.sort(snpg);
+	}
 }

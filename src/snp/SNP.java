@@ -10,23 +10,26 @@ public class SNP implements Comparable<SNP>{
 	GenomicCoordinate location;
 	int num;
 	
-	HashMap<String, GenoSample> gsamples;
+	int[] gsamples;
 	
 	SNP(String i, int c, long l, int n){
 		id=i;
 		location = new GenomicCoordinate(c, l);
 		num= n;
-		gsamples= new HashMap<String, GenoSample>();
+	}
+	
+	SNP(String i){
+		id=i;
 	}
 
-	public void addSample(String s, GenoSample g){
-		gsamples.put(s, g);
+	public void addSamples(int[] s){
+		gsamples = s;
 	}
 	
 	public int getNumSamples(){
-		return gsamples.keySet().size();
+		return gsamples.length;
 	}
-	public HashMap<String, GenoSample> getGenosamples(){
+	public int[] getGenosamples(){
 		return gsamples;
 	}
 	public String getId(){
