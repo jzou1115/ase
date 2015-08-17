@@ -31,7 +31,6 @@ public class Run {
 
 	
 	public int runSim(){
-		Map<String, ExpSample> emap= gene.getExpsamples();
 		Random rand = new Random();
 		int randInt = rand.nextInt(2);
 
@@ -43,15 +42,14 @@ public class Run {
 				String sampleID = g.getSampleID();
 				int isHetero = g.getHetero();
 				randInt = rand.nextInt(2);
-				
-				if(emap.containsKey(sampleID) & (isHetero == randInt)){
+				if(isHetero == randInt){
 					correct++;
 				}
-				else if(emap.containsKey(sampleID) & (isHetero != randInt)){
+				else if(isHetero != randInt){
 					incorrect++;
 				}
 				else{
-					System.out.println("Missing data: "+sampleID);
+					System.out.println("Missing data: "+sampleID );
 				}
 			}
 			if(passThreshold(incorrect)){
@@ -72,14 +70,14 @@ public class Run {
 			for (GenoSample g : gsamples) {
 				String sampleID = g.getSampleID();
 				int isHetero = g.getHetero();
-				if(emap.containsKey(sampleID) & (isHetero == emap.get(sampleID).getASE())){
+				if(emap.containsKey(sampleID) && (isHetero == emap.get(sampleID).getASE())){
 					correct++;
 				}
-				else if(emap.containsKey(sampleID) & (isHetero != emap.get(sampleID).getASE())){
+				else if(emap.containsKey(sampleID) && (isHetero != emap.get(sampleID).getASE())){
 					incorrect++;
 				}
 				else{
-					System.out.println("Missing data: "+sampleID);
+					System.out.println("Missing data: "+sampleID + "SNP id:" + s.getId());
 				}
 			}
 			if(passThreshold(incorrect)){
