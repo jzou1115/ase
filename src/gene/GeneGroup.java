@@ -41,12 +41,10 @@ public class GeneGroup{
 		List<Gene> snps = new ArrayList<Gene>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
-		int n=0;
 		try {
 			while((line = reader.readLine()) != null){
 				try{
 					snps.add(Gene.parseGene(line));
-					n++;
 				} catch (Exception e){
 					//do nothing
 				}

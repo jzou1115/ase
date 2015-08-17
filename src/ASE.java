@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +27,51 @@ public class ASE {
 	int nSamples = 100;
 	
 	public void parseSnps(FileInputStream snpData){
-		isHetero = SNPgroup.readSNPGroup(snpData);
+		List<SNP> snps = new ArrayList<SNP>();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(snpData));
+		String line;
+		int n=0;
+		try {
+			while((line = reader.readLine()) != null){
+				try{
+					SNP snp = SNP.parseSNP(line, n);
+					if (isSNPNeeded(snp)){
+						snps.add(snp);
+						n++;
+					}
+				} catch (Exception e){
+					e.printStackTrace();
+				}
+			}
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		isHetero =  new SNPgroup(snps);
+	}
+	
+
+	public static SNPgroup readSNPGroup(InputStream in){
+		List<SNP> snps = new ArrayList<SNP>();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		String line;
+		int n=0;
+		try {
+			while((line = reader.readLine()) != null){
+				try{
+					snps.add(SNP.parseSNP(line, n));
+					n++;
+				} catch (Exception e){
+					e.printStackTrace();
+				}
+			}
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new SNPgroup(snps);
 	}
 	
 	
@@ -103,14 +148,11 @@ public class ASE {
 		return false;
 	}
 	
-	public boolean isSNPNeeded(String snpId){
+	public boolean isSNPNeeded(SNP snp){
 		for(Gene g : hasASE.getGenes()){
-			for (SNP s : map.get(g)){
-				if (s.getId() == snpId){
-					return true;
-				}
+			if (match (snp, g)){
+				return true;
 			}
-			
 		}
 		return false;
 	}
@@ -181,7 +223,6 @@ public class ASE {
 		FileInputStream genotypeData = new FileInputStream(new File("./test/isHetero.txt"));
 		//FileInputStream genotypeData = new FileInputStream(new File("./test3/ChrOne.snps.txt"));
 		a.parseGenotypes(genotypeData);
-		
 		
 		//String expData = args[3];
 		//FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));

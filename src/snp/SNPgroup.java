@@ -33,6 +33,7 @@ public class SNPgroup{
 		}
 		return ret;
 	}
+	
 	public static SNPgroup readSNPGroup(InputStream in){
 		List<SNP> snps = new ArrayList<SNP>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
