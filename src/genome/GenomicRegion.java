@@ -1,8 +1,5 @@
 package genome;
 
-import java.util.Iterator;
-
-import snp.SNP;
 
 public class GenomicRegion {
 	GenomicCoordinate start;

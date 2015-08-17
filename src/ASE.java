@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -213,7 +212,7 @@ public class ASE {
 		FileInputStream genotypeData = new FileInputStream(new File("./test3/ChrOne.snps.txt"));
 		a.parseGenotypes(genotypeData);
 		
-		a.simulate(0, 1000000);		
+		a.simulate(0, 1000000);
 	}
 	
 }
