@@ -189,32 +189,30 @@ public class ASE {
 	public static void main(String args[]) throws IOException{
 		ASE a= new ASE();
 		
+		/* test data
+		 * FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
+		//FileInputStream snpData = new FileInputStream(new File("./test/snp.map"));
+		//FileInputStream genotypeData = new FileInputStream(new File("./test/isHetero.txt"));
+		//FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
+		 */
+		
 		//String geneData = args[1];
-		//FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
+		//String snpData = args[0];
+		//String genotypeData = args[2];
+		//String expData = args[3];
+		//a.parseExpressions(expData);
+
 		FileInputStream geneData = new FileInputStream(new File("./test3/mart_export.txt"));
 		a.parseGenes(geneData);
 		
-		/** Parse all data files **/
-		//String snpData = args[0];
-		//FileInputStream snpData = new FileInputStream(new File("./test/snp.map"));
 		FileInputStream snpData = new FileInputStream(new File("./test3/ChrOne.map"));
 		a.parseSnps(snpData);
 
-		//mapping
 		a.genesToSnps();
 		
-		//String genotypeData = args[2];
-		//FileInputStream genotypeData = new FileInputStream(new File("./test/isHetero.txt"));
 		FileInputStream genotypeData = new FileInputStream(new File("./test3/ChrOne.snps.txt"));
 		a.parseGenotypes(genotypeData);
 		
-		//String expData = args[3];
-		//FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
-		//a.parseExpressions(expData);
-
-		/** Launch simulation **/
-		//int numSimulations = args[4]
-		//int threshold = args[5]
 		a.simulate(0, 1000000);		
 	}
 	
