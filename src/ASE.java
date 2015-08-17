@@ -30,7 +30,7 @@ public class ASE {
 			while((line = reader.readLine()) != null){
 				try{
 					SNP snp = SNP.parseSNP(line, n);
-					if (isSNPNeeded(snp)){
+					if (snp != null && isSNPNeeded(snp)){
 						snps.add(snp);
 						n++;
 					}
@@ -45,34 +45,13 @@ public class ASE {
 		isHetero =  new SNPgroup(snps);
 	}
 	
-
-	public static SNPgroup readSNPGroup(InputStream in){
-		List<SNP> snps = new ArrayList<SNP>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		String line;
-		int n=0;
-		try {
-			while((line = reader.readLine()) != null){
-				try{
-					snps.add(SNP.parseSNP(line, n));
-					n++;
-				} catch (Exception e){
-					e.printStackTrace();
-				}
-			}
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return new SNPgroup(snps);
-	}
 	
-	
+	//TODO factor parseGenes into this class
 	public void parseGenes(FileInputStream geneData){
 		hasASE = GeneGroup.readGeneGroup(geneData);
 	}
 	
-	
+	//TODO generate random n samples, not the 1st n samples
 	public void parseGenotypes(FileInputStream genotypes) throws IOException{
 		BufferedReader br = new BufferedReader(new InputStreamReader(genotypes));
 		String line = br.readLine();
@@ -85,13 +64,12 @@ public class ASE {
 					String snpId = tokens[0].trim();
 					SNP s = isHetero.getSNP(snpId);
 					if (s != null) {
-						//TODO: think about this nsamples
 						for(int i=1; i<tokens.length && i<nSamples; i++){
 							GenoSample g = new GenoSample(sampleNames[i], Math.round(Float.parseFloat(tokens[i]))%2);
 							s.addSample(g);
 							//System.out.println(g.toString());
 						}
-						System.out.println(snpId +"\t"+s.getNumSamples());
+						System.out.println("in parseGenotypes:  " + snpId +"\t"+s.getNumSamples());
 					}
 				} catch (Exception e){
 					e.printStackTrace();
@@ -125,12 +103,11 @@ public class ASE {
 					//System.out.println(gene+"\t"+g.getNumSamples());
 					
 				} catch (Exception e){
-					//do nothing
+					e.printStackTrace();
 				}
 			}
 			br.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -153,13 +130,10 @@ public class ASE {
 	
 	public void genesToSnps(){
 		map = new HashMap<Gene, List<SNP>>();
-		
-		List<SNP> snpList = isHetero.getSnps();
-		//Collections.sort(snpList);
-		
+	
+		List<SNP> snpList = isHetero.getSnps();		
 		List<Gene> geneList = hasASE.getGenes();
-		//Collections.sort(geneList);
-		
+	
 		for(SNP s:snpList){
 			for(Gene g:geneList){
 				if(match(s,g)){
@@ -176,14 +150,15 @@ public class ASE {
 			}
 		}
 	}
-	/**
-	for(Gene g:map.keySet()){
-		List<SNP> s = map.get(g);
-		for(SNP x:s){
-			System.out.println(x.getId()+"\t"+g.getId());
+	
+	public void printMapping(){
+		for(Gene g:map.keySet()){
+			List<SNP> s = map.get(g);
+			for(SNP x:s){
+				System.out.println(x.getId()+"\t"+g.getId());
+			}
 		}
 	}
- 	**/
 	
 	public void simulate(int errors, int reps){
 		for(Gene g: hasASE.getGenes()){
@@ -198,7 +173,7 @@ public class ASE {
 					int variants = run.runSim();
 					total = total + variants;
 				}
-				System.out.println(g.getId()+"\t"+1.0*total/reps);
+				System.out.println(g.getId()+ " has " + snps.size() + " snps that map to it and " + 1.0*total/reps + " average variants");
 			}
 		}
 	}
@@ -216,7 +191,7 @@ public class ASE {
 		
 		//String geneData = args[1];
 		//FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
-		FileInputStream geneData = new FileInputStream(new File("./test3/genes.txt"));
+		FileInputStream geneData = new FileInputStream(new File("./test3/mart_export.txt"));
 		a.parseGenes(geneData);
 		
 		/** Parse all data files **/
@@ -240,7 +215,7 @@ public class ASE {
 		/** Launch simulation **/
 		//int numSimulations = args[4]
 		//int threshold = args[5]
-		a.simulate(0, 100);		
+		a.simulate(0, 1000000);		
 	}
 	
 }

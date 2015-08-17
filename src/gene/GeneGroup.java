@@ -42,7 +42,7 @@ public class GeneGroup{
 				try{
 					snps.add(Gene.parseGene(line));
 				} catch (Exception e){
-					//do nothing
+					e.printStackTrace();
 				}
 			}
 			reader.close();
