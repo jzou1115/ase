@@ -47,7 +47,7 @@ public class Run {
 					System.out.println("Missing data: "+sampleID );
 				}
 			}
-			if(passThreshold(incorrect)){
+			if(passThreshold(incorrect, correct)){
 				//System.out.println(gene.getId()+"\t"+s.getId());
 				variants++;
 			}
@@ -56,7 +56,7 @@ public class Run {
 	}
 	
 	
-	public int run(){
+	public int run() throws Exception{
 		Map<String, ExpSample> emap= gene.getExpsamples();
 		for(SNP s:snps){
 			ArrayList<GenoSample> gsamples= s.getGenosamples();
@@ -65,18 +65,19 @@ public class Run {
 			for (GenoSample g : gsamples) {
 				String sampleID = g.getSampleID();
 				int isHetero = g.getHetero();
-				//TODO: use a separate case for when emap doesn't exist, so both correct + incorrect = 0
-				if(emap.containsKey(sampleID) && (isHetero == emap.get(sampleID).getASE())){
-					correct++;
-				}
-				else if(emap.containsKey(sampleID) && (isHetero != emap.get(sampleID).getASE())){
-					incorrect++;
-				}
-				else{
-					System.out.println("Missing data: "+sampleID + "SNP id:" + s.getId());
+				if (emap.containsKey(sampleID)){
+					if(isHetero == emap.get(sampleID).getASE()){
+						correct++;
+					}
+					else{
+						incorrect++;
+					}
+				}				 
+				else {
+					throw new Exception("Missing data: "+sampleID + "SNP id:" + s.getId());
 				}
 			}
-			if(passThreshold(incorrect)){
+			if(passThreshold(incorrect, correct)){
 				//System.out.println(gene.getId()+"\t"+s.getId());
 				variants++;
 			}
@@ -84,20 +85,14 @@ public class Run {
 		return variants;
 	}
 	
-	
-	public boolean passThreshold(int incorrect){
-		if(incorrect>threshold){
+	//TODO think about when correct AND incorrect can be 0, because this happened before
+	public boolean passThreshold(int incorrect, int correct){
+		if (correct == 0) {
+			return false;
+		}
+		else if (incorrect>threshold) {
 			return false;
 		}
 		return true;
 	}
-	
-	public boolean passThreshold(int correct, int incorrect){
-		if(1.0*correct/incorrect >= threshold){
-			return true;
-		}
-		return false;
-	}
-	
-
 }
