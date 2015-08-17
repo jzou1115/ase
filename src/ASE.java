@@ -89,7 +89,7 @@ public class ASE {
 						for(int i=1; i<tokens.length && i<nSamples; i++){
 							GenoSample g = new GenoSample(sampleNames[i], Math.round(Float.parseFloat(tokens[i]))%2);
 							s.addSample(g);
-							System.out.println(g.toString());
+							//System.out.println(g.toString());
 						}
 						System.out.println(snpId +"\t"+s.getNumSamples());
 					}
@@ -187,13 +187,19 @@ public class ASE {
 	
 	public void simulate(int errors, int reps){
 		for(Gene g: hasASE.getGenes()){
-			int total=0;
-			for(int r=0; r<reps; r++){
-				Run run = new Run(g, map.get(g),errors);
-				int variants = run.runSim();
-				total = total + variants;
+			List<SNP> snps = map.get(g);
+			if (snps == null){
+				System.out.println(g.getId() + " has no SNPs that map to it");
 			}
-			System.out.println(g.getId()+"\t"+1.0*total/reps);
+			else{
+				int total=0;
+				for(int r=0; r<reps; r++){
+					Run run = new Run(g, map.get(g),errors);
+					int variants = run.runSim();
+					total = total + variants;
+				}
+				System.out.println(g.getId()+"\t"+1.0*total/reps);
+			}
 		}
 	}
 
@@ -209,33 +215,33 @@ public class ASE {
 		ASE a= new ASE();
 				
 		//String geneData = args[1];
-		FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
+		//FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
+		FileInputStream geneData = new FileInputStream(new File("./test3/genes.txt"));
 		a.parseGenes(geneData);
 		
 		/** Parse all data files **/
 		//String snpData = args[0];
-		FileInputStream snpData = new FileInputStream(new File("./test/snp.map"));
-		//FileInputStream snpData = new FileInputStream(new File("./test3/ChrOne.map"));
+		//FileInputStream snpData = new FileInputStream(new File("./test/snp.map"));
+		FileInputStream snpData = new FileInputStream(new File("./test3/ChrOne.map"));
 		a.parseSnps(snpData);
 
 		//mapping
 		a.genesToSnps();
 		
 		//String genotypeData = args[2];
-		FileInputStream genotypeData = new FileInputStream(new File("./test/isHetero.txt"));
-		//FileInputStream genotypeData = new FileInputStream(new File("./test3/ChrOne.snps.txt"));
+		//FileInputStream genotypeData = new FileInputStream(new File("./test/isHetero.txt"));
+		FileInputStream genotypeData = new FileInputStream(new File("./test3/ChrOne.snps.txt"));
 		a.parseGenotypes(genotypeData);
 		
 		//String expData = args[3];
-		FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
-		a.parseExpressions(expData);
+		//FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
+		//a.parseExpressions(expData);
 		
 
 		/** Launch simulation **/
 		//int numSimulations = args[4]
 		//int threshold = args[5]
-		a.run(0);
-		
+		a.simulate(0, 100);		
 	}
 	
 }
