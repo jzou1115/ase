@@ -10,7 +10,7 @@ public class SNP implements Comparable<SNP>{
 	GenomicCoordinate location;
 	int num;
 	
-	int[] gsamples;
+	GenoSample[] gsamples;
 	
 	SNP(String i, int c, long l, int n){
 		id=i;
@@ -22,14 +22,14 @@ public class SNP implements Comparable<SNP>{
 		id=i;
 	}
 
-	public void addSamples(int[] s){
+	public void addSamples(GenoSample[] s){
 		gsamples = s;
 	}
 	
 	public int getNumSamples(){
 		return gsamples.length;
 	}
-	public int[] getGenosamples(){
+	public GenoSample[] getGenosamples(){
 		return gsamples;
 	}
 	public String getId(){

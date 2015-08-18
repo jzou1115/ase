@@ -1,88 +1,96 @@
 package run;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import sample.*;
 import genome.*;
-import statistics.*;
 
 public class Run {
-	
-	Gene gene;
+	int threshold;
 	List<SNP> snps;
-	int num;
-	int errors;
-	List<ExpSample> expressionData;
-	List<GenoSample> genotypeData;
+	Gene gene;
 	
-	public Run(Gene g, 	List<SNP> sn, int n, int e, List<ExpSample> exp, List<GenoSample> geno){
+	int variants;
+	
+	public Run(Gene g, List<SNP> s, int t){
+		snps=s;
 		gene=g;
-		snps=sn;
-		num=n;
-		errors=e;
-		expressionData = exp;
-		genotypeData = geno;
+		threshold=t;
+		variants = 0;
 	}
 
 	
-/**
-	public List<SNP> runSim() throws FileNotFoundException{
+	public int runSim(){
 		Random rand = new Random();
-		
-		int numSamples = 50;
-		List<Integer> randSamples = new ArrayList<Integer>();
-		while(randSamples.size()<num){
-			int randInt = rand.nextInt(numSamples);
-			if(!randSamples.contains(randInt)){
-				randSamples.add(randInt);
-			}
-		}
+		int randInt = rand.nextInt(2);
 
-		//BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("out.txt")));
-		
-		List<SNP> ret = new ArrayList<SNP>();
 		for(SNP s:snps){
-			int[] gmap= samples.get(s);
+			ArrayList<GenoSample> gsamples = s.getGenosamples();
 			int correct=0;
 			int incorrect=0;
-			
-			for(int i: randSamples){
-				int randInt = rand.nextInt(2);
-				
-				if(gmap[i] == randInt){
+			for (GenoSample g : gsamples) {
+				String sampleID = g.getSampleID();
+				int isHetero = g.getHetero();
+				randInt = rand.nextInt(2);
+				if(isHetero == randInt){
 					correct++;
 				}
-				else{
+				else if(isHetero != randInt){
 					incorrect++;
 				}
+				else{
+					System.out.println("Missing data: "+sampleID );
+				}
 			}
-			if(passThreshold(incorrect)){
+			if(passThreshold(incorrect, correct)){
 				//System.out.println(gene.getId()+"\t"+s.getId());
-				ret.add(s);
+				variants++;
 			}
 		}
-		return ret;
+		return variants;
 	}
 	
 	
-
-	public boolean passThreshold(int incorrect){
-		if(incorrect>errors){
+	public int run() throws Exception{
+		Map<String, ExpSample> emap= gene.getExpsamples();
+		for(SNP s:snps){
+			ArrayList<GenoSample> gsamples= s.getGenosamples();
+			int correct=0;
+			int incorrect=0;
+			for (GenoSample g : gsamples) {
+				String sampleID = g.getSampleID();
+				int isHetero = g.getHetero();
+				if (emap.containsKey(sampleID)){
+					if(isHetero == emap.get(sampleID).getASE()){
+						correct++;
+					}
+					else{
+						incorrect++;
+					}
+				}				 
+				else {
+					throw new Exception("Missing data: "+sampleID + "SNP id:" + s.getId());
+				}
+			}
+			if(passThreshold(incorrect, correct)){
+				//System.out.println(gene.getId()+"\t"+s.getId());
+				variants++;
+			}
+		}
+		return variants;
+	}
+	
+	//TODO think about when correct AND incorrect can be 0, because this happened before
+	public boolean passThreshold(int incorrect, int correct){
+		if (correct == 0) {
+			return false;
+		}
+		else if (incorrect>threshold) {
 			return false;
 		}
 		return true;
 	}
-	
-**/
-
 }
