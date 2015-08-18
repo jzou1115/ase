@@ -12,27 +12,30 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import sample.ExpSample;
-import sample.GenoSample;
-import sample.Sample;
+import sample.*;
 import genome.*;
+import statistics.*;
 
 public class Run {
-	int errors;
-	List<SNP> snps;
-	Gene gene;
-	int num;
-	Map<SNP, int[]> samples;
 	
-	public Run(Gene g, 	List<SNP> sn, Map<SNP, int[]> s, int e, int n){
-		samples=s;
+	Gene gene;
+	List<SNP> snps;
+	int num;
+	int errors;
+	List<ExpSample> expressionData;
+	List<GenoSample> genotypeData;
+	
+	public Run(Gene g, 	List<SNP> sn, int n, int e, List<ExpSample> exp, List<GenoSample> geno){
 		gene=g;
-		errors=e;
-		num=n;
 		snps=sn;
+		num=n;
+		errors=e;
+		expressionData = exp;
+		genotypeData = geno;
 	}
 
 	
+/**
 	public List<SNP> runSim() throws FileNotFoundException{
 		Random rand = new Random();
 		
@@ -80,6 +83,6 @@ public class Run {
 		return true;
 	}
 	
-
+**/
 
 }
