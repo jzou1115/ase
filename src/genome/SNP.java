@@ -1,4 +1,4 @@
-package snp;
+package genome;
 import java.util.HashMap;
 
 import genome.GenomicCoordinate;

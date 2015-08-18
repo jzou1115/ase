@@ -1,13 +1,4 @@
-package gene;
-
-import genome.GenomicCoordinate;
-import genome.GenomicRegion;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import sample.*;
-import snp.SNP;
+package genome;
 
 public class Gene implements Comparable<Gene>{
 	String id;

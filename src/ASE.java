@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -13,11 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import gene.*;
 import genome.*;
 import run.*;
 import sample.*;
-import snp.*;
 
 public class ASE {
 	SNPgroup isHetero;
@@ -27,16 +26,16 @@ public class ASE {
 	Map<Gene, int[]> esamples;
 	String[] sampleNames;
 	
-	public void parseSnps(FileInputStream snpData){
+	public void parseSnps(InputStream inputStream){
 		System.out.println("Reading snps");
-		isHetero = SNPgroup.readSNPGroup(snpData);
+		isHetero = SNPgroup.readSNPGroup(inputStream);
 		isHetero.sort();
 		System.out.println("number of snps: "+ isHetero.size());
 	}
 	
-	public void parseGenes(FileInputStream geneData){
+	public void parseGenes(InputStream inputStream){
 		System.out.println("Reading genes");
-		hasASE = GeneGroup.readGeneGroup(geneData);
+		hasASE = GeneGroup.readGeneGroup(inputStream);
 		hasASE.sort();
 		System.out.println("number of genes: "+ hasASE.size());
 	}
@@ -198,16 +197,25 @@ public class ASE {
 		}
 	}
 	public static void main(String args[]) throws IOException{
+		
+		CommandLineParams cmdArgs = new CommandLine();
+		try{
+			cmdArgs.parse(args);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			cmdArgs.printHelp(System.err);
+			System.exit(1);
+		}
+		if(cmdArgs.help()){
+			cmdArgs.printHelp(System.err);
+			System.exit(0);
+		}
+		
 		ASE a= new ASE();
 		
-		/** Parse all data files **/
-		String snpFile = args[0];
-		FileInputStream snpData = new FileInputStream(new File(snpFile));
-		a.parseSnps(snpData);
-
-		String geneFile = args[1];
-		FileInputStream geneData = new FileInputStream(new File(geneFile));
-		a.parseGenes(geneData);
+		a.parseSnps(cmdArgs.getSNPsInput());
+	
+		a.parseGenes(cmdArgs.getGenesInput());
 		
 		a.genesToSnps();
 		
