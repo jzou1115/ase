@@ -1,4 +1,0 @@
-rs1 gene1
-rs2 gene2
-rs3 gene3
-rs4 gene4
