@@ -1,11 +1,15 @@
 package genome;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import genome.GenomicCoordinate;
 import sample.*;
 
 public class SNP implements Comparable<SNP>{
+	private static final String SNP_REGEX = "^rs.*$";
+	
 	//parsed from *.map files
 	String id;
 	GenomicCoordinate location;
@@ -17,6 +21,7 @@ public class SNP implements Comparable<SNP>{
 		id=i;
 		location = new GenomicCoordinate(c, l);
 		num= n;
+		gsamples = new ArrayList<GenoSample>();
 	}
 	
 	SNP(String i){
@@ -24,7 +29,9 @@ public class SNP implements Comparable<SNP>{
 	}
 
 	public void addSamples(List<GenoSample> s){
-		gsamples = s;
+		for(GenoSample g:s){
+			gsamples.add(g);
+		}
 	}
 	
 	public int getNumSamples(){
@@ -59,9 +66,11 @@ public class SNP implements Comparable<SNP>{
 	
 	public static SNP parseSNP(String line, int n){
 		String[] tokens = line.split("\\s+");
-
-		SNP s= new SNP(tokens[0], Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]), n);
-		
-		return s;
+	//	if(Pattern.matches(SNP_REGEX, tokens[0].trim())){
+			SNP s= new SNP(tokens[0].trim(), Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]), n);
+			return s;
+	//	}
+	//	System.out.println("does not match snp regex "+tokens[0]);
+	//	return null;
 	}
 }

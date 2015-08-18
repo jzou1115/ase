@@ -47,12 +47,26 @@ public class Gene implements Comparable<Gene>{
 		return id;
 	}
 
+	/**
 	public static Gene parseGene(String line){
 		String[] tokens = line.split("\\s+");
 		String chromosome = tokens[1];
 		int chr = Integer.parseInt(chromosome);
 		long s = Long.parseLong(tokens[2]);
 		long e = Long.parseLong(tokens[3]);
+		GenomicCoordinate start = new GenomicCoordinate(chr, s);
+		GenomicCoordinate end = new GenomicCoordinate(chr, e);
+		String id = tokens[0];
+		return new Gene(id, start, end);
+	}
+	**/
+	
+	public static Gene parseGene(String line){
+		String[] tokens = line.split(",");
+		String chromosome = tokens[3];
+		int chr = Integer.parseInt(chromosome);
+		long s = Long.parseLong(tokens[1]);
+		long e = Long.parseLong(tokens[2]);
 		GenomicCoordinate start = new GenomicCoordinate(chr, s);
 		GenomicCoordinate end = new GenomicCoordinate(chr, e);
 		String id = tokens[0];

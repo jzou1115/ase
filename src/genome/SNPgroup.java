@@ -34,8 +34,11 @@ public class SNPgroup{
 		try {
 			while((line = reader.readLine()) != null){
 				try{
-					snps.add(SNP.parseSNP(line, n));
-					n++;
+					SNP s = SNP.parseSNP(line, n);
+					if(s!=null){
+						snps.add(s);
+						n++;
+					}
 				} catch (Exception e){
 					//do nothing
 				}
@@ -53,8 +56,10 @@ public class SNPgroup{
 	}
 	
 	public boolean contains(String s){
-		if(snpg.contains(s)){
-			return true;
+		for(SNP snp:snpg){
+			if(snp.getId().equals(s)){
+				return true;
+			}
 		}
 		return false;
 	}

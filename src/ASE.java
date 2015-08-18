@@ -27,6 +27,8 @@ public class ASE {
 	String[] sampleNames;
 	Gene gene;
 	SNPgroup snps;
+	int[] ase;
+	Map<SNP, List<GenoSample>> genoMap;
 	
 	public void parseSnps(InputStream inputStream){
 		System.out.println("Reading snps");
@@ -43,29 +45,36 @@ public class ASE {
 	}
 	
 
-	public void parseGenotypes(FileInputStream genotypes) throws IOException{
+	public void parseGenotypes(InputStream genotypes) throws IOException{
 		System.out.println("Reading genotypes");
 		BufferedReader br = new BufferedReader(new InputStreamReader(genotypes));
 		String line = br.readLine();
 		
 		sampleNames = line.split("\\s+");
-
+		genoMap = new HashMap<SNP, List<GenoSample>>();
 		try {
 			while((line = br.readLine()) != null){
 				try{
 					String[] tokens = line.split("\\s+");
 					String snp = tokens[0].trim();
-					if(isHetero.contains(snp)){
+					if(snps.contains(snp) && isHetero.contains(snp)){
+						//System.out.println(snp);
 						SNP s = isHetero.getSNP(snp);
-						int[] samp = new int[tokens.length-1];
-						for(int i=0; i<tokens.length-1;i++){
-							samp[i] = Integer.parseInt(tokens[i+1]);
+						List<GenoSample> samp = new ArrayList<GenoSample>();
+						for(int i=1; i<tokens.length;i++){
+							GenoSample genosamp = new GenoSample(sampleNames[i], (int) Math.round(Double.parseDouble(tokens[i])%2));
+							//System.out.println(genosamp.getHetero());
+							s.addSamples(samp);
+							samp.add(genosamp);
 						}
-						samples.put(s, samp);
+						genoMap.put(s, samp);
 					}
 				} catch (Exception e){
 					//do nothing
 				}
+			}
+			for(SNP s: genoMap.keySet()){
+				System.out.println("asdf: "+s.getId());
 			}
 			br.close();
 			//System.out.println("done reading genotypes");
@@ -76,7 +85,8 @@ public class ASE {
 		
 	}
 	
-	public void parseExpressions(FileInputStream expressions) throws IOException{
+	
+	public void parseExpressions(InputStream expressions) throws IOException{
 		System.out.println("Reading expression data");
 		BufferedReader br = new BufferedReader(new InputStreamReader(expressions));
 		String line = br.readLine();
@@ -172,23 +182,17 @@ public class ASE {
 		snps = new SNPgroup(map.get(gene));
 		System.out.println(snps.size());
 	}
-	/**
-	public void simulate(int errors, int reps, int n) throws FileNotFoundException{
-		for(Gene g: hasASE.getGenes()){
-			for(SNP s: map.get(g)){
-				int total=0;
-			                    	for(int r=0; r<reps; r++){
-					Run run = new Run(g, map.get(g), samples, errors, n);
-					List<SNP> variants = run.runSim();
-					if(variants.contains(s)){
-						total++;
-					}
-				}
-				//System.out.println("\t"+s.getId()+":"+1.0*total/reps);
-			}
+	
+	public void startRun(double threshold, int errors, int perms, int n) throws IOException{
+		Run r = new Run(gene, snps.getSnps(), threshold, errors, perms, n, genoMap);
+		System.out.println("Gene run: "+r.getGene().getId());
+		System.out.println(r.getSnps().size());
+		for(SNP s: r.getGenoMap().keySet()){
+			System.out.println(s.getId());
 		}
+		r.allSimulations();
 	}
-	**/
+
 	public static void main(String args[]) throws IOException{
 		
 		CommandLineParams cmdArgs = new CommandLine();
@@ -211,11 +215,14 @@ public class ASE {
 		a.parseGenes(cmdArgs.getGenesInput());
 		
 		a.genesToSnps();
-		System.out.println(cmdArgs.getErrorNum());
-		System.out.println(cmdArgs.getPermNum());
+		
 		a.setTestGene(cmdArgs.getTestGene());
 		
+		a.parseGenotypes(cmdArgs.getGenotypeData());
 		
+		//a.parseExpressions(cmdArgs.getExpressionData());
+		
+		a.startRun(cmdArgs.getThreshold(), cmdArgs.getErrorNum(), cmdArgs.getPermNum(), cmdArgs.getSampleNum());
 		
 		/** Launch simulation **/
 		//int numSimulations = args[4]

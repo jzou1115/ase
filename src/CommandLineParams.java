@@ -15,5 +15,10 @@ public interface CommandLineParams {
 	public File getOutputDir();
 	public boolean help();
 	public String getTestGene();
+	public int getSampleNum();
+	public double getThreshold();
+	public InputStream getGenotypeData();
+	public InputStream getExpressionData();
+	
 	
 }
