@@ -15,7 +15,8 @@ public class CommandLine implements CommandLineParams{
 	private static final String ERROR_TAG = "-e";
 	private static final String HELP_TAG = "-h";
 	private static final String OUTPUT_TAG = "-o";
-
+	private static final String TEST_TAG = "-t";
+	
 	private File output = new File(DEFAULT_OUTPUT_DIR);
 	private InputStream snps = System.in;
 	private InputStream genes = System.in;
@@ -23,6 +24,7 @@ public class CommandLine implements CommandLineParams{
 	private boolean help = false;
 	private int perm;
 	private int errors;
+	private String test;
 	
 	@Override
 	public void parse(String ... args) throws Exception{
@@ -45,6 +47,10 @@ public class CommandLine implements CommandLineParams{
 				assertNextArg(ERROR_TAG, i, args);
 				errors = parseERRORArg(args[++i]);
 				break;
+			case TEST_TAG: 
+				assertNextArg(TEST_TAG, i, args);
+				test = parseTESTArg(args[++i]);
+				break;
 			case HELP_TAG:
 				help = true;
 				return;
@@ -58,6 +64,10 @@ public class CommandLine implements CommandLineParams{
 		}
 	}
 	
+	private String parseTESTArg(String string) {
+		return string.trim();
+	}
+
 	private int parseERRORArg(String string) {
 		return Integer.parseInt(string);
 	}
@@ -80,6 +90,7 @@ public class CommandLine implements CommandLineParams{
 		out.println("-g\tGene file");
 		out.println("-p\tNumber of permutations");
 		out.println("-e\tMaximum number of errors allowed");
+		out.println("-t\tTest gene ID");
 		out.println("-o\tOutput file");
 		out.println("-h\thelp statement");
 	}
@@ -123,6 +134,11 @@ public class CommandLine implements CommandLineParams{
 	@Override
 	public int getErrorNum() {
 		return errors;
+	}
+
+	@Override
+	public String getTestGene() {
+		return test;
 	}
 
 
