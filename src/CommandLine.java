@@ -8,21 +8,21 @@ import java.io.PrintStream;
 public class CommandLine implements CommandLineParams{
 	
 	private static final String DEFAULT_OUTPUT_DIR = "ase_output";
-//	private static final String DEFAULT_PACKAGE = "";
 	
 	private static final String SNP_TAG = "-s";
 	private static final String GENE_TAG = "-g";
-//	private static final String PACKAGE_TAG = "-p";
+	private static final String PERM_TAG = "-p";
+	private static final String ERROR_TAG = "-e";
 	private static final String HELP_TAG = "-h";
 	private static final String OUTPUT_TAG = "-o";
 
-	//private String root = DEFAULT_PACKAGE;
 	private File output = new File(DEFAULT_OUTPUT_DIR);
-	//private InputStream grammar = System.in;
 	private InputStream snps = System.in;
 	private InputStream genes = System.in;
 	//private InputStream map = System.in;
 	private boolean help = false;
+	private int perm;
+	private int errors;
 	
 	@Override
 	public void parse(String ... args) throws Exception{
@@ -37,10 +37,14 @@ public class CommandLine implements CommandLineParams{
 				assertNextArg(GENE_TAG, i, args);
 				genes = parseGeneArg(args[++i]);
 				break;
-	//		case PACKAGE_TAG:
-		//		assertNextArg(PACKAGE_TAG, i, args);
-			//	root = args[++i];
-				//break;
+			case PERM_TAG: 
+				assertNextArg(PERM_TAG, i, args);
+				perm = parsePermArg(args[++i]);
+				break;
+			case ERROR_TAG: 
+				assertNextArg(ERROR_TAG, i, args);
+				errors = parseERRORArg(args[++i]);
+				break;
 			case HELP_TAG:
 				help = true;
 				return;
@@ -54,6 +58,14 @@ public class CommandLine implements CommandLineParams{
 		}
 	}
 	
+	private int parseERRORArg(String string) {
+		return Integer.parseInt(string);
+	}
+
+	private int parsePermArg(String string) {
+		return Integer.parseInt(string);
+	}
+
 	private void assertNextArg(String flag, int index, String ... args) throws Exception{
 		if( index + 1 >= args.length){
 			throw new Exception("Flag `"+flag+"' requires an argument.");
@@ -62,11 +74,12 @@ public class CommandLine implements CommandLineParams{
 	
 	@Override
 	public void printHelp(PrintStream out){
-		out.println("Usage:\nASEsimulator [-s] [-g] [-p] [-h] [-o] \n");
+		out.println("Usage:\nASEsimulator [-s] [-g] [-p] [-e] [-o] [-h] \n");
 		out.println("Options:");
 		out.println("-s\tSNP file");
 		out.println("-g\tGene file");
-		out.println("-p\tPackage");
+		out.println("-p\tNumber of permutations");
+		out.println("-e\tMaximum number of errors allowed");
 		out.println("-o\tOutput file");
 		out.println("-h\thelp statement");
 	}
@@ -86,7 +99,7 @@ public class CommandLine implements CommandLineParams{
 	
 	@Override
 	public InputStream getGenesInput() {
-		return snps;
+		return genes;
 	}
 	
 	@Override
@@ -96,15 +109,20 @@ public class CommandLine implements CommandLineParams{
 		}
 		return output;
 	}
-
-	//@Override
-	//public String getRootPackage() {
-	//	return root;
-	//}
-
+	
 	@Override
 	public boolean help() {
 		return help;
+	}
+
+	@Override
+	public int getPermNum() {
+		return perm;
+	}
+
+	@Override
+	public int getErrorNum() {
+		return errors;
 	}
 
 

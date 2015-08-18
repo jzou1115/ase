@@ -15,4 +15,8 @@ public class ExpSample extends Sample{
 	public int getASE(){
 		return hasASE;
 	}
+	
+	public String getID(){
+		return id;
+	}
 }
