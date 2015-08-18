@@ -172,7 +172,7 @@ public class ASE {
 		snps = new SNPgroup(map.get(gene));
 		System.out.println(snps.size());
 	}
-	
+	/**
 	public void simulate(int errors, int reps, int n) throws FileNotFoundException{
 		for(Gene g: hasASE.getGenes()){
 			for(SNP s: map.get(g)){
@@ -188,6 +188,7 @@ public class ASE {
 			}
 		}
 	}
+	**/
 	public static void main(String args[]) throws IOException{
 		
 		CommandLineParams cmdArgs = new CommandLine();
@@ -213,6 +214,8 @@ public class ASE {
 		System.out.println(cmdArgs.getErrorNum());
 		System.out.println(cmdArgs.getPermNum());
 		a.setTestGene(cmdArgs.getTestGene());
+		
+		
 		
 		/** Launch simulation **/
 		//int numSimulations = args[4]
