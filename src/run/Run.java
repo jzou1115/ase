@@ -15,8 +15,6 @@ import java.util.Set;
 import sample.ExpSample;
 import sample.GenoSample;
 import sample.Sample;
-import gene.*;
-import snp.*;
 import genome.*;
 
 public class Run {

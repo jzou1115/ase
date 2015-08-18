@@ -1,6 +1,4 @@
-package snp;
-
-import gene.Gene;
+package genome;
 
 import java.io.BufferedReader;
 import java.io.IOException;
