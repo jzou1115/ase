@@ -11,7 +11,7 @@ public class Gene implements Comparable<Gene>{
 	String geneId;
 	public GenomicRegion region;
 	
-	ArrayList<ExpSample> esamples;
+	public ArrayList<ExpSample> esamples;
 	
 	Gene(String id, GenomicCoordinate start, GenomicCoordinate end){
 		geneId=id;

@@ -70,7 +70,7 @@ public class ASE {
 							s.addSample(g);
 							//System.out.println(g.toString());
 						}
-						System.out.println("in parseGenotypes:  " + snpId +"\t"+s.getNumSamples());
+						//System.out.println("in parseGenotypes:  " + snpId +"\t"+s.getNumSamples());
 					}
 				} catch (Exception e){
 					e.printStackTrace();
@@ -175,19 +175,11 @@ public class ASE {
 				int total=0;
 				for(int r=0; r<reps; r++){
 					Run run = new Run(g, map.get(g),errors);
-					int variants = run.runSim();
+					int variants = run.run();
 					total = total + variants;
 				}
 				System.out.println(g.getId()+ " has " + snps.size() + " snps that map to it and " + 1.0*total/reps + " average variants");
 			}
-		}
-	}
-
-	public void run(int errors){
-		for(Gene g: hasASE.getGenes()){
-			Run run = new Run(g, map.get(g), errors);
-			int numVariants = run.run();
-			System.out.println(g.getId()+"\t"+ numVariants);
 		}
 	}
 	
@@ -233,7 +225,7 @@ public class ASE {
 		a.parseGenotypes(genotypeData);
 		*/
 		
-		a.run(0);
+		a.simulate(0, 2000);
 		
 		//a.simulate(30, 100);
 	}

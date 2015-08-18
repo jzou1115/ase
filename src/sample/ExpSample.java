@@ -1,7 +1,7 @@
 package sample;
 
 public class ExpSample extends Sample{
-	int hasASE;
+	public int hasASE;
 	
 	public ExpSample(String s, int b){
 		id = s;

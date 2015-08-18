@@ -1,6 +1,7 @@
 package run;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -22,37 +23,6 @@ public class Run {
 		threshold=t;
 		variants = 0;
 	}
-
-	
-	public int runSim(){
-		Random rand = new Random();
-		int randInt = rand.nextInt(2);
-
-		for(SNP s:snps){
-			ArrayList<GenoSample> gsamples = s.getGenosamples();
-			int correct=0;
-			int incorrect=0;
-			for (GenoSample g : gsamples) {
-				String sampleID = g.getSampleID();
-				int isHetero = g.getHetero();
-				randInt = rand.nextInt(2);
-				if(isHetero == randInt){
-					correct++;
-				}
-				else if(isHetero != randInt){
-					incorrect++;
-				}
-				else{
-					System.out.println("Missing data: "+sampleID );
-				}
-			}
-			if(passThreshold(incorrect, correct)){
-				//System.out.println(gene.getId()+"\t"+s.getId());
-				variants++;
-			}
-		}
-		return variants;
-	}
 	
 	
 	public ExpSample find(ArrayList<ExpSample> samples, String id) {
@@ -64,8 +34,56 @@ public class Run {
 		return null;
 	}
 	
+	ArrayList<ExpSample> getExpSamples(int runType){
+		ArrayList<ExpSample> ASE = gene.getExpsamples();
+		switch (runType) {
+			case 1:
+				return ASE;
+			case 2:
+				return shuffle(ASE);
+			case 3:
+				return assign();
+			default:
+				return ASE;
+		}
+	}
+	
+	/*
+	 * Chooses SNP randomly. Changes gene.esamples.
+	 */
+	private ArrayList<ExpSample> assign() {
+		Random random = new Random();
+		SNP snp = snps.get(random.nextInt(snps.size()));
+		
+		System.out.println("Assigning ASE based on SNP: " + snp.getId());
+		
+		ArrayList<ExpSample> assignedASE = new ArrayList<ExpSample>();
+		for (GenoSample s : snp.getGenosamples()){
+			ExpSample esample = new ExpSample (s.id, s.getHetero());
+			assignedASE.add(esample);
+		}
+		
+		//TODO think about assigning this
+		gene.esamples = assignedASE;
+		
+		return assignedASE;
+	}
+
+	private ArrayList<ExpSample> shuffle(ArrayList<ExpSample> ASE) {
+		ArrayList<ExpSample> copyArray = new ArrayList<ExpSample>();
+		for (int i=0; i<ASE.size(); i++){
+			copyArray.add(new ExpSample(ASE.get(i).id, ASE.get(i).hasASE));
+		}
+		Collections.shuffle(copyArray);
+		
+		for (int i = 0; i < copyArray.size(); i++){
+			copyArray.get(i).id = ASE.get(i).id;
+		}
+		return copyArray;
+	}
+
 	public int run(){
-		ArrayList<ExpSample> expSamples = gene.getExpsamples();
+		ArrayList<ExpSample> expSamples = getExpSamples(2);
 		for(SNP s:snps){
 			ArrayList<GenoSample> gsamples= s.getGenosamples();
 			int correct=0;
@@ -87,7 +105,6 @@ public class Run {
 				}
 			}
 			if(passThreshold(incorrect, correct)){
-				//System.out.println(gene.getId()+"\t"+s.getId());
 				variants++;
 			}
 		}
