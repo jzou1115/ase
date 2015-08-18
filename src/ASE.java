@@ -13,7 +13,9 @@ import run.*;
 import sample.*;
 import snp.*;
 
+//TODO Split ASE.java into Parsing.java and ASE.java
 public class ASE {
+
 	SNPgroup isHetero;
 	GeneGroup hasASE;
 	Map<Gene,List<SNP>> map;
@@ -192,12 +194,24 @@ public class ASE {
 	public static void main(String args[]) throws IOException{
 		ASE a= new ASE();
 		
-		/* test data
-		 * FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
-		//FileInputStream snpData = new FileInputStream(new File("./test/snp.map"));
-		//FileInputStream genotypeData = new FileInputStream(new File("./test/isHetero.txt"));
-		//FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
-		 */
+		
+		// test data
+		FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
+		a.parseGenes(geneData);
+
+		FileInputStream snpData = new FileInputStream(new File("./test/snp.map"));
+		a.parseSnps(snpData);
+		
+		a.genesToSnps();
+
+		FileInputStream genotypeData = new FileInputStream(new File("./test/isHetero.txt"));
+		a.parseGenotypes(genotypeData);
+
+		FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
+		a.parseExpressions(expData);
+
+		a.genesToSnps();
+		
 		
 		//String geneData = args[1];
 		//String snpData = args[0];
@@ -205,6 +219,8 @@ public class ASE {
 		//String expData = args[3];
 		//a.parseExpressions(expData);
 
+		
+		/*
 		FileInputStream geneData = new FileInputStream(new File("./test3/genes2.txt"));
 		a.parseGenes(geneData);
 		
@@ -212,12 +228,14 @@ public class ASE {
 		a.parseSnps(snpData);
 
 		a.genesToSnps();
-		// a.printMapping();
 		
 		FileInputStream genotypeData = new FileInputStream(new File("./test3/ChrOne.snps.txt"));
 		a.parseGenotypes(genotypeData);
+		*/
 		
-		a.simulate(0, 100);
+		a.run(0);
+		
+		//a.simulate(30, 100);
 	}
 	
 }

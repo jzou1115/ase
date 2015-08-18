@@ -54,7 +54,7 @@ public class SNP implements Comparable<SNP>{
 	
 	public static SNP parseSNP(String line, int n){
 		String[] tokens = line.split("\\s+", ',');
-		if (tokens[0].matches("rs\\d{8}"))
+		if (tokens[0].matches("rs\\d{1,8}"))
 		{
 			SNP s= new SNP(tokens[0], Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]), n);
 			return s;

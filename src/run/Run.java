@@ -2,7 +2,6 @@ package run;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import sample.ExpSample;
@@ -56,8 +55,17 @@ public class Run {
 	}
 	
 	
+	public ExpSample find(ArrayList<ExpSample> samples, String id) {
+		for (ExpSample s : samples){
+			if (s.id.equalsIgnoreCase(id)){
+				return s;
+			}
+		}
+		return null;
+	}
+	
 	public int run(){
-		Map<String, ExpSample> emap= gene.getExpsamples();
+		ArrayList<ExpSample> expSamples = gene.getExpsamples();
 		for(SNP s:snps){
 			ArrayList<GenoSample> gsamples= s.getGenosamples();
 			int correct=0;
@@ -65,8 +73,9 @@ public class Run {
 			for (GenoSample g : gsamples) {
 				String sampleID = g.getSampleID();
 				int isHetero = g.getHetero();
-				if (emap.containsKey(sampleID)){
-					if(isHetero == emap.get(sampleID).getASE()){
+				ExpSample expSample = this.find(expSamples, sampleID);
+				if ( expSample != null ){
+					if(isHetero == expSample.getASE()){
 						correct++;
 					}
 					else{

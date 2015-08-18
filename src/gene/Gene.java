@@ -3,51 +3,48 @@ package gene;
 import genome.GenomicCoordinate;
 import genome.GenomicRegion;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import sample.*;
 
 public class Gene implements Comparable<Gene>{
-	String id;
+	String geneId;
 	public GenomicRegion region;
 	
-	HashMap<String,ExpSample> esamples;
+	ArrayList<ExpSample> esamples;
 	
-	Gene(String i, GenomicCoordinate start, GenomicCoordinate end){
-		id=i;
+	Gene(String id, GenomicCoordinate start, GenomicCoordinate end){
+		geneId=id;
 		region = new GenomicRegion(start, end);
-		esamples = new HashMap<String, ExpSample>();
+		esamples = new ArrayList<ExpSample>();
 	}
 	
-	public HashMap<String, ExpSample> getExpsamples(){
+	public ArrayList<ExpSample> getExpsamples(){
 		return esamples;
 	}
 	
 	public void addSample(String s, ExpSample e){
-		esamples.put(s, e);
+		esamples.add(e);
 	}
 	
 	public String getId(){
-		return id;
+		return geneId;
 	}
 	
 	public int getNumSamples(){
-		return esamples.keySet().size();
+		return esamples.size();
 	}
+	
 	@Override
 	public int compareTo(Gene o) {
 		return this.region.compareTo(o.region);
 	}
 	
 
-	public String toString(){
-		return id;
-	}
-
 	public static Gene parseGene(String line){
-		String[] tokens = line.split(",");
-		String id = tokens[0];
-		int chr = Integer.parseInt(tokens[3]);
+		String[] tokens = line.split("\\s" , ',');
+		String id = tokens[3];
+		int chr = Integer.parseInt(tokens[0]);
 		long s = Long.parseLong(tokens[1]);
 		long e = Long.parseLong(tokens[2]);
 		

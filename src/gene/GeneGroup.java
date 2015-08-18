@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-
 public class GeneGroup{
 
 	//TODO change into List
@@ -23,7 +22,7 @@ public class GeneGroup{
 	public GeneGroup(Collection<Gene> genes){
 		geneg= new HashMap<String, Gene>();
 		for(Gene g : genes){
-			geneg.put(g.id, g);
+			geneg.put(g.geneId, g);
 		}
 	}
 
@@ -64,6 +63,4 @@ public class GeneGroup{
 	public Gene getGene(String s){
 		return geneg.get(s);
 	}
-	
-
 }
