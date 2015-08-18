@@ -111,11 +111,14 @@ public class ASE {
 		}
 	}
 	
+	//TODO combine match and isSNPNeeded
 	public boolean match(SNP s, Gene g){
 		if(g.region.expand(100000).contains(s.getLocation())){
 			return true;
 		}
-		return false;
+		else{
+			return false;
+		}
 	}
 	
 	public boolean isSNPNeeded(SNP snp){
@@ -144,7 +147,6 @@ public class ASE {
 					else{
 						map.get(g).add(s);
 					}
-					break;
 				}
 			}
 		}
@@ -152,9 +154,11 @@ public class ASE {
 	
 	public void printMapping(){
 		for(Gene g:map.keySet()){
-			List<SNP> s = map.get(g);
-			for(SNP x:s){
-				System.out.println(x.getId()+"\t"+g.getId());
+			System.out.println(g.getId());
+			System.out.println(g.region.getStart().getCoord() + " - " + g.region.getEnd().getCoord());
+			List<SNP> snps = map.get(g);
+			for(SNP s:snps){
+				System.out.println(s.getId()+"\t"+s.getLocation());
 			}
 		}
 	}
@@ -201,18 +205,19 @@ public class ASE {
 		//String expData = args[3];
 		//a.parseExpressions(expData);
 
-		FileInputStream geneData = new FileInputStream(new File("./test3/mart_export.txt"));
+		FileInputStream geneData = new FileInputStream(new File("./test3/genes2.txt"));
 		a.parseGenes(geneData);
 		
 		FileInputStream snpData = new FileInputStream(new File("./test3/ChrOne.map"));
 		a.parseSnps(snpData);
 
 		a.genesToSnps();
+		// a.printMapping();
 		
 		FileInputStream genotypeData = new FileInputStream(new File("./test3/ChrOne.snps.txt"));
 		a.parseGenotypes(genotypeData);
 		
-		a.simulate(0, 1000000);
+		a.simulate(0, 100);
 	}
 	
 }

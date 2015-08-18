@@ -12,6 +12,7 @@ import java.util.List;
 
 public class GeneGroup{
 
+	//TODO change into List
 	private final HashMap<String, Gene> geneg;
 	
 	
@@ -33,24 +34,26 @@ public class GeneGroup{
 		}
 		return ret;
 	}
+
 	public static GeneGroup readGeneGroup(InputStream in){
-		List<Gene> snps = new ArrayList<Gene>();
+		List<Gene> genes = new ArrayList<Gene>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
 		try {
 			while((line = reader.readLine()) != null){
 				try{
-					snps.add(Gene.parseGene(line));
+					Gene g = Gene.parseGene(line);
+					genes.add(g);
 				} catch (Exception e){
 					e.printStackTrace();
 				}
 			}
 			reader.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new GeneGroup(snps);
+		
+		return new GeneGroup(genes);
 	}
 	
 	

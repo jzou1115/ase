@@ -63,6 +63,7 @@ public class GenomicRegion {
 		return other.getEnd().distance(start);
 	}
 	
+	//TODO: there is bug with contains since it doesn't compare chromosome?
 	public boolean contains(GenomicCoordinate coordinate){
 		return start.compareTo(coordinate) <= 0 && end.compareTo(coordinate) >= 0;
 	}

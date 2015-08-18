@@ -56,7 +56,7 @@ public class Run {
 	}
 	
 	
-	public int run() throws Exception{
+	public int run(){
 		Map<String, ExpSample> emap= gene.getExpsamples();
 		for(SNP s:snps){
 			ArrayList<GenoSample> gsamples= s.getGenosamples();
@@ -74,7 +74,7 @@ public class Run {
 					}
 				}				 
 				else {
-					throw new Exception("Missing data: "+sampleID + "SNP id:" + s.getId());
+					System.out.println("ERROR: Missing data: "+sampleID + "SNP id:" + s.getId());
 				}
 			}
 			if(passThreshold(incorrect, correct)){
