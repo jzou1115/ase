@@ -40,7 +40,7 @@ public class GeneGroup{
 					n++;
 				} catch (Exception e){
 					//do nothing
-					System.out.println("cannot add Gene");
+					//System.out.println("cannot add Gene");
 				}
 			}
 			reader.close();

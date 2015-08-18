@@ -14,5 +14,6 @@ public interface CommandLineParams {
 	public int getErrorNum();
 	public File getOutputDir();
 	public boolean help();
+	public String getTestGene();
 	
 }

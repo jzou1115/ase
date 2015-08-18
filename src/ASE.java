@@ -25,6 +25,8 @@ public class ASE {
 	Map<SNP, int[]> samples;
 	Map<Gene, int[]> esamples;
 	String[] sampleNames;
+	Gene gene;
+	SNPgroup snps;
 	
 	public void parseSnps(InputStream inputStream){
 		System.out.println("Reading snps");
@@ -164,6 +166,12 @@ public class ASE {
 		
 	}
 
+	public void setTestGene(String s){
+		gene = hasASE.getGene(s);
+		System.out.println(gene.getId());
+		snps = new SNPgroup(map.get(gene));
+		System.out.println(snps.size());
+	}
 	
 	public void simulate(int errors, int reps, int n) throws FileNotFoundException{
 		for(Gene g: hasASE.getGenes()){
@@ -202,6 +210,9 @@ public class ASE {
 		a.parseGenes(cmdArgs.getGenesInput());
 		
 		a.genesToSnps();
+		System.out.println(cmdArgs.getErrorNum());
+		System.out.println(cmdArgs.getPermNum());
+		a.setTestGene(cmdArgs.getTestGene());
 		
 		/** Launch simulation **/
 		//int numSimulations = args[4]
