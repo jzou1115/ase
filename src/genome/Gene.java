@@ -1,10 +1,12 @@
 package genome;
 
+import sample.*;
+
 public class Gene implements Comparable<Gene>{
 	String id;
 	public GenomicRegion region;
 	
-	int[] esamples;
+	ExpSample[] esamples;
 	
 	Gene(String i, GenomicCoordinate start, GenomicCoordinate end){
 		id=i;
@@ -14,7 +16,7 @@ public class Gene implements Comparable<Gene>{
 	Gene(String i){
 		id= i;
 	}
-	public int[] getExpsamples(){
+	public ExpSample[] getExpsamples(){
 		return esamples;
 	}
 	
@@ -22,7 +24,7 @@ public class Gene implements Comparable<Gene>{
 		return region;
 	}
 	
-	public void addSample(int[] s){
+	public void addSample(ExpSample[] s){
 		esamples=s;
 	}
 	
