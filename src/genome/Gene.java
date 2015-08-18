@@ -1,12 +1,14 @@
 package genome;
 
+
+import java.util.List;
+
 import sample.*;
 
 public class Gene implements Comparable<Gene>{
 	String id;
 	public GenomicRegion region;
-	
-	ExpSample[] esamples;
+	List<ExpSample> esamples;
 	
 	Gene(String i, GenomicCoordinate start, GenomicCoordinate end){
 		id=i;
@@ -16,7 +18,7 @@ public class Gene implements Comparable<Gene>{
 	Gene(String i){
 		id= i;
 	}
-	public ExpSample[] getExpsamples(){
+	public List<ExpSample> getExpsamples(){
 		return esamples;
 	}
 	
@@ -24,7 +26,7 @@ public class Gene implements Comparable<Gene>{
 		return region;
 	}
 	
-	public void addSample(ExpSample[] s){
+	public void addSample(List<ExpSample> s){
 		esamples=s;
 	}
 	
@@ -33,7 +35,7 @@ public class Gene implements Comparable<Gene>{
 	}
 	
 	public int getNumSamples(){
-		return esamples.length;
+		return esamples.size();
 	}
 	@Override
 	public int compareTo(Gene o) {
