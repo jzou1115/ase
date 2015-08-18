@@ -15,4 +15,8 @@ public class GenoSample extends Sample{
 	public int getHetero(){
 		return isHetero;
 	}
+	
+	public String getID(){
+		return id;
+	}
 }

@@ -10,7 +10,8 @@ public interface CommandLineParams {
 
 	public InputStream getSNPsInput();
 	public InputStream getGenesInput();
-	//public String getRootPackage();
+	public int getPermNum();
+	public int getErrorNum();
 	public File getOutputDir();
 	public boolean help();
 	

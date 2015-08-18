@@ -151,30 +151,14 @@ public class ASE {
 				snp++;
 			}
 		}
-		/**
-		for(SNP s:snpList){
-			for(Gene g:geneList){
-				if(match(s,g)){
-					if(map.get(g)==null){
-						List<SNP> val = new ArrayList<SNP>();
-						val.add(s);
-						map.put(g, val);
-					}
-					else{
-						map.get(g).add(s);
-					}
-					break;
-				}
-			}
-		}
-		**/
+		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("genesToSnps.txt")));
 		for(Gene g: map.keySet()){
-			String print = ">"+g.getId();
+			String print = ">"+g.getId()+"\t"+map.get(g).size();
 			for(SNP s: map.get(g)){
 				print = print + "\n"+s.getId();
 			}
-			bw.write(print);
+			bw.write(print+"\n");
 		}
 		bw.close();
 		
@@ -218,15 +202,6 @@ public class ASE {
 		a.parseGenes(cmdArgs.getGenesInput());
 		
 		a.genesToSnps();
-		
-		//String genotypeFile = args[2];
-		//FileInputStream genotypeData = new FileInputStream(new File(genotypeFile));
-		//a.parseGenotypes(genotypeData);
-		
-		//String expFile = args[3];
-		//FileInputStream expData = new FileInputStream(new File(expFile));
-		//a.parseExpressions(expData);
-		
 		
 		/** Launch simulation **/
 		//int numSimulations = args[4]
