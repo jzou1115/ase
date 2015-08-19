@@ -14,14 +14,15 @@ public class Run {
 	int threshold;
 	List<SNP> snps;
 	Gene gene;
-	
 	int variants;
+	int runType;
 	
-	public Run(Gene g, List<SNP> s, int t){
+	public Run(Gene g, List<SNP> s, int t, int rType){
 		snps=s;
 		gene=g;
 		threshold=t;
 		variants = 0;
+		runType = rType;
 	}
 	
 	
@@ -34,7 +35,7 @@ public class Run {
 		return null;
 	}
 	
-	ArrayList<ExpSample> getExpSamples(int runType){
+	ArrayList<ExpSample> getExpSamples( ){
 		ArrayList<ExpSample> ASE = gene.getExpsamples();
 		switch (runType) {
 			case 1:
@@ -83,7 +84,7 @@ public class Run {
 	}
 
 	public int run(){
-		ArrayList<ExpSample> expSamples = getExpSamples(2);
+		ArrayList<ExpSample> expSamples = getExpSamples();
 		for(SNP s:snps){
 			ArrayList<GenoSample> gsamples= s.getGenosamples();
 			int correct=0;
@@ -99,7 +100,7 @@ public class Run {
 					else{
 						incorrect++;
 					}
-				}				 
+				}
 				else {
 					System.out.println("ERROR: Missing data: "+sampleID + "SNP id:" + s.getId());
 				}
@@ -108,9 +109,10 @@ public class Run {
 				variants++;
 			}
 		}
+		//System.out.println("There are " + variants + " variants in this permutation.");
 		return variants;
 	}
-	
+
 	//TODO think about when correct AND incorrect can be 0, because this happened before
 	public boolean passThreshold(int incorrect, int correct){
 		if (correct == 0) {

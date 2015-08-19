@@ -12,7 +12,7 @@ public class SNP implements Comparable<SNP>{
 	
 	ArrayList<GenoSample> gsamples;
 	
-	SNP(String i, int c, long l, int n){
+	public SNP(String i, int c, long l, int n){
 		SNPid=i;
 		location = new GenomicCoordinate(c, l);
 		num= n;
@@ -51,17 +51,4 @@ public class SNP implements Comparable<SNP>{
 		return 0;
 	}
 
-	
-	public static SNP parseSNP(String line, int n){
-		String[] tokens = line.split("\\s+", ',');
-		if (tokens[0].matches("rs\\d{1,8}"))
-		{
-			SNP s= new SNP(tokens[0], Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]), n);
-			return s;
-		}
-		else{
-			return null;
-		}
-		
-	}
 }

@@ -13,7 +13,7 @@ public class Gene implements Comparable<Gene>{
 	
 	public ArrayList<ExpSample> esamples;
 	
-	Gene(String id, GenomicCoordinate start, GenomicCoordinate end){
+	public Gene(String id, GenomicCoordinate start, GenomicCoordinate end){
 		geneId=id;
 		region = new GenomicRegion(start, end);
 		esamples = new ArrayList<ExpSample>();
@@ -41,16 +41,4 @@ public class Gene implements Comparable<Gene>{
 	}
 	
 
-	public static Gene parseGene(String line){
-		String[] tokens = line.split("\\s" , ',');
-		String id = tokens[3];
-		int chr = Integer.parseInt(tokens[0]);
-		long s = Long.parseLong(tokens[1]);
-		long e = Long.parseLong(tokens[2]);
-		
-		GenomicCoordinate start = new GenomicCoordinate(chr, s);
-		GenomicCoordinate end = new GenomicCoordinate(chr, e);
-		
-		return new Gene(id, start, end);
-	}
 }

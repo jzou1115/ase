@@ -1,9 +1,6 @@
 package gene;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,27 +29,6 @@ public class GeneGroup{
 			ret.add(geneg.get(g));
 		}
 		return ret;
-	}
-
-	public static GeneGroup readGeneGroup(InputStream in){
-		List<Gene> genes = new ArrayList<Gene>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		String line;
-		try {
-			while((line = reader.readLine()) != null){
-				try{
-					Gene g = Gene.parseGene(line);
-					genes.add(g);
-				} catch (Exception e){
-					e.printStackTrace();
-				}
-			}
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return new GeneGroup(genes);
 	}
 	
 	
