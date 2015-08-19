@@ -11,18 +11,21 @@ import gene.*;
 import snp.*;
 
 public class Run {
-	int threshold;
 	List<SNP> snps;
 	Gene gene;
-	int variants;
+
+	/* RunType = 1 - use given ASE, 2 - assign ASE based on random snp, 3 - used shuffle ASE */
 	int runType;
-	
+	int threshold;
+	/* Final counts of variants that work */
+	public List<String> variantIds;
+
 	public Run(Gene g, List<SNP> s, int t, int rType){
 		snps=s;
 		gene=g;
 		threshold=t;
-		variants = 0;
 		runType = rType;
+		variantIds = new ArrayList<String>();
 	}
 	
 	
@@ -36,14 +39,15 @@ public class Run {
 	}
 	
 	ArrayList<ExpSample> getExpSamples( ){
-		ArrayList<ExpSample> ASE = gene.getExpsamples();
+		ArrayList<ExpSample> ASE = gene.esamples;
 		switch (runType) {
 			case 1:
 				return ASE;
 			case 2:
-				return shuffle(ASE);
+				gene.esamples = assign();
+				return gene.esamples;
 			case 3:
-				return assign();
+				return shuffle();
 			default:
 				return ASE;
 		}
@@ -63,18 +67,17 @@ public class Run {
 			ExpSample esample = new ExpSample (s.id, s.getHetero());
 			assignedASE.add(esample);
 		}
-		
-		//TODO think about assigning this
-		gene.esamples = assignedASE;
-		
 		return assignedASE;
 	}
 
-	private ArrayList<ExpSample> shuffle(ArrayList<ExpSample> ASE) {
+	private ArrayList<ExpSample> shuffle() {
+		ArrayList<ExpSample> ASE = gene.getExpsamples();
+		
 		ArrayList<ExpSample> copyArray = new ArrayList<ExpSample>();
 		for (int i=0; i<ASE.size(); i++){
 			copyArray.add(new ExpSample(ASE.get(i).id, ASE.get(i).hasASE));
 		}
+		
 		Collections.shuffle(copyArray);
 		
 		for (int i = 0; i < copyArray.size(); i++){
@@ -93,24 +96,18 @@ public class Run {
 				String sampleID = g.getSampleID();
 				int isHetero = g.getHetero();
 				ExpSample expSample = this.find(expSamples, sampleID);
-				if ( expSample != null ){
-					if(isHetero == expSample.getASE()){
-						correct++;
-					}
-					else{
-						incorrect++;
-					}
-				}
-				else {
+				if (expSample == null)
 					System.out.println("ERROR: Missing data: "+sampleID + "SNP id:" + s.getId());
-				}
+				else if(isHetero == expSample.getASE())
+					correct++;
+				else
+					incorrect++;
 			}
 			if(passThreshold(incorrect, correct)){
-				variants++;
+				variantIds.add(s.getId());
 			}
 		}
-		//System.out.println("There are " + variants + " variants in this permutation.");
-		return variants;
+		return variantIds.size();
 	}
 
 	//TODO think about when correct AND incorrect can be 0, because this happened before

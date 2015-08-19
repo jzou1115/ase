@@ -8,35 +8,32 @@ import java.util.List;
 
 public class GeneGroup{
 
-	//TODO change into List
-	private final HashMap<String, Gene> geneg;
-	
+	private HashMap<String, Gene> geneMap;	
 	
 	public GeneGroup(){
-		geneg= new HashMap<String, Gene>();
+		geneMap = new HashMap<String, Gene>();
 	}
 	
 	public GeneGroup(Collection<Gene> genes){
-		geneg= new HashMap<String, Gene>();
+		geneMap= new HashMap<String, Gene>();
 		for(Gene g : genes){
-			geneg.put(g.geneId, g);
+			geneMap.put(g.geneId, g);
 		}
 	}
 
 	public List<Gene> getGenes(){
 		List<Gene> ret = new ArrayList<Gene>();
-		for(String g:geneg.keySet()){
-			ret.add(geneg.get(g));
+		for(String g:geneMap.keySet()){
+			ret.add(geneMap.get(g));
 		}
 		return ret;
 	}
 	
-	
 	public int size(){
-		return geneg.keySet().size();
+		return geneMap.keySet().size();
 	}
 	
 	public Gene getGene(String s){
-		return geneg.get(s);
+		return geneMap.get(s);
 	}
 }

@@ -77,15 +77,21 @@ public class ASE {
 			}
 			else{
 				
-				Run firstRun = new Run(g, map.get(g), errors, 3);
+				Run firstRun = new Run(g, map.get(g), errors, 2);
 				int v = firstRun.run();
-				System.out.println(g.getId()+ " has " + snps.size() + " snps that map to it and " + v + " average variants");
+				System.out.println(g.getId()+ " has " + snps.size() + " snps that map to it and " + v + " variants");
+				for (String s : firstRun.variantIds){
+					System.out.println(s);
+				}
 				
 				int total=0;
 				for(int r=0; r<reps; r++){
-					Run run = new Run(g, map.get(g),errors, 2);
+					Run run = new Run(g, map.get(g),errors, 3);
 					int variants = run.run();
 					total = total + variants;
+					if (run.variantIds.size()!=0){
+						System.out.println("Variants matched:" + run.variantIds);
+					}
 				}
 				System.out.println(g.getId()+ " has " + snps.size() + " snps that map to it and " + 1.0*total/reps + " average variants");
 			}
@@ -121,7 +127,7 @@ public class ASE {
 		//a.parseExpressions(expData);
 
 		
-		FileInputStream geneData = new FileInputStream(new File("./test3/genes3.txt"));
+		FileInputStream geneData = new FileInputStream(new File("./test3/genes4.txt"));
 		parse.parseGenes(geneData);
 		
 		FileInputStream snpData = new FileInputStream(new File("./test3/ChrOne.map"));
