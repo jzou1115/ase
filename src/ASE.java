@@ -129,13 +129,13 @@ public class ASE {
 	
 	public boolean match(SNP s, Gene g){
 		//System.out.println(s.getId()+"\t"+s.getLocation());
-		if(g.region.expand(250000).contains(s.getLocation())){
+		if(g.region.expand(100000).contains(s.getLocation())){
 			return true;
 		}
 		//System.out.println("Fail: "+g.region.expand(250000).getChromosome()+"\t"+g.region.expand(250000).getStart().getCoord()+"\t"+g.region.expand(250000).getEnd().getCoord());
 		return false;
 	}
-	
+	/**
 	public void genesToSnps() throws IOException{
 		map = new HashMap<Gene, List<SNP>>();
 		
@@ -174,6 +174,40 @@ public class ASE {
 		}
 		bw.close();
 		
+	}
+	 * @throws IOException 
+	**/
+	
+	public void genesToSnps() throws IOException{
+		map = new HashMap<Gene, List<SNP>>();
+	
+		List<SNP> snpList = isHetero.getSnps();		
+		List<Gene> geneList = hasASE.getGenes();
+	
+		for(SNP s:snpList){
+			for(Gene g:geneList){
+				if(match(s,g)){
+					if(map.get(g)==null){
+						List<SNP> val = new ArrayList<SNP>();
+						val.add(s);
+						map.put(g, val);
+					}
+					else{
+						map.get(g).add(s);
+					}
+				}
+			}
+		}
+		
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("genesToSnps.txt")));
+		for(Gene g: map.keySet()){
+			String print = ">"+g.getId()+"\t"+map.get(g).size();
+			for(SNP s: map.get(g)){
+				print = print + "\n"+s.getId();
+			}
+			bw.write(print+"\n");
+		}
+		bw.close();
 	}
 
 	public void setTestGene(String s){

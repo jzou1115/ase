@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
+
+import statistics.*;
 import sample.*;
 import genome.*;
 
@@ -55,19 +58,37 @@ public class Run {
 		return genoMap;
 	}
 	
+	public Object[] getSubset(int total){
+		Random rand = new Random();
+		List<Integer> ret = new ArrayList<Integer>();
+		int i=0;
+		int j;
+		while(i<sampleSize){
+			j= rand.nextInt(total);
+			if(!ret.contains(j)){
+				ret.add(j);
+				i++;
+			}
+		}
+
+		return ret.toArray();
+	}
+	
 	public int mapASE(int[] ase){
 		int variants=0;
+		Object[] subset = getSubset(ase.length);
 		for(SNP s:snps){
 			List<GenoSample> gsamples = genoMap.get(s);
 			int correct=0;
 			int incorrect=0;
-			for (int i=0; i<gsamples.size();i++) {
-				String sampleID = gsamples.get(i).getID();
-				int isHetero = gsamples.get(i).getHetero();
-				if(isHetero == ase[i]){
+			for (int i=0; i<subset.length;i++) {
+				int ind= (int) subset[i];
+				String sampleID = gsamples.get(ind).getID();
+				int isHetero = gsamples.get(ind).getHetero();
+				if(isHetero == ase[ind]){
 					correct++;
 				}
-				else if(isHetero != ase[i]){
+				else if(isHetero != ase[ind]){
 					incorrect++;
 				}
 				else{
@@ -101,16 +122,7 @@ public class Run {
 		return a;
 	}
 	
-	public double simulate(SNP s, int[] ase) throws FileNotFoundException{
-		int total=0;
-		for(int i=0; i<perm;i++){
-			int[] p = permute(ase, ase.length);
-			int a = mapASE(p);
-			total=total+a;
-		}
-		return 1.0*total/perm;
-	}
-	
+
 	public double calculateMAF(SNP s){
 		int hetero=0;
 		//System.out.println("calc map for "+s.getId());
@@ -121,7 +133,7 @@ public class Run {
 					hetero++;
 				}
 			}
-			if(hetero>=genos.size()){
+			if(hetero>1.0*genos.size()/2){
 				//System.out.println(1.0*(genos.size()-hetero)/genos.size());
 				return 1.0*(genos.size()-hetero)/genos.size();
 			}
@@ -141,18 +153,42 @@ public class Run {
 		return ret;
 	}
 	
-	public void allSimulations() throws IOException{
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(gene.getId()+"_simulation.txt")));
-		outfile.write("GeneID\tMAF\tNumVariants\tSimulationMean\n");
+	public int allSimulations() throws IOException{
+		int pass=0;
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(gene.getId()+"_simulation_"+perm+"_"+sampleSize+"_"+errors+"_"+threshold+".txt")));
+		outfile.write("Number of samples: "+sampleSize);
+		outfile.write("GeneID\tMAF\tNumVariants\tSimulationMean\tSimulationSD\tZ-score\tP-value\n");
 		for(SNP s: snps){
 			double f = calculateMAF(s);
 			System.out.println(s.getId()+"\t"+f);
-			int[] ase = aseCall(s);
-			double mean = simulate(s, ase);		
+			int[] ase = aseCall(s);	
 			int x= mapASE(ase);
-			outfile.write(s.getId()+"\t"+f+"\t"+x+"\t"+mean+"\n");
+			
+			int total=0;
+			double[] perms = new double[perm];
+			for(int i=0; i<perm;i++){
+				int[] p = permute(ase, ase.length);
+				int a = mapASE(p);
+				total=total+a;
+				perms[i]=(double) a;
+			}
+			double mean= 1.0*total/perm;
+			StandardDeviation sd = new StandardDeviation();
+			double stdev= sd.evaluate(perms);
+			double z = calculateZScore(x, mean, stdev);
+			double p = StatisticsConversion.calculatePvalue(z);
+			if(p<threshold){
+				pass++;
+			}
+			outfile.write(s.getId()+"\t"+f+"\t"+x+"\t"+mean+"\t"+stdev+"\t"+z+"\t"+p+"\n");
 		}
+		outfile.write("power="+pass+"/"+perm+"="+1.0*pass/perm+"\n");
 		outfile.close();
+		return pass;
+	}
+	
+	public double calculateZScore(int x, double mean, double sd){
+		return (x-mean)/sd;
 	}
 	
 	public boolean passThreshold(int incorrect, int correct){
