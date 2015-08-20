@@ -76,11 +76,12 @@ public class ASE {
 				System.out.println("ERROR in ASE: " + g.getId() + " has no SNPs that map to it");
 			}
 			for (SNP s: snps){
-				System.out.print(g.getId() + "," + s.getId() + "," + s.numberHeterozygous + ",");
+				System.out.print(g.getId() + "," + snps.size() + "," + s.getId() + "," + 1.0 * s.numberHeterozygous / 94 + ",");
 				Run r = new Run(g, snps, errors, s.getId());
 				r.run();
-				System.out.print(r.variantIds.size() + "," + r.variantIds + ",");
+				System.out.print(r.variantIds.size() + ",");
 				r.isStatisticallySignificant();
+				System.out.println(r.variantIds + ",");
 			}
 		}
 	}
@@ -115,7 +116,7 @@ public class ASE {
 		//String expData = args[3];
 		//a.parseExpressions(expData);
 
-		FileInputStream geneData = new FileInputStream(new File("./test3/genes3.txt"));
+		FileInputStream geneData = new FileInputStream(new File("./test3/genes.txt"));
 		parse.parseGenes(geneData);
 		
 		FileInputStream snpData = new FileInputStream(new File("./test3/ChrOne.map"));
