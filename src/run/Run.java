@@ -1,7 +1,6 @@
 package run;
 
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -10,9 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
+import org.apache.commons.math.stat.inference.TestUtils;
 
-import statistics.*;
 import sample.*;
 import genome.*;
 
@@ -156,8 +154,11 @@ public class Run {
 	public int allSimulations() throws IOException{
 		int pass=0;
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(gene.getId()+"_simulation_"+perm+"_"+sampleSize+"_"+errors+"_"+threshold+".txt")));
-		outfile.write("Number of samples: "+sampleSize);
-		outfile.write("GeneID\tMAF\tNumVariants\tSimulationMean\tSimulationSD\tZ-score\tP-value\n");
+		//outfile.write("Number of permutations: "+perm+"\n");
+		//outfile.write("Number of samples: "+sampleSize+"\n");
+		//outfile.write("Maximum number of errors: "+errors+"\n");
+		//outfile.write("Significance: "+threshold+"\n");
+		//outfile.write("GeneID\tMAF\tNumVariants\tSimulationMean\tSimulationSD\tZ-score\tP-value\n");
 		for(SNP s: snps){
 			double f = calculateMAF(s);
 			System.out.println(s.getId()+"\t"+f);
@@ -173,16 +174,13 @@ public class Run {
 				perms[i]=(double) a;
 			}
 			double mean= 1.0*total/perm;
-			StandardDeviation sd = new StandardDeviation();
-			double stdev= sd.evaluate(perms);
-			double z = calculateZScore(x, mean, stdev);
-			double p = StatisticsConversion.calculatePvalue(z);
+			double p = TestUtils.t(mean, perms);
 			if(p<threshold){
 				pass++;
 			}
-			outfile.write(s.getId()+"\t"+f+"\t"+x+"\t"+mean+"\t"+stdev+"\t"+z+"\t"+p+"\n");
+			outfile.write(s.getId()+"\t"+f+"\t"+x+"\t"+mean+"\t"+p+"\n");
 		}
-		outfile.write("power="+pass+"/"+perm+"="+1.0*pass/perm+"\n");
+		//outfile.write("power="+pass+"/"+perm+"="+1.0*pass/perm+"\n");
 		outfile.close();
 		return pass;
 	}
