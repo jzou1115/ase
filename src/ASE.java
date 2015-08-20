@@ -69,56 +69,44 @@ public class ASE {
 		}
 	}
 	
-	public void simulate(int errors, int reps){
-		for(Gene g: geneGroup.getGenes()){
+	public void simulate(int errors){
+		for (Gene g: geneGroup.getGenes()){
 			List<SNP> snps = map.get(g);
 			if (snps == null){
-				System.out.println(g.getId() + " has no SNPs that map to it");
+				System.out.println("ERROR in ASE: " + g.getId() + " has no SNPs that map to it");
 			}
-			else{
-				
-				Run firstRun = new Run(g, map.get(g), errors, 2);
-				int v = firstRun.run();
-				System.out.println(g.getId()+ " has " + snps.size() + " snps that map to it and " + v + " variants");
-				for (String s : firstRun.variantIds){
-					System.out.println(s);
-				}
-				
-				int total=0;
-				for(int r=0; r<reps; r++){
-					Run run = new Run(g, map.get(g),errors, 3);
-					int variants = run.run();
-					total = total + variants;
-					if (run.variantIds.size()!=0){
-						System.out.println("Variants matched:" + run.variantIds);
-					}
-				}
-				System.out.println(g.getId()+ " has " + snps.size() + " snps that map to it and " + 1.0*total/reps + " average variants");
+			for (SNP s: snps){
+				System.out.print(g.getId() + "," + s.getId() + ",");
+				Run r = new Run(g, snps, errors, s.getId());
+				r.run();
+				System.out.print(r.variantIds.size() + "," + r.variantIds + ",");
+				r.isStatisticallySignificant();
 			}
 		}
 	}
 	
+
 	public static void main(String args[]) throws IOException{
 		ASE a= new ASE();
 		Parse parse = new Parse(a);
-		/*
+		
 		// test data
 		FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
-		a.parseGenes(geneData);
+		parse.parseGenes(geneData);
 
 		FileInputStream snpData = new FileInputStream(new File("./test/snp.map"));
-		a.parseSnps(snpData);
+		parse.parseSnps(snpData);
 		
 		a.genesToSnps();
 
 		FileInputStream genotypeData = new FileInputStream(new File("./test/isHetero.txt"));
-		a.parseGenotypes(genotypeData);
+		parse.parseGenotypes(genotypeData);
 
 		FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
-		a.parseExpressions(expData);
+		parse.parseExpressions(expData);
 
 		a.genesToSnps();
-		*/
+		
 		
 		//String geneData = args[1];
 		//String snpData = args[0];
@@ -126,7 +114,7 @@ public class ASE {
 		//String expData = args[3];
 		//a.parseExpressions(expData);
 
-		
+		/*
 		FileInputStream geneData = new FileInputStream(new File("./test3/genes4.txt"));
 		parse.parseGenes(geneData);
 		
@@ -137,8 +125,9 @@ public class ASE {
 		
 		FileInputStream genotypeData = new FileInputStream(new File("./test3/ChrOne.snps.txt"));
 		parse.parseGenotypes(genotypeData);
+		*/
 		
-		a.simulate(0, 100);
+		a.simulate(0);
 		
 		//a.simulate(30, 100);
 	}

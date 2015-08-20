@@ -14,12 +14,28 @@ public class Run {
 	List<SNP> snps;
 	Gene gene;
 
-	/* RunType = 1 - use given ASE, 2 - assign ASE based on random snp, 3 - used shuffle ASE */
+	/* RunType = 1 - use given ASE, 2 - assign ASE based on random snp, 3 - shuffle ASE, 4 - assign based on SNP */
 	int runType;
 	int threshold;
+	
 	/* Final counts of variants that work */
 	public List<String> variantIds;
-
+	
+	/*If runtype = 4, then this is the SNP that the simulation will be run with */
+	String snpId;
+	
+	int numberPermutations = 200;
+	int significanceThreshold = 1;
+	
+	public Run(Gene g, List<SNP> s, int t, String id){
+		snps=s;
+		gene=g;
+		threshold=t;
+		runType = 4;
+		variantIds = new ArrayList<String>();
+		snpId = id;
+	}
+	
 	public Run(Gene g, List<SNP> s, int t, int rType){
 		snps=s;
 		gene=g;
@@ -44,23 +60,19 @@ public class Run {
 			case 1:
 				return ASE;
 			case 2:
-				gene.esamples = assign();
+				gene.esamples = assignASE(getRandomSNP());
 				return gene.esamples;
 			case 3:
 				return shuffle();
+			case 4:
+				gene.esamples = assignASE(getSpecificSNP(snpId));
+				return gene.esamples;
 			default:
 				return ASE;
 		}
 	}
-	
-	/*
-	 * Chooses SNP randomly. Changes gene.esamples.
-	 */
-	private ArrayList<ExpSample> assign() {
-		Random random = new Random();
-		SNP snp = snps.get(random.nextInt(snps.size()));
-		
-		System.out.println("Assigning ASE based on SNP: " + snp.getId());
+
+	private ArrayList<ExpSample> assignASE(SNP snp) {
 		
 		ArrayList<ExpSample> assignedASE = new ArrayList<ExpSample>();
 		for (GenoSample s : snp.getGenosamples()){
@@ -69,7 +81,23 @@ public class Run {
 		}
 		return assignedASE;
 	}
-
+	
+	private SNP getRandomSNP(){
+		Random random = new Random();
+		return snps.get(random.nextInt(snps.size()));
+	}
+	
+	private SNP getSpecificSNP(String snpId){
+		for (SNP s : snps){
+			if(s.getId().equalsIgnoreCase(snpId)){
+				return s;
+			}
+		}
+		System.out.println("In Run.java -- cannot find SNP associated with snpId");
+		return null;
+	}
+	
+	
 	private ArrayList<ExpSample> shuffle() {
 		ArrayList<ExpSample> ASE = gene.getExpsamples();
 		
@@ -116,6 +144,25 @@ public class Run {
 			return false;
 		}
 		else if (incorrect>threshold) {
+			return false;
+		}
+		return true;
+	}
+	
+	/* Runs Permutation Test */
+	public boolean isStatisticallySignificant(){
+		int numberBetterPermutations = 0;
+		for (int i=0; i<numberPermutations; i++){
+			Run r = new Run(gene, snps, threshold, 3);
+			r.run();
+			if (r.variantIds.size() != 0){
+				numberBetterPermutations++;
+			}
+		}
+		double pValue = 1.0 * numberBetterPermutations / numberPermutations;
+		System.out.println(pValue);
+
+		if (numberBetterPermutations >= significanceThreshold){
 			return false;
 		}
 		return true;
