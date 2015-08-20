@@ -9,6 +9,7 @@ public class SNP implements Comparable<SNP>{
 	String SNPid;
 	GenomicCoordinate location;
 	int num;
+	public int numberHeterozygous;
 	
 	ArrayList<GenoSample> gsamples;
 	

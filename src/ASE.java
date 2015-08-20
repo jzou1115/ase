@@ -76,7 +76,7 @@ public class ASE {
 				System.out.println("ERROR in ASE: " + g.getId() + " has no SNPs that map to it");
 			}
 			for (SNP s: snps){
-				System.out.print(g.getId() + "," + s.getId() + ",");
+				System.out.print(g.getId() + "," + s.getId() + "," + s.numberHeterozygous + ",");
 				Run r = new Run(g, snps, errors, s.getId());
 				r.run();
 				System.out.print(r.variantIds.size() + "," + r.variantIds + ",");
@@ -90,6 +90,7 @@ public class ASE {
 		ASE a= new ASE();
 		Parse parse = new Parse(a);
 		
+		/*
 		// test data
 		FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
 		parse.parseGenes(geneData);
@@ -106,7 +107,7 @@ public class ASE {
 		parse.parseExpressions(expData);
 
 		a.genesToSnps();
-		
+		*/
 		
 		//String geneData = args[1];
 		//String snpData = args[0];
@@ -114,8 +115,7 @@ public class ASE {
 		//String expData = args[3];
 		//a.parseExpressions(expData);
 
-		/*
-		FileInputStream geneData = new FileInputStream(new File("./test3/genes4.txt"));
+		FileInputStream geneData = new FileInputStream(new File("./test3/genes3.txt"));
 		parse.parseGenes(geneData);
 		
 		FileInputStream snpData = new FileInputStream(new File("./test3/ChrOne.map"));
@@ -125,7 +125,7 @@ public class ASE {
 		
 		FileInputStream genotypeData = new FileInputStream(new File("./test3/ChrOne.snps.txt"));
 		parse.parseGenotypes(genotypeData);
-		*/
+		
 		
 		a.simulate(0);
 		

@@ -24,7 +24,7 @@ public class Run {
 	/*If runtype = 4, then this is the SNP that the simulation will be run with */
 	String snpId;
 	
-	int numberPermutations = 200;
+	int numberPermutations = 100;
 	int significanceThreshold = 1;
 	
 	public Run(Gene g, List<SNP> s, int t, String id){
