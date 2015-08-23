@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import sample.*;
 
 public class Gene implements Comparable<Gene>{
-	String geneId;
+	public String geneId;
 	public GenomicRegion region;
 	
 	public ArrayList<ExpSample> esamples;
@@ -25,10 +25,6 @@ public class Gene implements Comparable<Gene>{
 	
 	public void addSample(String s, ExpSample e){
 		esamples.add(e);
-	}
-	
-	public String getId(){
-		return geneId;
 	}
 	
 	public int getNumSamples(){

@@ -9,14 +9,10 @@ import java.util.List;
 public class SNPgroup{
 	private final HashMap<String, SNP> snpg;
 	
-	public SNPgroup(){
-		snpg= new HashMap<String,SNP>();
-	}
-	
 	public SNPgroup(Collection<SNP> snps){
 		snpg= new HashMap<String, SNP>();
 		for(SNP s : snps){
-			snpg.put(s.SNPid,s);
+			snpg.put(s.snpId,s);
 		}
 	}
 

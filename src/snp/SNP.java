@@ -6,7 +6,7 @@ import sample.*;
 
 public class SNP implements Comparable<SNP>{
 	//parsed from *.map files
-	String SNPid;
+	public String snpId;
 	GenomicCoordinate location;
 	int num;
 	public int numberHeterozygous;
@@ -14,7 +14,7 @@ public class SNP implements Comparable<SNP>{
 	ArrayList<GenoSample> gsamples;
 	
 	public SNP(String i, int c, long l, int n){
-		SNPid=i;
+		snpId=i;
 		location = new GenomicCoordinate(c, l);
 		num= n;
 		gsamples = new ArrayList<GenoSample>();
@@ -33,7 +33,7 @@ public class SNP implements Comparable<SNP>{
 	}
 	
 	public String getId(){
-		return SNPid;
+		return snpId;
 	}
 	public GenomicCoordinate getLocation(){
 		return location;

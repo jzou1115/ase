@@ -2,7 +2,6 @@ package gene;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,13 +13,6 @@ public class GeneGroup{
 		geneMap = new HashMap<String, Gene>();
 	}
 	
-	public GeneGroup(Collection<Gene> genes){
-		geneMap= new HashMap<String, Gene>();
-		for(Gene g : genes){
-			geneMap.put(g.geneId, g);
-		}
-	}
-
 	public List<Gene> getGenes(){
 		List<Gene> ret = new ArrayList<Gene>();
 		for(String g:geneMap.keySet()){
@@ -35,5 +27,9 @@ public class GeneGroup{
 	
 	public Gene getGene(String s){
 		return geneMap.get(s);
+	}
+
+	public void add(String geneId, Gene g) {
+		geneMap.put(geneId, g);
 	}
 }
