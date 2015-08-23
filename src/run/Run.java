@@ -21,19 +21,20 @@ public class Run {
 	/* Final counts of variants that work */
 	public List<String> variantIds;
 	
-	/*If runtype = 4, then this is the SNP that the simulation will be run with */
-	String snpId;
+	/*this is the SNP that the simulation will be run with */
+	public SNP snp;
 	
-	int numberPermutations = 10000000;
-	int significanceThreshold = 4;
+	int numberPermutations = 1000;
+	int significanceThreshold = 1;
 	
-	public Run(Gene g, List<SNP> s, int t, String id){
+	public Run(Gene g, List<SNP> s, int t, SNP snp){
 		snps=s;
 		gene=g;
+		Collections.sort(g.esamples);
 		threshold=t;
-		runType = 4;
+		runType = 2;
 		variantIds = new ArrayList<String>();
-		snpId = id;
+		this.snp = snp;
 	}
 	
 	public Run(Gene g, List<SNP> s, int t, int rType){
@@ -44,36 +45,23 @@ public class Run {
 		variantIds = new ArrayList<String>();
 	}
 	
-	
-	public ExpSample find(ArrayList<ExpSample> samples, String id) {
-		for (ExpSample s : samples){
-			if (s.id.equalsIgnoreCase(id)){
-				return s;
-			}
-		}
-		return null;
-	}
-	
-	ArrayList<ExpSample> getExpSamples( ){
-		ArrayList<ExpSample> ASE = gene.esamples;
+	ArrayList<ExpSample> getExpSamples(){
 		switch (runType) {
 			case 1:
-				return ASE;
+				setRandomSNP();
 			case 2:
-				gene.esamples = assignASE(getRandomSNP());
-				return gene.esamples;
+				gene.esamples = assignASE();
 			case 3:
-				return shuffle();
+				Collections.sort(gene.esamples);
+				return gene.esamples;
 			case 4:
-				gene.esamples = assignASE(getSpecificSNP(snpId));
+				Collections.shuffle(gene.esamples);
 				return gene.esamples;
 			default:
-				return ASE;
+				return gene.esamples;
 		}
 	}
-
-	private ArrayList<ExpSample> assignASE(SNP snp) {
-		
+	private ArrayList<ExpSample> assignASE() {
 		ArrayList<ExpSample> assignedASE = new ArrayList<ExpSample>();
 		for (GenoSample s : snp.getGenosamples()){
 			ExpSample esample = new ExpSample (s.id, s.getHetero());
@@ -82,64 +70,31 @@ public class Run {
 		return assignedASE;
 	}
 	
-	private SNP getRandomSNP(){
+	private void setRandomSNP(){
 		Random random = new Random();
-		return snps.get(random.nextInt(snps.size()));
-	}
-	
-	private SNP getSpecificSNP(String snpId){
-		for (SNP s : snps){
-			if(s.getId().equalsIgnoreCase(snpId)){
-				return s;
-			}
-		}
-		System.out.println("In Run.java -- cannot find SNP associated with snpId");
-		return null;
-	}
-	
-	
-	private ArrayList<ExpSample> shuffle() {
-		ArrayList<ExpSample> ASE = gene.getExpsamples();
-		
-		ArrayList<ExpSample> copyArray = new ArrayList<ExpSample>();
-		for (int i=0; i<ASE.size(); i++){
-			copyArray.add(new ExpSample(ASE.get(i).id, ASE.get(i).hasASE));
-		}
-		
-		Collections.shuffle(copyArray);
-		
-		for (int i = 0; i < copyArray.size(); i++){
-			copyArray.get(i).id = ASE.get(i).id;
-		}
-		return copyArray;
+		snp = snps.get(random.nextInt(snps.size()));
 	}
 
-	public int run(){
-		ArrayList<ExpSample> expSamples = getExpSamples();
+	public void run(){
+		ArrayList<ExpSample> esamples = getExpSamples();
+		
 		for(SNP s:snps){
 			ArrayList<GenoSample> gsamples= s.getGenosamples();
 			int correct=0;
 			int incorrect=0;
-			for (GenoSample g : gsamples) {
-				String sampleID = g.getSampleID();
-				int isHetero = g.getHetero();
-				ExpSample expSample = this.find(expSamples, sampleID);
-				if (expSample == null)
-					System.out.println("ERROR: Missing data: "+sampleID + "SNP id:" + s.getId());
-				else if(isHetero == expSample.getASE())
-					correct++;
+			for (int i =0; i<gsamples.size(); i++){
+				if (gsamples.get(i).isHetero == esamples.get(i).hasASE)
+					correct ++;
 				else
-					incorrect++;
+					incorrect ++;
 			}
 			if(passThreshold(incorrect, correct)){
 				variantIds.add(s.getId());
 			}
 		}
-		return variantIds.size();
 	}
 
-	//TODO think about when correct AND incorrect can be 0, because this happened before
-	public boolean passThreshold(int incorrect, int correct){
+	private boolean passThreshold(int incorrect, int correct){
 		if (correct == 0) {
 			return false;
 		}
@@ -153,7 +108,7 @@ public class Run {
 	public boolean isStatisticallySignificant(){
 		int numberBetterPermutations = 0;
 		for (int i=0; i<numberPermutations; i++){
-			Run r = new Run(gene, snps, threshold, 3);
+			Run r = new Run(gene, snps, threshold, 4);
 			r.run();
 			if (r.variantIds.size() != 0){
 				numberBetterPermutations++;

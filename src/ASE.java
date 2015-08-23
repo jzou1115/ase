@@ -36,7 +36,7 @@ public class ASE {
 		return false;
 	}
 	
-	public void genesToSnps(){
+	private void genesToSnps(){
 		map = new HashMap<Gene, List<SNP>>();
 	
 		List<SNP> snpList = snpGroup.getSnps();		
@@ -58,7 +58,8 @@ public class ASE {
 		}
 	}
 	
-	public void printMapping(){
+	/*
+	private void printMapping(){
 		for(Gene g:map.keySet()){
 			System.out.println(g.getId());
 			System.out.println(g.region.getStart().getCoord() + " - " + g.region.getEnd().getCoord());
@@ -69,7 +70,8 @@ public class ASE {
 		}
 	}
 	
-	public void simulate(int errors){
+	
+	private void simulateEverySNPPerGene(int errors){
 		for (Gene g: geneGroup.getGenes()){
 			List<SNP> snps = map.get(g);
 			if (snps == null){
@@ -77,7 +79,7 @@ public class ASE {
 			}
 			for (SNP s: snps){
 				System.out.print(g.getId() + "," + snps.size() + "," + s.getId() + "," + 1.0 * s.numberHeterozygous / 94 + ",");
-				Run r = new Run(g, snps, errors, s.getId());
+				Run r = new Run(g, snps, errors, s);
 				r.run();
 				System.out.print(r.variantIds.size() + ",");
 				r.isStatisticallySignificant();
@@ -85,52 +87,57 @@ public class ASE {
 			}
 		}
 	}
+	*/
 	
-
+	private void simulate(int errors){
+		for (Gene g: geneGroup.getGenes()){
+			List<SNP> snps = map.get(g);
+			if (snps == null){
+				System.out.println("ERROR in ASE: " + g.getId() + " has no SNPs that map to it");
+			}
+			Run r = new Run(g, snps, errors, 1);
+			r.run();
+			System.out.print(g.getId() + "," + snps.size() + "," + r.snp.getId() + "," + 1.0 * r.snp.numberHeterozygous / 94 + ",");
+			System.out.print(r.variantIds.size() + ",");
+			r.isStatisticallySignificant();
+			System.out.println(r.variantIds + ",");
+		}
+	}
 	public static void main(String args[]) throws IOException{
-		ASE a= new ASE();
-		Parse parse = new Parse(a);
+			ASE a= new ASE();
+			Parse parse = new Parse(a);
+	
+			/*
+			// test data
+			FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
+			parse.parseGenes(geneData);
+	
+			FileInputStream snpData = new FileInputStream(new File("./test/snp.map"));
+			parse.parseSnps(snpData);
+			
+			a.genesToSnps();
+	
+			FileInputStream genotypeData = new FileInputStream(new File("./test/isHetero.txt"));
+			parse.parseGenotypes(genotypeData);
+	
+			FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
+			parse.parseExpressions(expData);
+	
+			a.genesToSnps();
+			*/
+			
+			FileInputStream geneData = new FileInputStream(new File("./test3/genes.txt"));
+			parse.parseGenes(geneData, 23);
+			
+			FileInputStream snpData = new FileInputStream(new File("./test3/ChrOne.map"));
+			parse.parseSnps(snpData);
 		
-		/*
-		// test data
-		FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
-		parse.parseGenes(geneData);
-
-		FileInputStream snpData = new FileInputStream(new File("./test/snp.map"));
-		parse.parseSnps(snpData);
-		
-		a.genesToSnps();
-
-		FileInputStream genotypeData = new FileInputStream(new File("./test/isHetero.txt"));
-		parse.parseGenotypes(genotypeData);
-
-		FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
-		parse.parseExpressions(expData);
-
-		a.genesToSnps();
-		*/
-		
-		//String geneData = args[1];
-		//String snpData = args[0];
-		//String genotypeData = args[2];
-		//String expData = args[3];
-		//a.parseExpressions(expData);
-
-		FileInputStream geneData = new FileInputStream(new File("./test3/genes.txt"));
-		parse.parseGenes(geneData);
-		
-		FileInputStream snpData = new FileInputStream(new File("./test3/ChrOne.map"));
-		parse.parseSnps(snpData);
-
-		a.genesToSnps();
-		
-		FileInputStream genotypeData = new FileInputStream(new File("./test3/ChrOne.snps.txt"));
-		parse.parseGenotypes(genotypeData);
-		
-		
-		a.simulate(0);
-		
-		//a.simulate(30, 100);
+			a.genesToSnps();
+				
+			FileInputStream genotypeData = new FileInputStream(new File("./test3/ChrOne.snps.txt"));
+			parse.parseGenotypes(genotypeData);
+				
+			a.simulate(0);
 	}
 	
 }
