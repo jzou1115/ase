@@ -3,6 +3,7 @@ import genome.GenomicCoordinate;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -20,9 +21,9 @@ public class Parse {
 		ase = a;
 	}
 	
-	public void parseSnps(FileInputStream map){
+	public void parseSnps(String snpFile) throws FileNotFoundException{
 		List<SNP> snps = new ArrayList<SNP>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(map));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(snpFile)));
 		String line;
 		int n=0;
 		try {
@@ -61,8 +62,8 @@ public class Parse {
 	
 	//TODO generate random n samples, not the 1st n samples
 	/* Reads genotypes of SNPs, adds minor allele frequency to SNP */
-	public void parseGenotypes(FileInputStream genotypes) throws IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(genotypes));
+	public void parseGenotypes(String genotypeFile) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(genotypeFile)));
 		String line = br.readLine();
 		String[] sampleNames = line.split("\\s+");
 		

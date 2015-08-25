@@ -30,7 +30,6 @@ public class Run {
 	public Run(Gene g, List<SNP> s, int t, SNP snp){
 		snps=s;
 		gene=g;
-		Collections.sort(g.esamples);
 		threshold=t;
 		runType = 2;
 		variantIds = new ArrayList<String>();
@@ -52,11 +51,9 @@ public class Run {
 			case 2:
 				gene.esamples = assignASE();
 			case 3:
-				Collections.sort(gene.esamples);
 				return gene.esamples;
 			case 4:
 				Collections.shuffle(gene.esamples);
-				return gene.esamples;
 			default:
 				return gene.esamples;
 		}

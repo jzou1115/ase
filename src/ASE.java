@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -63,7 +62,8 @@ public class ASE {
 		for (Gene g: genes.getGenes()){
 			List<SNP> snps = map.get(g);
 			if (snps == null){
-				System.out.println(g.geneId + "," + "0");
+				//genes.remove(g.geneId);
+				//System.out.println(g.geneId + "," + "0");
 			}
 			else{
 				Run r = new Run(g, snps, errors, 1);
@@ -81,26 +81,20 @@ public class ASE {
 			Parse parse = new Parse(a);
 	
 			//FileInputStream geneData = new FileInputStream(new File("./test/geneLoc.txt"));
-			FileInputStream geneData = new FileInputStream(new File("./test3/mart_export_xaa_500.txt"));
-			BufferedReader reader = new BufferedReader(new InputStreamReader(geneData));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(args[0])));
 			String line = null;
 			do {
-				for(int i = 0; i<1; i++){
-					try {
-						while((line = reader.readLine()) != null){
-							Gene g = parse.parseGene(line);
-							a.genes.add(g.geneId, g);
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
+				try {
+					for(int i = 0; i<300; i++){
+						if((line = reader.readLine()) == null)
+							break;
+						Gene g = parse.parseGene(line);
+						a.genes.add(g.geneId, g);
 					}
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 	
-				
-				FileInputStream snpData = new FileInputStream(new File("./test3/ChrOne.map"));
-				FileInputStream genotypeData = new FileInputStream(new File("./test3/ChrOne.snps.txt"));
-				
-				
 				/*
 				//test data
 				FileInputStream snpData = new FileInputStream(new File("./test/snp.map"));
@@ -108,12 +102,12 @@ public class ASE {
 				FileInputStream expData = new FileInputStream(new File("./test/hasASE.txt"));
 				parse.parseExpressions(expData);
 				*/
-				parse.parseSnps(snpData);
+				
+				parse.parseSnps("./test3/ChrOne.map");
 				a.genesToSnps();
-				parse.parseGenotypes(genotypeData);
-				System.out.println("Here");
+				parse.parseGenotypes("./test3/ChrOne.snps.txt");
 
-				a.simulate(0);
+				a.simulate(Integer.parseInt(args[1]));
 				a = new ASE();
 				parse = new Parse(a);
 				System.gc();

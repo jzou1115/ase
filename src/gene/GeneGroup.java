@@ -32,4 +32,8 @@ public class GeneGroup{
 	public void add(String geneId, Gene g) {
 		geneMap.put(geneId, g);
 	}
+	
+	public void remove(String geneId){
+		geneMap.remove(geneId);
+	}
 }
