@@ -19,6 +19,8 @@ public interface CommandLineParams {
 	public double getThreshold();
 	public InputStream getGenotypeData();
 	public InputStream getExpressionData();
+	public InputStream getMap();
+	public String getFunction();
 	
 	
 }

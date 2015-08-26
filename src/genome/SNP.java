@@ -13,14 +13,12 @@ public class SNP implements Comparable<SNP>{
 	//parsed from *.map files
 	String id;
 	GenomicCoordinate location;
-	int num;
 	
 	List<GenoSample> gsamples;
 	
-	SNP(String i, int c, long l, int n){
+	public SNP(String i, int c, long l){
 		id=i;
 		location = new GenomicCoordinate(c, l);
-		num= n;
 		gsamples = new ArrayList<GenoSample>();
 	}
 	
@@ -32,6 +30,10 @@ public class SNP implements Comparable<SNP>{
 		for(GenoSample g:s){
 			gsamples.add(g);
 		}
+	}
+	
+	public void addSample(GenoSample g){
+		gsamples.add(g);
 	}
 	
 	public int getNumSamples(){
@@ -61,16 +63,8 @@ public class SNP implements Comparable<SNP>{
 	}
 
 	public String toString(){
-		return id;
+		return id+"\t"+location.getChromosome()+"\t"+location.getCoord();
 	}
 	
-	public static SNP parseSNP(String line, int n){
-		String[] tokens = line.split("\\s+");
-	//	if(Pattern.matches(SNP_REGEX, tokens[0].trim())){
-			SNP s= new SNP(tokens[0].trim(), Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]), n);
-			return s;
-	//	}
-	//	System.out.println("does not match snp regex "+tokens[0]);
-	//	return null;
-	}
+
 }

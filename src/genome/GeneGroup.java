@@ -28,30 +28,6 @@ public class GeneGroup{
 	public List<Gene> getGenes(){
 		return geneg;
 	}
-	public static GeneGroup readGeneGroup(InputStream in){
-		List<Gene> genes = new ArrayList<Gene>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		String line;
-		int n=0;
-		try {
-			while((line = reader.readLine()) != null){
-				try{
-					genes.add(Gene.parseGene(line));
-					n++;
-				} catch (Exception e){
-					//do nothing
-					//System.out.println("cannot add Gene");
-				}
-			}
-			reader.close();
-		} catch (IOException e) {
-			System.out.println("no lines");
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return new GeneGroup(genes);
-	}
-	
 	
 	public int size(){
 		return geneg.size();

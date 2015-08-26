@@ -26,30 +26,6 @@ public class SNPgroup{
 	public List<SNP> getSnps(){
 		return snpg;
 	}
-	public static SNPgroup readSNPGroup(InputStream in){
-		List<SNP> snps = new ArrayList<SNP>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		String line;
-		int n=0;
-		try {
-			while((line = reader.readLine()) != null){
-				try{
-					SNP s = SNP.parseSNP(line, n);
-					if(s!=null){
-						snps.add(s);
-						n++;
-					}
-				} catch (Exception e){
-					//do nothing
-				}
-			}
-			reader.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return new SNPgroup(snps);
-	}
 	
 	public int size(){
 		return snpg.size();

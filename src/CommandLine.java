@@ -20,6 +20,10 @@ public class CommandLine implements CommandLineParams{
 	private static final String TEST_TAG = "-t";
 	private static final String SAMPLE_TAG = "-n";
 	private static final String THRESHOLD_TAG = "-z";
+	private static final String MAP_TAG = "-m";
+	private static final String MAP_FCN = "genestosnps";
+	private static final String SIM_FCN = "simulation";
+	private static final String ASE_FCN = "mapase";
 	
 	private File output = new File(DEFAULT_OUTPUT_DIR);
 	private InputStream snps = System.in;
@@ -33,12 +37,26 @@ public class CommandLine implements CommandLineParams{
 	private double threshold;
 	private InputStream genotypes;
 	private InputStream expressions;
+	private InputStream map;
+	private String function;
 	
 	@Override
 	public void parse(String ... args) throws Exception{
 		for( int i = 0 ; i < args.length ; ++i ){
 			String cur = args[i];
 			switch(cur){
+			case MAP_FCN: 
+				//assertNextArg(MAP_FCN, i, args);
+				function = MAP_FCN;
+				break;
+			case SIM_FCN: 
+				//assertNextArg(SIM_FCN, i, args);
+				function = SIM_FCN;
+				break;
+			case ASE_FCN:
+				//assertNextArg(ASE_FCN, i, args);
+				function = ASE_FCN;
+				break;
 			case SNP_TAG: 
 				assertNextArg(SNP_TAG, i, args);
 				snps = parseSNPArg(args[++i]);
@@ -46,6 +64,10 @@ public class CommandLine implements CommandLineParams{
 			case GENE_TAG: 
 				assertNextArg(GENE_TAG, i, args);
 				genes = parseGeneArg(args[++i]);
+				break;
+			case MAP_TAG: 
+				assertNextArg(MAP_TAG, i, args);
+				map = parseMapArg(args[++i]);
 				break;
 			case PERM_TAG: 
 				assertNextArg(PERM_TAG, i, args);
@@ -88,6 +110,10 @@ public class CommandLine implements CommandLineParams{
 		}
 	}
 	
+	private InputStream parseMapArg(String string) throws FileNotFoundException {
+		return new BufferedInputStream( new FileInputStream(new File(string)));
+	}
+
 	private InputStream parseExpressionArg(String string) throws FileNotFoundException {
 		return new BufferedInputStream( new FileInputStream(new File(string)));
 	}
@@ -124,19 +150,25 @@ public class CommandLine implements CommandLineParams{
 	
 	@Override
 	public void printHelp(PrintStream out){
-		out.println("Usage:\nASEsimulator [-s] [-g] [-p] [-e] [-t] [-n] [-z] [-o] [-h] \n");
-		out.println("Options:");
-		out.println("-s\tSNP file");
-		out.println("-g\tGene file");
-		out.println("-a\tGenotype data");
-		out.println("-b\tExpression data");
-		out.println("-p\tNumber of permutations");
+		out.println("Usage: ase <function> [<args>] \n");
+		out.println("Functions:");
+		out.println("<genestosnps>\tThis function takes a list of genes and a list of snps.  It creates a map from each gene to a list of snps.");
+		out.println("<simulation>\tThis function starts a simulation for one gene.");
+		out.println("<mapase>\tThis function maps variants to ASE.");
+		out.println("<join>\tThis function joins output files from <simulation> or <mapase>");
+		out.println("\nOptions:");
+		out.println("-s\tSNP Locations");
+		out.println("-g\tGene Locations");
+		out.println("-m\tMap from gene to SNPs");
+		out.println("-a\tGenotype file");
+		out.println("-b\tExpression file");
+		out.println("-p\tNumber of permutations for simulation");
 		out.println("-e\tMaximum number of errors allowed");
-		out.println("-t\tTest gene ID");
-		out.println("-n\tNumber of samples");
+		out.println("-n\tNumber of samples used");
 		out.println("-z\tSignificance threshold");
 		out.println("-o\tOutput file");
 		out.println("-h\thelp statement");
+
 	}
 	
 	private InputStream parseSNPArg(String s) throws FileNotFoundException {
@@ -203,6 +235,16 @@ public class CommandLine implements CommandLineParams{
 	@Override
 	public InputStream getExpressionData() {
 		return expressions;
+	}
+
+	@Override
+	public InputStream getMap() {
+		return map;
+	}
+
+	@Override
+	public String getFunction() {
+		return function;
 	}
 
 
