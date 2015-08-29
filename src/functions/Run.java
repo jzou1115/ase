@@ -59,6 +59,7 @@ public class Run {
 //	}
 	
 	public Object[] getSubset(int total){
+		System.out.println(total);
 		Random rand = new Random();
 		List<Integer> ret = new ArrayList<Integer>();
 		int i=0;

@@ -22,8 +22,9 @@ public class SNP implements Comparable<SNP>{
 		gsamples = new ArrayList<GenoSample>();
 	}
 	
-	SNP(String i){
+	public SNP(String i){
 		id=i;
+		gsamples = new ArrayList<GenoSample>();
 	}
 
 	public void addSamples(List<GenoSample> s){

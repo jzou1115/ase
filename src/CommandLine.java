@@ -42,6 +42,10 @@ public class CommandLine implements CommandLineParams{
 	
 	@Override
 	public void parse(String ... args) throws Exception{
+		if(args.length==0){
+			printHelp(System.err);
+			System.exit(0);
+		}
 		for( int i = 0 ; i < args.length ; ++i ){
 			String cur = args[i];
 			switch(cur){
