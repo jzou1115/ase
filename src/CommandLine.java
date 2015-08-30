@@ -24,6 +24,7 @@ public class CommandLine implements CommandLineParams{
 	private static final String MAP_FCN = "genestosnps";
 	private static final String SIM_FCN = "simulation";
 	private static final String ASE_FCN = "mapase";
+	private static final String COMB_FCN = "combinations";
 	
 	private File output = new File(DEFAULT_OUTPUT_DIR);
 	private InputStream snps = System.in;
@@ -60,6 +61,10 @@ public class CommandLine implements CommandLineParams{
 			case ASE_FCN:
 				//assertNextArg(ASE_FCN, i, args);
 				function = ASE_FCN;
+				break;
+			case COMB_FCN:
+				//assertNextArg(ASE_FCN, i, args);
+				function = COMB_FCN;
 				break;
 			case SNP_TAG: 
 				assertNextArg(SNP_TAG, i, args);

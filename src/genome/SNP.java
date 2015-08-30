@@ -67,5 +67,14 @@ public class SNP implements Comparable<SNP>{
 		return id+"\t"+location.getChromosome()+"\t"+location.getCoord();
 	}
 	
+	public String samplesToString(){
+		String ret = id;
+		
+		for(GenoSample g:gsamples){
+			ret = ret+"\t"+ g.getHetero();
+		}
+		
+		return ret;
+	}
 
 }

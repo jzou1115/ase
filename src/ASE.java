@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.io.InputStream;
 
+import parse.ParseMap;
+
 import functions.*;
 
 
@@ -28,9 +30,9 @@ public class ASE {
 	}
 	
 	private void generateCombinations(InputStream map, String gene,
-			InputStream genotypes, InputStream expressions) {
-		// TODO Auto-generated method stub
-		
+			InputStream genotypes) throws IOException {
+		GenerateCombinations combinations = new GenerateCombinations(map, gene, genotypes);
+		combinations.write();
 	}
 	
 	
@@ -107,10 +109,10 @@ public class ASE {
 			InputStream map = cmdArgs.getMap();
 			String gene = cmdArgs.getTestGene();
 			InputStream genotypes = cmdArgs.getGenotypeData();
-			InputStream expressions = cmdArgs.getExpressionData();
+			//InputStream expressions = cmdArgs.getExpressionData();
 			
-			if(map!=null && gene!=null && genotypes!=null && expressions!=null){
-				a.generateCombinations(map, gene, genotypes, expressions);
+			if(map!=null && gene!=null && genotypes!=null){
+				a.generateCombinations(map, gene, genotypes);
 			} else{
 				cmdArgs.printHelp(System.err);
 				System.exit(0);
