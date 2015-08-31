@@ -1,7 +1,7 @@
 package functions;
 
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,9 +22,10 @@ public class Combinations {
 	List<SNP> snps;
 	List<SNP> combs;
 	List<String> gtexIds;
+	File outdir;
 	
-	public Combinations(InputStream map, String gene2,
-			InputStream genotypes) throws IOException {
+	public Combinations(InputStream map, String gene2, InputStream genotypes, File out) throws IOException {
+		outdir =out;
 		setTestGene(map, gene2);
 		ParseSNP.parseGenotypes(genotypes,snps);
 		setSampIDs();
@@ -56,8 +57,8 @@ public class Combinations {
 		return combs;
 	}
 	
-	public void write() throws IOException{
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("combined.txt")));
+	public void write(String filename) throws IOException{
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
 		
 		String labels="";
 		for(String id: gtexIds){
@@ -103,7 +104,7 @@ public class Combinations {
 	public void simulate(double threshold, int error, int perm, int n) throws IOException {
 		Simulation sim = new Simulation();
 		sim.setTestGene(gene, combs);
-		sim.startRun(threshold, error, perm, n);
+		sim.startRun(threshold, error, perm, n, outdir);
 	}
 
 }

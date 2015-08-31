@@ -2,7 +2,6 @@ package parse;
 
 import genome.Gene;
 import genome.GenomicCoordinate;
-import genome.SNP;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,8 +9,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-
-import sample.GenoSample;
 
 public class ParseGene {
 
@@ -29,12 +26,10 @@ public class ParseGene {
 		List<Gene> genes = new ArrayList<Gene>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
-		int n=0;
 		try {
 			while((line = reader.readLine()) != null){
 				try{
 					genes.add(parseGene(line));
-					n++;
 				} catch (Exception e){
 					//do nothing
 					//System.out.println("cannot add Gene");

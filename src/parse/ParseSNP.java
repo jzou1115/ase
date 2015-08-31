@@ -25,14 +25,12 @@ public class ParseSNP {
 		List<SNP> snps = new ArrayList<SNP>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
-		int n=0;
 		try {
 			while((line = reader.readLine()) != null){
 				try{
 					SNP s = parseSNP(line);
 					if(s!=null){
 						snps.add(s);
-						n++;
 					}
 				} catch (Exception e){
 					//do nothing

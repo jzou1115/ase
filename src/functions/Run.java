@@ -1,16 +1,13 @@
 package functions;
 
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-
-import org.apache.commons.math.stat.inference.TestUtils;
 
 import sample.*;
 import genome.*;
@@ -23,16 +20,18 @@ public class Run {
 	private int errors;
 	private int perm;
 	private int sampleSize;
+	private File outdir;
 	//private Map<SNP,List<GenoSample>> genoMap;
 	
 	//public Run(Gene g, List<SNP> s, double t, int e, int p, int n, Map<SNP, List<GenoSample>> geno){
-	public Run(Gene g, List<SNP> s, double t, int e, int p, int n){
+	public Run(Gene g, List<SNP> s, double t, int e, int p, int n, File out){
 		snps=s;
 		gene=g;
 		threshold=t;
 		errors= e;
 		perm=p;
 		sampleSize=n;
+		outdir=out;
 		//genoMap = geno;
 	}
 
@@ -193,7 +192,7 @@ public class Run {
 	
 	public int allSimulations() throws IOException{
 		int pass=0;
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(gene.getId()+"_simulation_"+perm+"_"+sampleSize+"_"+errors+"_"+threshold+".txt")));
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+gene.getId()+"_simulation_"+perm+"_"+sampleSize+"_"+errors+"_"+threshold+".txt")));
 		outfile.write("Number of permutations: "+perm+"\n");
 		outfile.write("Number of samples: "+sampleSize+"\n");
 		outfile.write("Maximum number of errors: "+errors+"\n");
@@ -203,7 +202,7 @@ public class Run {
 			double f = calculateMAF(s);
 			//System.out.println(s.getId()+"\t"+f);
 			int[] ase = aseCall(s);	
-			int x= mapASE(ase, s.getId());
+			int x= mapASE(ase, outdir+File.separator+s.getId());
 			
 			int total=0;
 			double[] perms = new double[perm];

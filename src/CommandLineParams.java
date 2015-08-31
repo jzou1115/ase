@@ -22,6 +22,7 @@ public interface CommandLineParams {
 	public InputStream getExpressionData();
 	public InputStream getMap();
 	public String getFunction();
+	public String getFilename();
 	
 	
 }

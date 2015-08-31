@@ -1,7 +1,5 @@
 package genome;
 
-import java.util.Iterator;
-
 public class GenomicRegion {
 	GenomicCoordinate start;
 	GenomicCoordinate end;

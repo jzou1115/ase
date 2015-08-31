@@ -17,6 +17,7 @@ public class CommandLine implements CommandLineParams{
 	private static final String ERROR_TAG = "-e";
 	private static final String HELP_TAG = "-h";
 	private static final String OUTPUT_TAG = "-o";
+	private static final String FILE_TAG = "-f";
 	private static final String TEST_TAG = "-t";
 	private static final String SAMPLE_TAG = "-n";
 	private static final String THRESHOLD_TAG = "-z";
@@ -27,6 +28,7 @@ public class CommandLine implements CommandLineParams{
 	private static final String COMB_FCN = "combinations";
 	
 	private File output = new File(DEFAULT_OUTPUT_DIR);
+	private String outfile;
 	private InputStream snps = System.in;
 	private InputStream genes = System.in;
 	//private InputStream map = System.in;
@@ -105,6 +107,10 @@ public class CommandLine implements CommandLineParams{
 				assertNextArg(OUTPUT_TAG, i, args);
 				output = new File(args[++i]);
 				break;
+			case FILE_TAG:
+				assertNextArg(FILE_TAG, i, args);
+				outfile = parseFileTag(args[++i]);
+				break;
 			case GENOTYPES_TAG:
 				assertNextArg(GENOTYPES_TAG, i, args);
 				genotypes = parseGenotypesArg(args[++i]);
@@ -119,6 +125,10 @@ public class CommandLine implements CommandLineParams{
 		}
 	}
 	
+	private String parseFileTag(String string) {
+		return string.trim();
+	}
+
 	private InputStream parseMapArg(String string) throws FileNotFoundException {
 		return new BufferedInputStream( new FileInputStream(new File(string)));
 	}
@@ -254,6 +264,11 @@ public class CommandLine implements CommandLineParams{
 	@Override
 	public String getFunction() {
 		return function;
+	}
+
+	@Override
+	public String getFilename() {
+		return outfile;
 	}
 
 
