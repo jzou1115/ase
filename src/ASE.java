@@ -22,6 +22,7 @@ public class ASE {
 		
 	}
 	
+	
 
 	private void startRun(InputStream map, InputStream genotypes,
 			InputStream expressions, String gene, double threshold, int perm, int n) {
@@ -30,9 +31,10 @@ public class ASE {
 	}
 	
 	private void generateCombinations(InputStream map, String gene,
-			InputStream genotypes) throws IOException {
-		GenerateCombinations combinations = new GenerateCombinations(map, gene, genotypes);
+			InputStream genotypes, double threshold, int error, int perm, int n) throws IOException {
+		Combinations combinations = new Combinations(map, gene, genotypes);
 		combinations.write();
+		combinations.simulate(threshold, error, perm, n);
 	}
 	
 	
@@ -75,6 +77,7 @@ public class ASE {
 			int perm = cmdArgs.getPermNum();
 			int n = cmdArgs.getSampleNum();
 			
+			
 			if(map!=null && genotypes!=null && gene!=null){
 				a.startSimulation(map, genotypes, gene, threshold, error, perm, n);
 
@@ -111,12 +114,18 @@ public class ASE {
 			InputStream genotypes = cmdArgs.getGenotypeData();
 			//InputStream expressions = cmdArgs.getExpressionData();
 			
+			double threshold = cmdArgs.getThreshold();
+			int error = cmdArgs.getErrorNum();
+			int perm = cmdArgs.getPermNum();
+			int n = cmdArgs.getSampleNum();
+			
 			if(map!=null && gene!=null && genotypes!=null){
-				a.generateCombinations(map, gene, genotypes);
+				a.generateCombinations(map, gene, genotypes, threshold, error, perm, n);
 			} else{
 				cmdArgs.printHelp(System.err);
 				System.exit(0);
 			}
+			
 		}
 		else{
 			//a.parseExpressions(cmdArgs.getExpressionData());
@@ -125,6 +134,8 @@ public class ASE {
 
 		
 	}
+
+
 
 
 

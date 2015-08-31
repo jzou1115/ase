@@ -50,7 +50,7 @@ public class ParseSNP {
 		System.out.println("Reading genotypes");
 		BufferedReader br = new BufferedReader(new InputStreamReader(genotypes));
 		String line = br.readLine();
-		
+		System.out.println(line);
 		String[] sampleNames = line.split("\\s+");
 		
 		try {
@@ -80,5 +80,6 @@ public class ParseSNP {
 		}
 		
 	}
-
+	
+	
 }

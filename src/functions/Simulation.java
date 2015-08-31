@@ -22,12 +22,23 @@ public class Simulation {
 		ParseSNP.parseGenotypes(genotypes,snps);
 		startRun(threshold, error, perm, n);
 	}
+	
+	public Simulation(){
+		
+	}
+	
+	public void setTestGene(Gene g, List<SNP> s){
+		gene = g;
+		snps = s;
+		System.out.println(gene.toString()+"\t"+snps.size());
+	}
+	
 	public void setTestGene(InputStream map2, String gene2){
 		ParseMap parsemap = new ParseMap();
 		parsemap.parseMap(map2, gene2);
 		gene = parsemap.getGene();
 		snps = parsemap.getSNPs();
-		//System.out.println(gene.toString()+"\t"+snps.size());
+		System.out.println(gene.toString()+"\t"+snps.size());
 	}
 	public void startRun(double threshold, int errors, int perms, int n) throws IOException{
 		Run r = new Run(gene, snps, threshold, errors, perms, n);

@@ -17,13 +17,13 @@ import sample.GenoSample;
 import genome.Gene;
 import genome.SNP;
 
-public class GenerateCombinations {
+public class Combinations {
 	Gene gene;
 	List<SNP> snps;
 	List<SNP> combs;
 	List<String> gtexIds;
 	
-	public GenerateCombinations(InputStream map, String gene2,
+	public Combinations(InputStream map, String gene2,
 			InputStream genotypes) throws IOException {
 		setTestGene(map, gene2);
 		ParseSNP.parseGenotypes(genotypes,snps);
@@ -97,6 +97,13 @@ public class GenerateCombinations {
 		}
 		
 		return ret;
+	}
+	
+
+	public void simulate(double threshold, int error, int perm, int n) throws IOException {
+		Simulation sim = new Simulation();
+		sim.setTestGene(gene, combs);
+		sim.startRun(threshold, error, perm, n);
 	}
 
 }
