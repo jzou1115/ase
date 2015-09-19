@@ -243,18 +243,35 @@ public class Run {
 
 	public double calculateMAF(SNP s){
 		int hetero=0;
-
+		
 		List<GenoSample> genos = s.getGenosamples();
-			for(int i=0; i<genos.size();i++){
-				if(genos.get(i).getHetero()==1){
-					hetero++;
-				}
+		for(int i=0; i<genos.size();i++){
+			if(genos.get(i).getHetero()==1){
+				hetero++;
 			}
-			if(hetero>1.0*genos.size()/2){
-				return 1.0*(genos.size()-hetero)/genos.size();
-			}
-			return 1.0*hetero/genos.size();
+		}
 
+		double pq = 0.5*hetero/genos.size();
+		
+		double discriminant = Math.sqrt(1-4*pq);
+		
+		double root = (1+discriminant)/2;
+		double root2 = (1-discriminant)/2;
+		
+		if(root>=0 && root<=1){
+			if(root<1-root){
+				return root;
+			}
+			return 1-root;
+		}
+		
+		if(root2>=0 && root2<=1){
+			if(root2<1-root2){
+				return root2;
+			}
+			return 1-root2;
+		}
+		return -1;
 	}
 	
 	public int[] aseCall(SNP s){
@@ -290,7 +307,7 @@ public class Run {
 				perms[i]=(double) a;
 			}
 			
-			double p = calculatePValue(x, perms);
+			double p = calculatePValue(perms);
 			
 			double mean= 1.0*total/perm;
 			
