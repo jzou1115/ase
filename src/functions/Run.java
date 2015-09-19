@@ -344,11 +344,11 @@ public class Run {
 		int total=0;
 		double[] perms = new double[perm];
 		for(int i=0; i<perm;i++){
-			System.out.println("PermNum"+i);
 			int[] p = permute(ase, ase.length);
 			int a = mapASE(p);
 			total=total+a;
 			perms[i]=(double) a;
+			System.out.println("PermNum"+i+"\t"+a);
 		}
 
 		double p = calculatePValue(perms);
