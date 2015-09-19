@@ -62,7 +62,7 @@ public class Run {
 	}
 	
 	public Object[] getSubset(int total, int num){
-		System.out.println(total);
+		//System.out.println(total);
 		Random rand = new Random();
 		List<Integer> ret = new ArrayList<Integer>();
 		int i=0;
@@ -105,9 +105,22 @@ public class Run {
 	
 	public int mapASE(int[] ase){
 		int variants=0;
-		Object[] subset = getSubset(ase.length, sampleSize);
+		
+		int samples;
+		if(ase.length<sampleSize){
+			samples = ase.length;
+		}
+		else{
+			samples = sampleSize;
+		}
+		
+		
 		for(SNP s:snps){
 			List<GenoSample> gsamples = s.getGenosamples();
+			if(gsamples.size()<samples){
+				continue;
+			}
+			Object[] subset = getSubset(ase.length, samples);
 			int correct=0;
 			int incorrect=0;
 			for (int i=0; i<subset.length;i++) {

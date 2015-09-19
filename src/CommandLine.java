@@ -56,19 +56,15 @@ public class CommandLine implements CommandLineParams{
 			String cur = args[i];
 			switch(cur){
 			case MAP_FCN: 
-				//assertNextArg(MAP_FCN, i, args);
 				function = MAP_FCN;
 				break;
 			case SIM_FCN: 
-				//assertNextArg(SIM_FCN, i, args);
 				function = SIM_FCN;
 				break;
 			case ASE_FCN:
-				//assertNextArg(ASE_FCN, i, args);
 				function = ASE_FCN;
 				break;
 			case COMB_FCN:
-				//assertNextArg(ASE_FCN, i, args);
 				function = COMB_FCN;
 				break;
 			case SNP_TAG: 
