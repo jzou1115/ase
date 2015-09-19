@@ -51,11 +51,11 @@ public class ParseSNP {
 		System.out.println("Reading genotypes");
 		BufferedReader br = new BufferedReader(new InputStreamReader(genotypes));
 		String line = br.readLine();
-		System.out.println(line);
+		//System.out.println(line);
 		String[] samples = line.split("\t");
-		System.out.println("snploc size: " + snpLoc.size());
-		System.out.println(samples.length);
-		System.out.println(sampleNames.size());
+		//System.out.println("snploc size: " + snpLoc.size());
+		//System.out.println(samples.length);
+		//System.out.println(sampleNames.size());
 		try {
 			while((line = br.readLine()) != null){
 					String[] tokens = line.split("\\s+");

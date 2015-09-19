@@ -24,7 +24,7 @@ public class MapASE {
 		gene = g;
 		snps = s;
 		snpLoc = new HashMap<String, SNP>();
-		System.out.println(gene.toString()+"\t"+snps.size());
+		//System.out.println(gene.toString()+"\t"+snps.size());
 	}
 	
 	public void setTestGene(InputStream map, String g, InputStream genotypes, InputStream samples) throws IOException {

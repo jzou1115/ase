@@ -169,7 +169,7 @@ public class Run {
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_mapase.txt")));
 
 		List<ExpSample> ase = gene.getExpsamples();
-		System.out.println("Num ExpSamples: "+ase.size());
+		//System.out.println("Num ExpSamples: "+ase.size());
 		
 		int samples;
 		if(ase.size()<sampleSize){
@@ -185,7 +185,7 @@ public class Run {
 		int total =0;
 		for(SNP s:snps){
 			total++;
-			System.out.println(s.getId()+"\t"+total);
+			//System.out.println(s.getId()+"\t"+total);
 			Object[] subset = getSubset(ase.size(), samples, s, gene.getExpsamples());
 			if(subset==null){
 				continue;
@@ -344,6 +344,7 @@ public class Run {
 		int total=0;
 		double[] perms = new double[perm];
 		for(int i=0; i<perm;i++){
+			System.out.println("PermNum"+i);
 			int[] p = permute(ase, ase.length);
 			int a = mapASE(p);
 			total=total+a;
