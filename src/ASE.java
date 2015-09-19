@@ -2,7 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import parse.ParseSNP;
+//import parse.ParseSNP;
 import functions.*;
 
 
@@ -20,31 +20,36 @@ public class ASE {
 	
 
 	private void startSimulation(InputStream map2, InputStream genotypes,
-			String gene2, double threshold, int error, int perm, int n, File outdir) throws IOException {
+			String gene2, double threshold, int error, int perm, int n, File outdir, InputStream samples) throws IOException {
 		Simulation sim = new Simulation();
-		sim.setTestGene(map2, gene2, genotypes);
+		sim.setTestGene(map2, gene2, genotypes, samples);
 		sim.startRun(threshold, error, perm, n, outdir);
 		
 	}
 	
 	
 
-	private void startRun(InputStream map, InputStream genotypes,
-			InputStream expressions, String gene, double threshold, int perm, int n) {
-		// start run
+	private void mapASE(InputStream map, InputStream genotypes,
+			InputStream expressions, String gene, double threshold, int error, int n, File outdir, InputStream samples) throws IOException {
+		MapASE ase = new MapASE();
+		ase.setTestGene(map, gene, genotypes, samples);
+		ase.parseGenotypes(genotypes);
+		ase.parseExpressions(expressions, outdir, samples);
+		ase.startRun(threshold, error, n, outdir);
+		System.out.println("Done with mapASE in ASE");
 		
 	}
 	
 	private void generateCombinations(InputStream map, String gene,
-			InputStream genotypes, double threshold, int error, int perm, int n, File outdir, String filename) throws IOException {
+			InputStream genotypes, double threshold, int error, int perm, int n, File outdir, String filename, InputStream samples) throws IOException {
 		if(filename!=null){
-			Combinations combinations = new Combinations(map, gene, genotypes, outdir);
+			Combinations combinations = new Combinations(map, gene, genotypes, outdir, samples);
 			combinations.write(filename);
 			combinations.simulate(threshold, error, perm, n);
 		}
 		else{
 			filename = "combinations.txt";
-			Combinations combinations = new Combinations(map, gene, genotypes, outdir);
+			Combinations combinations = new Combinations(map, gene, genotypes, outdir, samples);
 			combinations.write(filename);
 			combinations.simulate(threshold, error, perm, n);
 		}
@@ -92,9 +97,10 @@ public class ASE {
 			int perm = cmdArgs.getPermNum();
 			int n = cmdArgs.getSampleNum();
 			File outdir = cmdArgs.getOutputDir();
+			InputStream samples = cmdArgs.getSamples();
 			
 			if(map!=null && genotypes!=null && gene!=null){
-				a.startSimulation(map, genotypes, gene, threshold, error, perm, n, outdir);
+				a.startSimulation(map, genotypes, gene, threshold, error, perm, n, outdir, samples);
 
 			} else{
 				cmdArgs.printHelp(System.err);
@@ -112,16 +118,18 @@ public class ASE {
 			double threshold = cmdArgs.getThreshold();
 			int error = cmdArgs.getErrorNum();
 			int n = cmdArgs.getSampleNum();
+			File outdir = cmdArgs.getOutputDir();
+			InputStream samples = cmdArgs.getSamples();
 			
 			if(map!=null && genotypes!=null && gene!=null){
-				a.startRun(map, genotypes, expressions, gene, threshold, error, n);
+				a.mapASE(map, genotypes, expressions, gene, threshold, error, n, outdir, samples);
 
 			} else{
 				cmdArgs.printHelp(System.err);
 				System.exit(0);
 			}
 		}
-		
+		/**
 		else if(fcn.equals("combinations")){
 			InputStream map = cmdArgs.getMap();
 			String gene = cmdArgs.getTestGene();
@@ -129,6 +137,7 @@ public class ASE {
 			File outdir = cmdArgs.getOutputDir();
 			String outfile = cmdArgs.getFilename();
 			//InputStream expressions = cmdArgs.getExpressionData();
+			 InputStream samples = cmdArgs.getSamples();
 			
 			double threshold = cmdArgs.getThreshold();
 			int error = cmdArgs.getErrorNum();
@@ -136,13 +145,14 @@ public class ASE {
 			int n = cmdArgs.getSampleNum();
 			
 			if(map!=null && gene!=null && genotypes!=null){
-				a.generateCombinations(map, gene, genotypes, threshold, error, perm, n, outdir, outfile);
+				a.generateCombinations(map, gene, genotypes, threshold, error, perm, n, outdir, outfile, samples);
 			} else{
 				cmdArgs.printHelp(System.err);
 				System.exit(0);
 			}
 			
 		}
+		**/
 		else{
 			System.out.println("Function not recognized");
 			cmdArgs.printHelp(System.err);

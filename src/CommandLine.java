@@ -22,10 +22,12 @@ public class CommandLine implements CommandLineParams{
 	private static final String SAMPLE_TAG = "-n";
 	private static final String THRESHOLD_TAG = "-z";
 	private static final String MAP_TAG = "-m";
+	private static final String FIXEDSAMPLES_TAG = "-x";
 	private static final String MAP_FCN = "genestosnps";
 	private static final String SIM_FCN = "simulation";
 	private static final String ASE_FCN = "mapase";
 	private static final String COMB_FCN = "combinations";
+	
 	
 	private File output = new File(DEFAULT_OUTPUT_DIR);
 	private String outfile;
@@ -42,6 +44,7 @@ public class CommandLine implements CommandLineParams{
 	private InputStream expressions;
 	private InputStream map;
 	private String function;
+	private InputStream samples;
 	
 	@Override
 	public void parse(String ... args) throws Exception{
@@ -119,12 +122,20 @@ public class CommandLine implements CommandLineParams{
 				assertNextArg(EXPRESSIONS_TAG, i, args);
 				expressions = parseExpressionArg(args[++i]);
 				break;
+			case FIXEDSAMPLES_TAG:
+				assertNextArg(FIXEDSAMPLES_TAG, i, args);
+				samples = parseFixedSamplesArg(args[++i]);
+				break;
 			default:
 				throw new Exception("Unrecognized flag: "+cur);
 			}
 		}
 	}
 	
+	private InputStream parseFixedSamplesArg(String string) throws FileNotFoundException {
+		return new BufferedInputStream( new FileInputStream(new File(string)));
+	}
+
 	private String parseFileTag(String string) {
 		return string.trim();
 	}
@@ -174,7 +185,7 @@ public class CommandLine implements CommandLineParams{
 		out.println("<genestosnps>\tThis function takes a list of genes and a list of snps.  It creates a map from each gene to a list of snps.");
 		out.println("<simulation>\tThis function starts a simulation for one gene.");
 		out.println("<mapase>\tThis function maps variants to ASE.");
-		out.println("<join>\tThis function joins output files from <simulation> or <mapase>");
+		//out.println("<join>\tThis function joins output files from <simulation> or <mapase>");
 		out.println("\nOptions:");
 		out.println("-s\tSNP Locations");
 		out.println("-g\tGene Locations");
@@ -186,6 +197,7 @@ public class CommandLine implements CommandLineParams{
 		out.println("-n\tNumber of samples used");
 		out.println("-z\tSignificance threshold");
 		out.println("-o\tOutput file");
+		out.println("-x\tSample IDs to use");
 		out.println("-h\thelp statement");
 
 	}
@@ -269,6 +281,11 @@ public class CommandLine implements CommandLineParams{
 	@Override
 	public String getFilename() {
 		return outfile;
+	}
+
+	@Override
+	public InputStream getSamples() {
+		return samples;
 	}
 
 

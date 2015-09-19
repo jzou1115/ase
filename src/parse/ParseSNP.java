@@ -8,10 +8,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import sample.GenoSample;
 
 public class ParseSNP {
+	
+	
 	public static SNP parseSNP(String line){
 		String[] tokens = line.split("\\s+");
 //		if(Pattern.matches(SNP_REGEX, tokens[0].trim())){
@@ -44,30 +47,39 @@ public class ParseSNP {
 		return snps;
 	}
 	
-	public static void parseGenotypes(InputStream genotypes, List<SNP> snps) throws IOException{
+	public static void parseGenotypes(InputStream genotypes, List<SNP> snps, Map<String, SNP> snpLoc, List<String> sampleNames) throws IOException{
 		System.out.println("Reading genotypes");
 		BufferedReader br = new BufferedReader(new InputStreamReader(genotypes));
 		String line = br.readLine();
 		System.out.println(line);
-		String[] sampleNames = line.split("\\s+");
-		
+		String[] samples = line.split("\t");
+		System.out.println("snploc size: " + snpLoc.size());
+		System.out.println(samples.length);
+		System.out.println(sampleNames.size());
 		try {
 			while((line = br.readLine()) != null){
-				try{
 					String[] tokens = line.split("\\s+");
-					String snpid = tokens[0].trim();
-					for(SNP s:snps){
-						if(s.getId().equals(snpid)){
-							System.out.println(s.getId());
-							for(int i=1; i<tokens.length;i++){
-								GenoSample genosamp = new GenoSample(sampleNames[i], (int) Math.round(Double.parseDouble(tokens[i]))%2);
-								s.addSample(genosamp);
-							}	
-						}
+					String[] snpTokens = tokens[0].split("_");
+					int chr = Integer.parseInt(snpTokens[0]);
+					int pos = Integer.parseInt(snpTokens[1]);
+					String snpid = chr+"_"+pos;
+					SNP s = snpLoc.get(snpid);
+					if(s==null){
+						//System.out.println(snpid+" not found in snpLoc");
 					}
-				} catch (Exception e){
-					//do nothing
-				}
+					else{
+						for(int i=1; i<tokens.length;i++){
+							//System.out.println(i);
+							if(sampleNames.contains(samples[i])){
+								
+								GenoSample genosamp = new GenoSample(samples[i], (int) Math.round(Double.parseDouble(tokens[i]))%2);
+								s.addSample(genosamp);	
+							}
+						}
+						s.sortSamples();
+								
+					}
+				
 			}
 
 			br.close();
@@ -78,6 +90,7 @@ public class ParseSNP {
 		}
 		
 	}
+	
 	
 	
 }

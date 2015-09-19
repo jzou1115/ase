@@ -23,6 +23,6 @@ public interface CommandLineParams {
 	public InputStream getMap();
 	public String getFunction();
 	public String getFilename();
-	
+	public InputStream getSamples();
 	
 }

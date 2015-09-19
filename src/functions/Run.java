@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -35,6 +36,16 @@ public class Run {
 		//genoMap = geno;
 	}
 
+	public Run(Gene g, List<SNP> s, double t, int e, int n, File out){
+		snps=s;
+		gene=g;
+		threshold=t;
+		errors= e;
+		sampleSize=n;
+		outdir=out;
+		//genoMap = geno;
+	}
+	
 	public List<SNP> getSnps(){
 		return snps;
 	}
@@ -57,17 +68,44 @@ public class Run {
 //		return genoMap;
 //	}
 	
-	public Object[] getSubset(int total){
+	public Object[] getSubset(int total, int num){
 		System.out.println(total);
 		Random rand = new Random();
 		List<Integer> ret = new ArrayList<Integer>();
 		int i=0;
 		int j;
-		while(i<sampleSize){
+		while(i<num){
 			j= rand.nextInt(total);
 			if(!ret.contains(j)){
 				ret.add(j);
 				i++;
+				//System.out.print(j+" ");
+			}
+		}
+
+		return ret.toArray();
+	}
+	
+	public Object[] getSubset(int total, int num, SNP s, List<ExpSample> exp){
+		List<Integer> tried = new ArrayList<Integer>();
+		System.out.println(total);
+		Random rand = new Random();
+		List<Integer> ret = new ArrayList<Integer>();
+		int i=0;
+		int j;
+		while(i<num){
+			if(tried.size()==total){
+				return null;
+			}
+			j= rand.nextInt(total);
+			if(!tried.contains(j)){
+				tried.add(j);
+				String gtexID = exp.get(j).getID();
+				if(s.getSample(gtexID)!=null){
+					ret.add(j);
+					i++;
+					//System.out.print(j+" ");
+				}
 			}
 		}
 
@@ -76,7 +114,7 @@ public class Run {
 	
 	public int mapASE(int[] ase){
 		int variants=0;
-		Object[] subset = getSubset(ase.length);
+		Object[] subset = getSubset(ase.length, sampleSize);
 		for(SNP s:snps){
 			List<GenoSample> gsamples = s.getGenosamples();
 			int correct=0;
@@ -104,10 +142,10 @@ public class Run {
 	}
 	
 	public int mapASE(int[] ase, String st) throws IOException{
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(st+".txt")));
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_simulation.txt")));
 
 		int variants=0;
-		Object[] subset = getSubset(ase.length);
+		Object[] subset = getSubset(ase.length, sampleSize);
 		outfile.write("subset len: "+subset.length+"\n");
 		for(SNP s:snps){
 			List<GenoSample> gsamples = s.getGenosamples();
@@ -135,6 +173,66 @@ public class Run {
 		}
 		outfile.write("variants: "+variants+"\n");
 		outfile.close();
+		return variants;
+	}
+	
+	public int mapASE(String st) throws IOException{
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_mapase.txt")));
+
+		List<ExpSample> ase = gene.getExpsamples();
+		System.out.println("Num ExpSamples: "+ase.size());
+		
+		int samples;
+		if(ase.size()<sampleSize){
+			samples = ase.size();
+		}
+		else{
+			samples = sampleSize;
+		}
+		
+		//Object[] subset = getSubset(ase.size(), samples);
+		
+		outfile.write("subset len: "+samples+"\n");
+		int variants=0;
+		int total =0;
+		for(SNP s:snps){
+			total++;
+			System.out.println(s.getId()+"\t"+total);
+			Object[] subset = getSubset(ase.size(), samples, s, gene.getExpsamples());
+			if(subset==null){
+				continue;
+			}
+			int correct=0;
+			int incorrect=0;
+			for (int i=0; i<subset.length;i++) {
+				int ind= (int) subset[i];
+				ExpSample e = ase.get(ind);
+				String sampleID = e.getID();
+				GenoSample g = s.getSample(sampleID);
+				
+				int hasASE = e.getASE();
+				int isHetero = g.getHetero();
+				if(isHetero == hasASE){
+					correct++;
+				}
+				else if(isHetero != hasASE){
+					incorrect++;
+				}	
+			
+				else{
+					System.out.println("Missing data: "+sampleID );
+				}
+			}
+			if(passThreshold(incorrect, correct)){
+				variants++;
+				System.out.println("Variants: "+variants);
+				outfile.write(s.getId()+"\t"+incorrect+"\n");
+			}
+		}
+		System.out.println("Done reading snps");
+		outfile.write("variants: "+variants+"\n");
+		outfile.close();
+		System.out.println("Variants: "+variants);
 		return variants;
 	}
 	
@@ -189,6 +287,7 @@ public class Run {
 		}
 		return ret;
 	}
+	
 	
 	public int allSimulations() throws IOException{
 		int pass=0;

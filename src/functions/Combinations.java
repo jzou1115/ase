@@ -8,10 +8,11 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import parse.ParseMap;
 import parse.ParseSNP;
-
+import parse.ParseSamples;
 import sample.GenoSample;
 
 import genome.Gene;
@@ -23,11 +24,14 @@ public class Combinations {
 	List<SNP> combs;
 	List<String> gtexIds;
 	File outdir;
+	Map<String, SNP> snpLoc;
+	List<String> sampleNames;
 	
-	public Combinations(InputStream map, String gene2, InputStream genotypes, File out) throws IOException {
+	public Combinations(InputStream map, String gene2, InputStream genotypes, File out, InputStream samples) throws IOException {
 		outdir =out;
 		setTestGene(map, gene2);
-		ParseSNP.parseGenotypes(genotypes,snps);
+		sampleNames = ParseSamples.parseSamples(samples);
+		ParseSNP.parseGenotypes(genotypes,snps, snpLoc, sampleNames);
 		setSampIDs();
 		getCombinations();
 	}
@@ -44,6 +48,7 @@ public class Combinations {
 		parsemap.parseMap(map2, gene2);
 		gene = parsemap.getGene();
 		snps = parsemap.getSNPs();
+		snpLoc = parsemap.getSnpLoc();
 		//System.out.println(gene.toString()+"\t"+snps.size());
 	}
 	public List<SNP> getCombinations(){

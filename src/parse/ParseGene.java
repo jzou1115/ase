@@ -2,13 +2,24 @@ package parse;
 
 import genome.Gene;
 import genome.GenomicCoordinate;
+import genome.SNP;
+import sample.ExpSample;
+import sample.GenoSample;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 public class ParseGene {
 
@@ -44,47 +55,77 @@ public class ParseGene {
 		return genes;
 	}
 	
-	/**
-	public void parseExpressions(InputStream expressions) throws IOException{
-		System.out.println("Reading expression data");
+	public static List<ExpSample> parseExpressions(InputStream expressions, Gene g, List<String> sampleNames, File outdir) throws IOException{
+		System.out.println("Reading expressions");
 		BufferedReader br = new BufferedReader(new InputStreamReader(expressions));
-		String line = br.readLine();
+		String line;
 		
-		String[] gtex = line.split("\\s+");
-		for(int j=0; j<gtex.length;j++){
-			if(!gtex[j].equals(sampleNames[j])){
-				System.out.println("Samples not the same");
-				return;
-			}
-		}
-		
-		
+		Map<String, Integer> reads = new HashMap<String,Integer>();
+		Map<String, Integer> ref = new HashMap<String,Integer>();
 		try {
 			while((line = br.readLine()) != null){
 				try{
 					String[] tokens = line.split("\\s+");
-					
-					String gene = tokens[0].trim();
-					Gene g = hasASE.getGene(gene);
-					
-					int[] samp = new int[tokens.length-1];
-					for(int i=0; i<tokens.length-1;i++){
-						samp[i] = Integer.parseInt(tokens[i+1]);
+					String gtexid = tokens[6].trim();
+					int refAllele = Integer.parseInt(tokens[8]);
+					int totalReads = Integer.parseInt(tokens[10]);
+					if(sampleNames.contains(gtexid)){
+						if(!reads.containsKey(gtexid)){
+							reads.put(gtexid, 0);
+							ref.put(gtexid, 0);
+						}
+						int refKey = ref.get(gtexid) + refAllele;
+						int readsKey = reads.get(gtexid) + totalReads;
+						ref.put(gtexid, refKey);
+						reads.put(gtexid, readsKey);
 					}
-					esamples.put(g, samp);
-					
-					//System.out.println(gene+"\t"+g.getNumSamples());
 					
 				} catch (Exception e){
 					//do nothing
 				}
 			}
+
 			br.close();
+			System.out.println("reads size: "+reads.size());
+			System.out.println("ref size: "+ref.size());
+			BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+g.getId()+"_ase.txt")));
+
+			
+			for(String sample: reads.keySet()){
+				
+				ExpSample expsamp;
+				double allelicRatio = 1.0*ref.get(sample) / reads.get(sample);
+				int hasASE;
+				if(allelicRatio>0.65){
+					expsamp = new ExpSample(sample, 1);
+					hasASE=1;
+				}
+				else if(allelicRatio<0.35){
+					expsamp = new ExpSample(sample, 1);
+					hasASE=1;
+				}
+				else{
+					expsamp = new ExpSample(sample, 0);
+					hasASE=0;
+				}
+
+				g.addSample(expsamp);
+				
+				outfile.write(sample+"\t"+allelicRatio+"\t"+hasASE+"\n");
+		
+			}
+			g.sortSamples();
+			outfile.close();
+		
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		return g.getExpsamples();
+		
 	}
-	**/
+	
 
 }
