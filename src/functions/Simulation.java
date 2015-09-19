@@ -39,6 +39,6 @@ public class Simulation {
 	}
 	public void startRun(double threshold, int errors, int perms, int n, File outdir) throws IOException{
 		Run r = new Run(gene, snps, threshold, errors, perms, n, outdir);
-		r.allSimulations();
+		r.randomSimulation();
 	}
 }

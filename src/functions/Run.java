@@ -308,7 +308,50 @@ public class Run {
 	}
 	
 	
-	private double calculatePValue(int x, double[] perms) {
+	public int randomSimulation() throws IOException{
+		int pass=0;
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+gene.getId()+"_simulation_"+perm+"_"+sampleSize+"_"+errors+"_"+threshold+".txt")));
+		outfile.write("Number of permutations: "+perm+"\n");
+		outfile.write("Number of samples: "+sampleSize+"\n");
+		outfile.write("Maximum number of errors: "+errors+"\n");
+		
+		Random rand = new Random();
+		int randInt = rand.nextInt(snps.size());
+		SNP s = snps.get(randInt);
+		outfile.write("SNP used: "+s.toString()+"\n");
+
+		double f = calculateMAF(s);
+		int[] ase = aseCall(s);	
+		//int x= mapASE(ase, outdir+File.separator+s.getId());
+
+		int total=0;
+		double[] perms = new double[perm];
+		for(int i=0; i<perm;i++){
+			int[] p = permute(ase, ase.length);
+			int a = mapASE(p);
+			total=total+a;
+			perms[i]=(double) a;
+		}
+
+		double p = calculatePValue(perms);
+
+		double mean= 1.0*total/perm;
+
+		int numSNPs = snps.size();
+
+		if(p<threshold){
+			pass++;
+		}
+		outfile.write("GeneID\tMAF\tSimulationMean\tP-value\tTotalSNPs\n");
+		outfile.write(s.getId()+"\t"+f+"\t"+mean+"\t"+p+"\t"+numSNPs+"\n");
+
+		//outfile.write("power="+pass+"/"+perm+"="+1.0*pass/perm+"\n");
+		outfile.close();
+		return pass;
+	}
+	
+	
+	private double calculatePValue(double[] perms) {
 		int total = 0;
 		for(double p:perms){
 			if(p>1){
