@@ -64,7 +64,6 @@ public class ParseMap {
 			}
 		} catch (IOException e) {
 			System.out.println("no lines");
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -98,8 +97,6 @@ public class ParseMap {
 						System.out.println("snp duplicate: "+key);
 					}
 					
-				
-					//System.out.println(s.getLocation().getChromosome()+"_"+s.getLocation().getCoord());
 				}
 				else{
 					break;

@@ -36,7 +36,6 @@ public class ASE {
 		ase.parseGenotypes(genotypes);
 		ase.parseExpressions(expressions, outdir, samples);
 		ase.startRun(threshold, error, n, outdir);
-		System.out.println("Done with mapASE in ASE");
 		
 	}
 	

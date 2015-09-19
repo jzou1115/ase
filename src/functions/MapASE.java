@@ -50,7 +50,6 @@ public class MapASE {
 	public void startRun(double threshold, int error, int n, File outdir) throws IOException {
 		Run r = new Run(gene, snps, threshold, error, n, outdir);
 		r.mapASE(gene.getId());
-		System.out.println("Finish startRun in MapASE");
 	}
 	
 	

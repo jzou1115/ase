@@ -22,9 +22,7 @@ public class Run {
 	private int perm;
 	private int sampleSize;
 	private File outdir;
-	//private Map<SNP,List<GenoSample>> genoMap;
-	
-	//public Run(Gene g, List<SNP> s, double t, int e, int p, int n, Map<SNP, List<GenoSample>> geno){
+
 	public Run(Gene g, List<SNP> s, double t, int e, int p, int n, File out){
 		snps=s;
 		gene=g;
@@ -33,7 +31,6 @@ public class Run {
 		perm=p;
 		sampleSize=n;
 		outdir=out;
-		//genoMap = geno;
 	}
 
 	public Run(Gene g, List<SNP> s, double t, int e, int n, File out){
@@ -43,7 +40,6 @@ public class Run {
 		errors= e;
 		sampleSize=n;
 		outdir=out;
-		//genoMap = geno;
 	}
 	
 	public List<SNP> getSnps(){
@@ -64,9 +60,6 @@ public class Run {
 	public int sampleSize(){
 		return sampleSize;
 	}
-//	public Map<SNP,List<GenoSample>> getGenoMap(){
-//		return genoMap;
-//	}
 	
 	public Object[] getSubset(int total, int num){
 		System.out.println(total);
@@ -79,7 +72,6 @@ public class Run {
 			if(!ret.contains(j)){
 				ret.add(j);
 				i++;
-				//System.out.print(j+" ");
 			}
 		}
 
@@ -104,7 +96,6 @@ public class Run {
 				if(s.getSample(gtexID)!=null){
 					ret.add(j);
 					i++;
-					//System.out.print(j+" ");
 				}
 			}
 		}
@@ -134,7 +125,6 @@ public class Run {
 				}
 			}
 			if(passThreshold(incorrect, correct)){
-				//System.out.println(gene.getId()+"\t"+s.getId());
 				variants++;
 			}
 		}
@@ -166,7 +156,6 @@ public class Run {
 				}
 			}
 			if(passThreshold(incorrect, correct)){
-				//System.out.println(gene.getId()+"\t"+s.getId());
 				variants++;
 				outfile.write(s.getId()+"\t"+incorrect+"\n");
 			}
@@ -190,7 +179,6 @@ public class Run {
 			samples = sampleSize;
 		}
 		
-		//Object[] subset = getSubset(ase.size(), samples);
 		
 		outfile.write("subset len: "+samples+"\n");
 		int variants=0;
@@ -225,14 +213,11 @@ public class Run {
 			}
 			if(passThreshold(incorrect, correct)){
 				variants++;
-				System.out.println("Variants: "+variants);
 				outfile.write(s.getId()+"\t"+incorrect+"\n");
 			}
 		}
-		System.out.println("Done reading snps");
 		outfile.write("variants: "+variants+"\n");
 		outfile.close();
-		System.out.println("Variants: "+variants);
 		return variants;
 	}
 	
@@ -258,9 +243,7 @@ public class Run {
 
 	public double calculateMAF(SNP s){
 		int hetero=0;
-		//System.out.println("calc map for "+s.getId());
-		//if(genoMap.containsKey(s)){
-			//List<GenoSample> genos = genoMap.get(s);
+
 		List<GenoSample> genos = s.getGenosamples();
 			for(int i=0; i<genos.size();i++){
 				if(genos.get(i).getHetero()==1){
@@ -268,18 +251,13 @@ public class Run {
 				}
 			}
 			if(hetero>1.0*genos.size()/2){
-				//System.out.println(1.0*(genos.size()-hetero)/genos.size());
 				return 1.0*(genos.size()-hetero)/genos.size();
 			}
-			//System.out.println(1.0*hetero/genos.size());
 			return 1.0*hetero/genos.size();
-		//}
-		//System.out.println("no key in genomap");
-		//return 0.0;
+
 	}
 	
 	public int[] aseCall(SNP s){
-		//List<GenoSample> genos = genoMap.get(s);
 		List<GenoSample> genos = s.getGenosamples();
 		int[] ret = new int[genos.size()];
 		for(int i=0; i<genos.size();i++){

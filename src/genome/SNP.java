@@ -10,9 +10,7 @@ import genome.GenomicCoordinate;
 import sample.*;
 
 public class SNP implements Comparable<SNP>{
-	//private static final String SNP_REGEX = "^rs.*$";
-	
-	//parsed from *.map files
+
 	String id;
 	GenomicCoordinate location;
 	
