@@ -20,10 +20,10 @@ public class ASE {
 	
 
 	private void startSimulation(InputStream map2, InputStream genotypes,
-			String gene2, double threshold, int error, int perm, int n, File outdir, InputStream samples) throws IOException {
+			String gene2, double threshold, int error, int perm, int n, File outdir, InputStream samples, int splits) throws IOException {
 		Simulation sim = new Simulation();
 		sim.setTestGene(map2, gene2, genotypes, samples);
-		sim.startRun(threshold, error, perm, n, outdir);
+		sim.startRun(threshold, error, perm, n, splits, outdir);
 		
 	}
 	
@@ -97,9 +97,10 @@ public class ASE {
 			int n = cmdArgs.getSampleNum();
 			File outdir = cmdArgs.getOutputDir();
 			InputStream samples = cmdArgs.getSamples();
+			int split = cmdArgs.getSplits();
 			
 			if(map!=null && genotypes!=null && gene!=null){
-				a.startSimulation(map, genotypes, gene, threshold, error, perm, n, outdir, samples);
+				a.startSimulation(map, genotypes, gene, threshold, error, perm, n, outdir, samples, split);
 
 			} else{
 				cmdArgs.printHelp(System.err);

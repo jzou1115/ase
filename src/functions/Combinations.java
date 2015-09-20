@@ -109,7 +109,7 @@ public class Combinations {
 	public void simulate(double threshold, int error, int perm, int n) throws IOException {
 		Simulation sim = new Simulation();
 		sim.setTestGene(gene, combs);
-		sim.startRun(threshold, error, perm, n, outdir);
+		//sim.startRun(threshold, error, perm, n, outdir);
 	}
 
 }

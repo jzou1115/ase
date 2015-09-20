@@ -194,6 +194,7 @@ public class Run {
 		
 		
 		outfile.write("subset len: "+samples+"\n");
+		outfile.write("snpID\tcorrect\tincorrect\n");
 		int variants=0;
 		int total =0;
 		for(SNP s:snps){
@@ -226,7 +227,7 @@ public class Run {
 			}
 			if(passThreshold(incorrect, correct)){
 				variants++;
-				outfile.write(s.getId()+"\t"+incorrect+"\n");
+				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\n");
 			}
 		}
 		outfile.write("variants: "+variants+"\n");
@@ -338,17 +339,17 @@ public class Run {
 	}
 	
 	
-	public int randomSimulation() throws IOException{
+	public int randomSimulation(int itr) throws IOException{
 		int pass=0;
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+gene.getId()+"_simulation_"+perm+"_"+sampleSize+"_"+errors+"_"+threshold+".txt")));
-		outfile.write("Number of permutations: "+perm+"\n");
-		outfile.write("Number of samples: "+sampleSize+"\n");
-		outfile.write("Maximum number of errors: "+errors+"\n");
+		//outfile.write("Number of permutations: "+perm+"\n");
+		//outfile.write("Number of samples: "+sampleSize+"\n");
+		//outfile.write("Maximum number of errors: "+errors+"\n");
 		
-		Random rand = new Random();
+		Random rand = new Random(13);
 		int randInt = rand.nextInt(snps.size());
 		SNP s = snps.get(randInt);
-		outfile.write("SNP used: "+s.toString()+"\n");
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+gene.getId()+"_simulation_"+perm+"_"+sampleSize+"_"+errors+"_"+threshold+"_"+s.getId()+"_"+itr+".txt")));
+		//outfile.write("SNP used: "+s.toString()+"\n");
 
 		double f = calculateMAF(s);
 		int[] ase = aseCall(s);	
@@ -361,6 +362,13 @@ public class Run {
 			int a = mapASE(p);
 			total=total+a;
 			perms[i]=(double) a;
+			if(a>1){
+				outfile.write("PermNum"+i+"\t"+a+"\t"+1+"\n");
+				
+			}
+			else{
+				outfile.write("PermNum"+i+"\t"+a+"\t"+0+"\n");
+			}
 			System.out.println("PermNum"+i+"\t"+a);
 		}
 

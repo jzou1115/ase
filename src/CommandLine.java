@@ -22,11 +22,14 @@ public class CommandLine implements CommandLineParams{
 	private static final String SAMPLE_TAG = "-n";
 	private static final String THRESHOLD_TAG = "-z";
 	private static final String MAP_TAG = "-m";
+	private static final String SPLIT_TAG = "-y";
 	private static final String FIXEDSAMPLES_TAG = "-x";
 	private static final String MAP_FCN = "genestosnps";
 	private static final String SIM_FCN = "simulation";
 	private static final String ASE_FCN = "mapase";
 	private static final String COMB_FCN = "combinations";
+	
+	
 	
 	
 	private File output = new File(DEFAULT_OUTPUT_DIR);
@@ -45,6 +48,7 @@ public class CommandLine implements CommandLineParams{
 	private InputStream map;
 	private String function;
 	private InputStream samples;
+	private int split;
 	
 	@Override
 	public void parse(String ... args) throws Exception{
@@ -122,12 +126,20 @@ public class CommandLine implements CommandLineParams{
 				assertNextArg(FIXEDSAMPLES_TAG, i, args);
 				samples = parseFixedSamplesArg(args[++i]);
 				break;
+			case SPLIT_TAG:
+				assertNextArg(SPLIT_TAG, i, args);
+				split = parseSplitArg(args[++i]);
+				break;
 			default:
 				throw new Exception("Unrecognized flag: "+cur);
 			}
 		}
 	}
 	
+	private int parseSplitArg(String string) {
+		return Integer.parseInt(string);
+	}
+
 	private InputStream parseFixedSamplesArg(String string) throws FileNotFoundException {
 		return new BufferedInputStream( new FileInputStream(new File(string)));
 	}
@@ -194,6 +206,7 @@ public class CommandLine implements CommandLineParams{
 		out.println("-z\tSignificance threshold");
 		out.println("-o\tOutput file");
 		out.println("-x\tSample IDs to use");
+		out.println("-y\tSplits");
 		out.println("-h\thelp statement");
 
 	}
@@ -282,6 +295,11 @@ public class CommandLine implements CommandLineParams{
 	@Override
 	public InputStream getSamples() {
 		return samples;
+	}
+
+	@Override
+	public int getSplits() {
+		return split;
 	}
 
 
