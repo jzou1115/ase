@@ -83,7 +83,7 @@ public class ParseMap {
 			}
 			
 			System.out.println(line);
-			if(line.charAt(0) == '>' && line.contains(gene)){
+			if(line!=null && line.charAt(0) == '>' && line.contains(gene)){
 				g = ParseGene.parseGene(line.substring(1,line.length()));
 				snps = new ArrayList<SNP>();
 			
