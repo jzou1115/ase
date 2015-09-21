@@ -81,6 +81,8 @@ public class ParseMap {
 					break;
 				}
 			}
+			
+			System.out.println(line);
 			if(line.charAt(0) == '>'){
 				g = ParseGene.parseGene(line.substring(1,line.length()));
 				snps = new ArrayList<SNP>();
