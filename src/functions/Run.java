@@ -189,12 +189,14 @@ public class Run {
 			samples = ase.size();
 		}
 		else{
-			samples = sampleSize;
+			samples=-1;
+			System.out.println("Not enough samples");
+			System.exit(1);
 		}
 		
 		
 		outfile.write("subset len: "+samples+"\n");
-		outfile.write("snpID\tcorrect\tincorrect\n");
+		outfile.write("snpID\tcorrect\tincorrect\tvariant\n");
 		int variants=0;
 		int total =0;
 		for(SNP s:snps){
@@ -227,10 +229,13 @@ public class Run {
 			}
 			if(passThreshold(incorrect, correct)){
 				variants++;
-				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\n");
+				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\t"+1+"\n");
+			}
+			else{
+				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\t"+0+"\n");
 			}
 		}
-		outfile.write("variants: "+variants+"\n");
+		//outfile.write("variants: "+variants+"\n");
 		outfile.close();
 		return variants;
 	}
