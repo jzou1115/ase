@@ -83,27 +83,34 @@ public class ParseMap {
 			}
 			
 			System.out.println(line);
-			if(line.charAt(0) == '>'){
+			if(line.charAt(0) == '>' && line.contains(gene)){
 				g = ParseGene.parseGene(line.substring(1,line.length()));
 				snps = new ArrayList<SNP>();
-			}
-			while((line = reader.readLine()) != null){
-				if(line.charAt(0) != '>'){
-					SNP s = ParseSNP.parseSNP(line);
-					snps.add(s);
-					String key = s.getLocation().getChromosome()+"_"+s.getLocation().getCoord();
-					if(!snpLoc.containsKey(key)){
-						snpLoc.put(key, s);	
+			
+				while((line = reader.readLine()) != null){
+					if(line.charAt(0) != '>'){
+						SNP s = ParseSNP.parseSNP(line);
+						snps.add(s);
+						String key = s.getLocation().getChromosome()+"_"+s.getLocation().getCoord();
+						if(!snpLoc.containsKey(key)){
+							snpLoc.put(key, s);	
+						}
+						else{
+							System.out.println("snp duplicate: "+key);
+						}
+						
 					}
 					else{
-						System.out.println("snp duplicate: "+key);
+						break;
 					}
-					
 				}
-				else{
-					break;
-				}
+			
 			}
+			else{
+				System.out.println("Gene not found");
+				System.exit(1);
+			}
+
 
 				
 		} catch (IOException e) {
