@@ -24,10 +24,12 @@ public class CommandLine implements CommandLineParams{
 	private static final String MAP_TAG = "-m";
 	private static final String SPLIT_TAG = "-y";
 	private static final String FIXEDSAMPLES_TAG = "-x";
+	private static final String CHROM_TAG = "-c";
 	private static final String MAP_FCN = "genestosnps";
 	private static final String SIM_FCN = "simulation";
 	private static final String ASE_FCN = "mapase";
 	private static final String COMB_FCN = "combinations";
+	private static final String CHROM_FCN = "chromatin";
 	
 	
 	
@@ -49,6 +51,7 @@ public class CommandLine implements CommandLineParams{
 	private String function;
 	private InputStream samples;
 	private int split;
+	private InputStream chrom;
 	
 	@Override
 	public void parse(String ... args) throws Exception{
@@ -70,6 +73,9 @@ public class CommandLine implements CommandLineParams{
 				break;
 			case COMB_FCN:
 				function = COMB_FCN;
+				break;
+			case CHROM_FCN:
+				function = CHROM_FCN;
 				break;
 			case SNP_TAG: 
 				assertNextArg(SNP_TAG, i, args);
@@ -130,12 +136,19 @@ public class CommandLine implements CommandLineParams{
 				assertNextArg(SPLIT_TAG, i, args);
 				split = parseSplitArg(args[++i]);
 				break;
+			case CHROM_TAG:
+				assertNextArg(CHROM_TAG, i, args);
+				chrom = parseChromArg(args[++i]);
 			default:
 				throw new Exception("Unrecognized flag: "+cur);
 			}
 		}
 	}
 	
+	private InputStream parseChromArg(String string) throws FileNotFoundException {
+		return  new BufferedInputStream( new FileInputStream(new File(string)));
+	}
+
 	private int parseSplitArg(String string) {
 		return Integer.parseInt(string);
 	}
@@ -300,6 +313,11 @@ public class CommandLine implements CommandLineParams{
 	@Override
 	public int getSplits() {
 		return split;
+	}
+
+	@Override
+	public InputStream getChrom() {
+		return chrom;
 	}
 
 

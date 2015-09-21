@@ -25,5 +25,6 @@ public interface CommandLineParams {
 	public String getFilename();
 	public InputStream getSamples();
 	public int getSplits();
+	public InputStream getChrom();
 	
 }
