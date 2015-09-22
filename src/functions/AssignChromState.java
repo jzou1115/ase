@@ -25,12 +25,12 @@ public class AssignChromState {
 			GenomicCoordinate end = region.getEnd();
 			
 			SNP snp = snps.get(ind);
-			//System.out.println(snp.getId()+"\t"+snps.size());
+			System.out.println(snp.getId()+"\t"+snps.size());
 			if(region.contains(snp.getLocation())){
 				while(region.contains(snp.getLocation())){
 					map.put(snp, c);
 					snp.setChromState(c);
-					//System.out.println(snp.getId());
+					System.out.println(snp.getId());
 					if(ind>snps.size()-1){
 						ind++;
 						snp = snps.get(ind);	
