@@ -22,12 +22,18 @@ public class ParseChromState {
 		String line;
 		try{
 			while((line = reader.readLine()) != null){
-				String[] tokens = line.split("//s+");
-				int chromosome = Integer.parseInt(tokens[0].substring(3, tokens[0].length()));
-				GenomicCoordinate start = new GenomicCoordinate(chromosome, Integer.parseInt(tokens[1]));
-				GenomicCoordinate end = new GenomicCoordinate(chromosome, Integer.parseInt(tokens[2]));
-				
-				ret.add(new ChromState(tokens[3].trim(), new GenomicRegion(start, end)));
+				String[] tokens = line.split("/t");
+				String[] tokens2 = tokens[0].split("\t");
+				if(tokens2[0].contains("M") || tokens2[0].contains("X") || tokens2[0].contains("Y")){
+					continue;
+				}
+				else{
+					int chromosome = Integer.parseInt(tokens2[0].substring(3, tokens2[0].length()));
+					GenomicCoordinate start = new GenomicCoordinate(chromosome, Integer.parseInt(tokens2[1]));
+					GenomicCoordinate end = new GenomicCoordinate(chromosome, Integer.parseInt(tokens2[2]));
+					
+					ret.add(new ChromState(tokens2[3].trim(), new GenomicRegion(start, end)));	
+				}
 			}
 			
 		} catch (IOException e) {

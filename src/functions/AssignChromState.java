@@ -20,17 +20,21 @@ public class AssignChromState {
 		Collections.sort(chrom);
 		
 		for(ChromState c:chrom){
+			//System.out.println(c.getState()+"\t"+chrom.size());
 			GenomicRegion region = c.getRegion();
 			GenomicCoordinate end = region.getEnd();
 			
 			SNP snp = snps.get(ind);
-			
+			//System.out.println(snp.getId()+"\t"+snps.size());
 			if(region.contains(snp.getLocation())){
 				while(region.contains(snp.getLocation())){
 					map.put(snp, c);
 					snp.setChromState(c);
-					ind++;
-					snp = snps.get(ind);
+					//System.out.println(snp.getId());
+					if(ind>snps.size()-1){
+						ind++;
+						snp = snps.get(ind);	
+					}
 				}	
 			}
 		}
