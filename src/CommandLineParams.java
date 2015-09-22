@@ -26,5 +26,6 @@ public interface CommandLineParams {
 	public InputStream getSamples();
 	public int getSplits();
 	public InputStream getChrom();
+	public InputStream getVariants();
 	
 }

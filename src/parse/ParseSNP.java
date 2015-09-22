@@ -17,14 +17,39 @@ public class ParseSNP {
 	
 	public static SNP parseSNP(String line){
 		String[] tokens = line.split("\\s+");
-//		if(Pattern.matches(SNP_REGEX, tokens[0].trim())){
+		if(tokens.length>1){
 			SNP s= new SNP(tokens[0].trim(), Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
 			return s;
-//		}
-//		System.out.println("does not match snp regex "+tokens[0]);
-//		return null;
+		}
+		else{
+			SNP s = new SNP(tokens[0]);
+			return s;
+		}
 	}
 	public static List<SNP> readSNPGroup(InputStream in){
+		List<SNP> snps = new ArrayList<SNP>();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		String line;
+		try {
+			while((line = reader.readLine()) != null){
+				try{
+					SNP s = parseSNP(line);
+					if(s!=null){
+						snps.add(s);
+					}
+				} catch (Exception e){
+					//do nothing
+				}
+			}
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return snps;
+	}
+	
+	public static List<SNP> readVariantGroup(InputStream in){
 		List<SNP> snps = new ArrayList<SNP>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;

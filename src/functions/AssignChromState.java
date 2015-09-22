@@ -1,7 +1,9 @@
 package functions;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import genome.ChromState;
 import genome.GenomicRegion;
@@ -10,7 +12,8 @@ import genome.GenomicCoordinate;
 
 public class AssignChromState {
 	
-	public static void assignStateSNP(List<SNP> snps, List<ChromState> chrom){
+	public static Map<SNP, ChromState> assignStateSNP(List<SNP> snps, List<ChromState> chrom){
+		Map<SNP, ChromState> map = new HashMap<SNP, ChromState>();
 		int ind=0;
 		
 		Collections.sort(snps);
@@ -24,6 +27,7 @@ public class AssignChromState {
 			
 			if(region.contains(snp.getLocation())){
 				while(region.contains(snp.getLocation())){
+					map.put(snp, c);
 					snp.setChromState(c);
 					ind++;
 					snp = snps.get(ind);
@@ -32,5 +36,7 @@ public class AssignChromState {
 		}
 		
 		System.out.println("Chromatin state assigned for snp index: "+ind);
+		
+		return map;
 	}
 }

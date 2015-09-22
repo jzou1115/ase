@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
+import java.util.Map;
 
 //import parse.ParseSNP;
 import functions.*;
@@ -17,10 +18,11 @@ import parse.ParseSNP;
 
 public class ASE {
 	
-	private void assignChromatin(InputStream snps, InputStream states, File outdir, String filename) throws IOException{
+	private void assignChromatin(InputStream snps, InputStream states, InputStream variants, File outdir, String filename) throws IOException{
+		List<SNP> var = ParseSNP.readVariantGroup(variants);
 		List<SNP> s = ParseSNP.readSNPGroup(snps);
 		List<ChromState> chrom = ParseChromState.parseChromState(states);
-		AssignChromState.assignStateSNP(s, chrom);
+		Map<SNP, ChromState> map = AssignChromState.assignStateSNP(s, chrom);
 		
 		if(filename==null){
 			filename = "assignChromatinOutput.txt";
@@ -31,6 +33,14 @@ public class ASE {
 			outfile.write(snp.toString()+"\n");
 		}
 		outfile.close();
+		
+		BufferedWriter outfile2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename+"_variants.txt")));
+
+		for(SNP snp:var){
+			String line = snp.toString()+"\t"+map.get(snp).getState()+"\n";
+			outfile2.write(line);
+		}
+		outfile2.close();
 	}
 
 	
@@ -159,11 +169,12 @@ public class ASE {
 		else if(fcn.equals("chromatin")){
 			InputStream snps = cmdArgs.getSNPsInput();
 			InputStream chrom = cmdArgs.getChrom();
+			InputStream variants = cmdArgs.getVariants();
 			File outdir = cmdArgs.getOutputDir();
 			String filename = cmdArgs.getFilename();
 			
 			if(snps!=null && chrom!=null){
-				a.assignChromatin(snps, chrom, outdir, filename);
+				a.assignChromatin(snps, chrom, variants, outdir, filename);
 			}
 			
 		}

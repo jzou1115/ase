@@ -25,6 +25,7 @@ public class CommandLine implements CommandLineParams{
 	private static final String SPLIT_TAG = "-y";
 	private static final String FIXEDSAMPLES_TAG = "-x";
 	private static final String CHROM_TAG = "-c";
+	private static final String VAR_TAG = "-v";
 	private static final String MAP_FCN = "genestosnps";
 	private static final String SIM_FCN = "simulation";
 	private static final String ASE_FCN = "mapase";
@@ -52,6 +53,7 @@ public class CommandLine implements CommandLineParams{
 	private InputStream samples;
 	private int split;
 	private InputStream chrom;
+	private InputStream variant;
 	
 	@Override
 	public void parse(String ... args) throws Exception{
@@ -139,6 +141,9 @@ public class CommandLine implements CommandLineParams{
 			case CHROM_TAG:
 				assertNextArg(CHROM_TAG, i, args);
 				chrom = parseChromArg(args[++i]);
+			case VAR_TAG:
+				assertNextArg(CHROM_TAG,i,args);
+				variant = parseChromArg(args[++i]);
 			default:
 				throw new Exception("Unrecognized flag: "+cur);
 			}
@@ -220,6 +225,7 @@ public class CommandLine implements CommandLineParams{
 		out.println("-o\tOutput file");
 		out.println("-x\tSample IDs to use");
 		out.println("-y\tSplits");
+		out.println("-v\tVariants");
 		out.println("-h\thelp statement");
 
 	}
@@ -318,6 +324,11 @@ public class CommandLine implements CommandLineParams{
 	@Override
 	public InputStream getChrom() {
 		return chrom;
+	}
+
+	@Override
+	public InputStream getVariants() {
+		return variant;
 	}
 
 
