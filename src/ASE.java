@@ -19,12 +19,11 @@ import parse.ParseSNP;
 
 public class ASE {
 	
-	private void assignChromatin(InputStream states, InputStream variants, InputStream genesmap, String gene, File outdir, String filename) throws IOException{
+	private void assignChromatin(InputStream states, InputStream genesmap, String gene, File outdir, String filename) throws IOException{
 		ParseMap parsemap = new ParseMap();
 		parsemap.parseMap(genesmap, gene);
 		List<SNP> s = parsemap.getSNPs();
 		
-		List<SNP> var = ParseSNP.readVariantGroup(variants);
 		
 		List<ChromState> chrom = ParseChromState.parseChromState(states);
 		Map<SNP, ChromState> map = AssignChromState.assignStateSNP(s, chrom);
@@ -39,13 +38,6 @@ public class ASE {
 		}
 		outfile.close();
 		
-		BufferedWriter outfile2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename+"_variants.txt")));
-
-		for(SNP snp:var){
-			String line = snp.toString()+"\t"+map.get(snp).getState()+"\n";
-			outfile2.write(line);
-		}
-		outfile2.close();
 	}
 
 	
@@ -173,7 +165,6 @@ public class ASE {
 		
 		else if(fcn.equals("chromatin")){
 			InputStream chrom = cmdArgs.getChrom();
-			InputStream variants = cmdArgs.getVariants();
 			InputStream genesmap = cmdArgs.getMap();
 			String gene = cmdArgs.getTestGene();
 			
@@ -181,7 +172,7 @@ public class ASE {
 			String filename = cmdArgs.getFilename();
 			
 			if(genesmap!=null && chrom!=null){
-				a.assignChromatin(chrom, variants,genesmap, gene, outdir, filename);
+				a.assignChromatin(chrom,genesmap, gene, outdir, filename);
 			}
 			
 		}

@@ -143,11 +143,15 @@ public class CommandLine implements CommandLineParams{
 				chrom = parseChromArg(args[++i]);
 			case VAR_TAG:
 				assertNextArg(VAR_TAG,i,args);
-				variant = parseChromArg(args[++i]);
+				variant = parseVarArg(args[++i]);
 			default:
 				throw new Exception("Unrecognized flag: "+cur);
 			}
 		}
+	}
+	
+	private InputStream parseVarArg(String string) throws FileNotFoundException{
+		return  new BufferedInputStream( new FileInputStream(new File(string)));
 	}
 	
 	private InputStream parseChromArg(String string) throws FileNotFoundException {
