@@ -142,7 +142,7 @@ public class CommandLine implements CommandLineParams{
 				assertNextArg(CHROM_TAG, i, args);
 				chrom = parseChromArg(args[++i]);
 			case VAR_TAG:
-				assertNextArg(CHROM_TAG,i,args);
+				assertNextArg(VAR_TAG,i,args);
 				variant = parseChromArg(args[++i]);
 			default:
 				throw new Exception("Unrecognized flag: "+cur);
