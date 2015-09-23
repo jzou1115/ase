@@ -18,7 +18,15 @@ public class SNP implements Comparable<SNP>{
 	
 	Map<String, GenoSample> map;
 	
-	ChromState chrom;
+	String chrom;
+	
+	public SNP(String i, int c, long l, String ch){
+		id=i;
+		location = new GenomicCoordinate(c, l);
+		gsamples = new ArrayList<GenoSample>();
+		map = new HashMap<String, GenoSample>();
+		chrom = ch;
+	}
 	
 	public SNP(String i, int c, long l){
 		id=i;
@@ -72,7 +80,7 @@ public class SNP implements Comparable<SNP>{
 	}
 
 	public String toString(){
-		return id+"\t"+location.getChromosome()+"\t"+location.getCoord()+"\t"+chrom.getState();
+		return id+"\t"+location.getChromosome()+"\t"+location.getCoord()+"\t"+chrom;
 	}
 	
 	public String samplesToString(){
@@ -96,12 +104,12 @@ public class SNP implements Comparable<SNP>{
 		return null;
 	}
 	
-	public ChromState getChromState(){
+	public String getChromState(){
 		return chrom;
 	}
 	
 	public void setChromState(ChromState c){
-		chrom = c;
+		chrom = c.getState();
 	}
 
 }

@@ -80,14 +80,13 @@ public class Run {
 	
 	public Object[] getSubset(int total, int num, SNP s, List<ExpSample> exp){
 		List<Integer> tried = new ArrayList<Integer>();
-		System.out.println(total);
 		Random rand = new Random();
 		List<Integer> ret = new ArrayList<Integer>();
 		int i=0;
 		int j;
 		while(i<num){
 			if(tried.size()==total){
-				return null;
+				return ret.toArray();
 			}
 			j= rand.nextInt(total);
 			if(!tried.contains(j)){
@@ -103,24 +102,25 @@ public class Run {
 		return ret.toArray();
 	}
 	
-	public int mapASE(int[] ase){
+	
+	public int mapASE(int[] ase, int st) throws IOException{
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+"simulation"+st+".txt")));
+		
 		int variants=0;
 		
-		int samples;
 		if(ase.length<sampleSize){
-			samples = ase.length;
-		}
-		else{
-			samples = sampleSize;
+			System.out.println("Not enough samples");
+			System.exit(1);
 		}
 		
-		
+		Object[] subset = getSubset(ase.length, sampleSize);
+
 		for(SNP s:snps){
 			List<GenoSample> gsamples = s.getGenosamples();
-			if(gsamples.size()<samples){
+			if(gsamples.size()<sampleSize){
 				continue;
 			}
-			Object[] subset = getSubset(ase.length, samples);
+			
 			int correct=0;
 			int incorrect=0;
 			for (int i=0; i<subset.length;i++) {
@@ -138,71 +138,69 @@ public class Run {
 				}
 			}
 			if(passThreshold(incorrect, correct)){
-				variants++;
+				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\t"+1+"\n");
+			}
+			else{
+				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\t"+0+"\n");	
 			}
 		}
-		return variants;
-	}
-	
-	public int mapASE(int[] ase, String st) throws IOException{
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_simulation.txt")));
-
-		int variants=0;
-		Object[] subset = getSubset(ase.length, sampleSize);
-		outfile.write("subset len: "+subset.length+"\n");
-		for(SNP s:snps){
-			List<GenoSample> gsamples = s.getGenosamples();
-			int correct=0;
-			int incorrect=0;
-			for (int i=0; i<subset.length;i++) {
-				int ind= (int) subset[i];
-				String sampleID = gsamples.get(ind).getID();
-				int isHetero = gsamples.get(ind).getHetero();
-				if(isHetero == ase[ind]){
-					correct++;
-				}
-				else if(isHetero != ase[ind]){
-					incorrect++;
-				}
-				else{
-					System.out.println("Missing data: "+sampleID );
-				}
-			}
-			if(passThreshold(incorrect, correct)){
-				variants++;
-				outfile.write(s.getId()+"\t"+incorrect+"\n");
-			}
-		}
-		outfile.write("variants: "+variants+"\n");
+		
 		outfile.close();
 		return variants;
 	}
 	
+	/**
+	public int mapASE(int[] ase, String st) throws IOException{
+		int variants=0;
+		Object[] subset = getSubset(ase.length, sampleSize);
+		
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_"+subset.length+"_simulation.txt")));
+		for(SNP s:snps){
+			List<GenoSample> gsamples = s.getGenosamples();
+			int correct=0;
+			int incorrect=0;
+			for (int i=0; i<subset.length;i++) {
+				int ind= (int) subset[i];
+				String sampleID = gsamples.get(ind).getID();
+				int isHetero = gsamples.get(ind).getHetero();
+				if(isHetero == ase[ind]){
+					correct++;
+				}
+				else if(isHetero != ase[ind]){
+					incorrect++;
+				}
+				else{
+					System.out.println("Missing data: "+sampleID );
+				}
+			}
+			if(passThreshold(incorrect, correct)){
+				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\t"+1+"\n");
+			}
+			else{
+				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\t"+0+"\n");	
+			}
+		}
+		outfile.close();
+		return variants;
+	}
+	**/
+	
+	//mapase
 	public int mapASE(String st) throws IOException{
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_mapase.txt")));
 
 		List<ExpSample> ase = gene.getExpsamples();
 		//System.out.println("Num ExpSamples: "+ase.size());
 		
-		int samples;
 		if(ase.size()<sampleSize){
-			samples = ase.size();
-		}
-		else{
-			samples=-1;
 			System.out.println("Not enough samples");
 			System.exit(1);
 		}
-		
-		
-		outfile.write("subset len: "+samples+"\n");
-		outfile.write("snpID\tcorrect\tincorrect\tvariant\n");
+
+		//outfile.write("snpID\tcorrect\tincorrect\tvariant\n");
 		int variants=0;
-		int total =0;
 		for(SNP s:snps){
-			total++;
-			//System.out.println(s.getId()+"\t"+total);
-			Object[] subset = getSubset(ase.size(), samples, s, gene.getExpsamples());
+			Object[] subset = getSubset(ase.size(), sampleSize, s, gene.getExpsamples());
 			if(subset==null){
 				continue;
 			}
@@ -302,7 +300,7 @@ public class Run {
 		return ret;
 	}
 	
-	
+	/**
 	public int allSimulations() throws IOException{
 		int pass=0;
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+gene.getId()+"_simulation_"+perm+"_"+sampleSize+"_"+errors+"_"+threshold+".txt")));
@@ -342,7 +340,7 @@ public class Run {
 		outfile.close();
 		return pass;
 	}
-	
+	**/
 	
 	public int randomSimulation(int itr) throws IOException{
 		int pass=0;
@@ -353,7 +351,7 @@ public class Run {
 		Random rand = new Random(13);
 		int randInt = rand.nextInt(snps.size());
 		SNP s = snps.get(randInt);
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+gene.getId()+"_simulation_"+perm+"_"+sampleSize+"_"+errors+"_"+threshold+"_"+s.getId()+"_"+itr+".txt")));
+	//	BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+gene.getId()+"_simulation_"+perm+"_"+sampleSize+"_"+errors+"_"+threshold+"_"+s.getId()+"_"+itr+".txt")));
 		//outfile.write("SNP used: "+s.toString()+"\n");
 
 		double f = calculateMAF(s);
@@ -363,34 +361,40 @@ public class Run {
 		int total=0;
 		double[] perms = new double[perm];
 		for(int i=0; i<perm;i++){
+			if(total>=5){
+				//outfile.write("Not Significant");
+				break;
+			}
 			int[] p = permute(ase, ase.length);
-			int a = mapASE(p);
-			total=total+a;
+			int a = mapASE(p, i);
 			perms[i]=(double) a;
 			if(a>1){
-				outfile.write("PermNum"+i+"\t"+a+"\t"+1+"\n");
-				
+				total=total+1;
+				//outfile.write("PermNum"+i+"\t"+a+"\t"+1+"\n");
+				System.out.println("PermNum"+i+"\t"+a+"\t"+1);
 			}
 			else{
-				outfile.write("PermNum"+i+"\t"+a+"\t"+0+"\n");
+				//outfile.write("PermNum"+i+"\t"+a+"\t"+0+"\n");
+				System.out.println("PermNum"+i+"\t"+a+"\t"+0);
 			}
-			System.out.println("PermNum"+i+"\t"+a);
 		}
 
-		double p = calculatePValue(perms);
+		/**
+	//	double p = calculatePValue(perms);
 
-		double mean= 1.0*total/perm;
+		//double mean= 1.0*total/perm;
 
-		int numSNPs = snps.size();
+		//int numSNPs = snps.size();
 
-		if(p<threshold){
+		//if(p<threshold){
 			pass++;
 		}
 		outfile.write("GeneID\tMAF\tSimulationMean\tP-value\tTotalSNPs\n");
 		outfile.write(s.getId()+"\t"+f+"\t"+mean+"\t"+p+"\t"+numSNPs+"\n");
 
 		//outfile.write("power="+pass+"/"+perm+"="+1.0*pass/perm+"\n");
-		outfile.close();
+		 **/
+		//outfile.close();
 		return pass;
 	}
 	

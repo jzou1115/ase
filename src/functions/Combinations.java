@@ -31,7 +31,7 @@ public class Combinations {
 		outdir =out;
 		setTestGene(map, gene2);
 		sampleNames = ParseSamples.parseSamples(samples);
-		ParseSNP.parseGenotypes(genotypes,snps, snpLoc, sampleNames);
+		ParseSNP.parseGenotypes(genotypes,snps, snpLoc);
 		setSampIDs();
 		getCombinations();
 	}

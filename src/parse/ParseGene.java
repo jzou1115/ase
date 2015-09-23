@@ -55,7 +55,7 @@ public class ParseGene {
 		return genes;
 	}
 	
-	public static List<ExpSample> parseExpressions(InputStream expressions, Gene g, List<String> sampleNames, File outdir) throws IOException{
+	public static List<ExpSample> parseExpressions(InputStream expressions, Gene g, File outdir) throws IOException{
 		System.out.println("Reading expressions");
 		BufferedReader br = new BufferedReader(new InputStreamReader(expressions));
 		String line;
@@ -69,7 +69,7 @@ public class ParseGene {
 					String gtexid = tokens[6].trim();
 					int refAllele = Integer.parseInt(tokens[8]);
 					int totalReads = Integer.parseInt(tokens[10]);
-					if(sampleNames.contains(gtexid)){
+				//	if(sampleNames.contains(gtexid)){
 						if(!reads.containsKey(gtexid)){
 							reads.put(gtexid, 0);
 							ref.put(gtexid, 0);
@@ -78,7 +78,7 @@ public class ParseGene {
 						int readsKey = reads.get(gtexid) + totalReads;
 						ref.put(gtexid, refKey);
 						reads.put(gtexid, readsKey);
-					}
+				//	}
 					
 				} catch (Exception e){
 					//do nothing

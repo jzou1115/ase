@@ -53,9 +53,9 @@ public class ASE {
 	
 
 	private void startSimulation(InputStream map2, InputStream genotypes,
-			String gene2, double threshold, int error, int perm, int n, File outdir, InputStream samples, int splits) throws IOException {
+			String gene2, double threshold, int error, int perm, int n, File outdir, int splits) throws IOException {
 		Simulation sim = new Simulation();
-		sim.setTestGene(map2, gene2, genotypes, samples);
+		sim.setTestGene(map2, gene2, genotypes);
 		sim.startRun(threshold, error, perm, n, splits, outdir);
 		
 	}
@@ -63,11 +63,11 @@ public class ASE {
 	
 
 	private void mapASE(InputStream map, InputStream genotypes,
-			InputStream expressions, String gene, double threshold, int error, int n, File outdir, InputStream samples) throws IOException {
+			InputStream expressions, String gene, double threshold, int error, int n, File outdir) throws IOException {
 		MapASE ase = new MapASE();
-		ase.setTestGene(map, gene, genotypes, samples);
+		ase.setTestGene(map, gene, genotypes);
 		ase.parseGenotypes(genotypes);
-		ase.parseExpressions(expressions, outdir, samples);
+		ase.parseExpressions(expressions, outdir);
 		ase.startRun(threshold, error, n, outdir);
 		
 	}
@@ -129,11 +129,11 @@ public class ASE {
 			int perm = cmdArgs.getPermNum();
 			int n = cmdArgs.getSampleNum();
 			File outdir = cmdArgs.getOutputDir();
-			InputStream samples = cmdArgs.getSamples();
+			//InputStream samples = cmdArgs.getSamples();
 			int split = cmdArgs.getSplits();
 			
 			if(map!=null && genotypes!=null && gene!=null){
-				a.startSimulation(map, genotypes, gene, threshold, error, perm, n, outdir, samples, split);
+				a.startSimulation(map, genotypes, gene, threshold, error, perm, n, outdir, split);
 
 			} else{
 				cmdArgs.printHelp(System.err);
@@ -152,10 +152,9 @@ public class ASE {
 			int error = cmdArgs.getErrorNum();
 			int n = cmdArgs.getSampleNum();
 			File outdir = cmdArgs.getOutputDir();
-			InputStream samples = cmdArgs.getSamples();
 			
 			if(map!=null && genotypes!=null && gene!=null){
-				a.mapASE(map, genotypes, expressions, gene, threshold, error, n, outdir, samples);
+				a.mapASE(map, genotypes, expressions, gene, threshold, error, n, outdir);
 
 			} else{
 				cmdArgs.printHelp(System.err);

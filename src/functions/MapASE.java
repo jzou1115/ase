@@ -17,7 +17,6 @@ import parse.ParseSamples;
 public class MapASE {
 	Gene gene;
 	List<SNP> snps;
-	List<String> sampleNames;
 	Map<String, SNP> snpLoc;
 	
 	public void setTestGene(Gene g, List<SNP> s){
@@ -27,24 +26,22 @@ public class MapASE {
 		//System.out.println(gene.toString()+"\t"+snps.size());
 	}
 	
-	public void setTestGene(InputStream map, String g, InputStream genotypes, InputStream samples) throws IOException {
+	public void setTestGene(InputStream map, String g, InputStream genotypes) throws IOException {
 		ParseMap parsemap = new ParseMap();
 		parsemap.parseMap(map, g);
 		gene = parsemap.getGene();
 		snps = parsemap.getSNPs();
 		snpLoc = parsemap.getSnpLoc();
 		
-		sampleNames = ParseSamples.parseSamples(samples);
-		
 	}
 
 
 	public void parseGenotypes(InputStream genotypes) throws IOException{
-		ParseSNP.parseGenotypes(genotypes,snps, snpLoc, sampleNames);
+		ParseSNP.parseGenotypes(genotypes,snps, snpLoc);
 	}
 	
-	public void parseExpressions(InputStream expressions, File outdir, InputStream samples) throws IOException {
-		ParseGene.parseExpressions(expressions, gene, sampleNames, outdir);
+	public void parseExpressions(InputStream expressions, File outdir) throws IOException {
+		ParseGene.parseExpressions(expressions, gene, outdir);
 	}
 
 	public void startRun(double threshold, int error, int n, File outdir) throws IOException {

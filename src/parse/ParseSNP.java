@@ -49,30 +49,8 @@ public class ParseSNP {
 		return snps;
 	}
 	
-	public static List<SNP> readVariantGroup(InputStream in){
-		List<SNP> snps = new ArrayList<SNP>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		String line;
-		try {
-			while((line = reader.readLine()) != null){
-				try{
-					SNP s = parseSNP(line);
-					if(s!=null){
-						snps.add(s);
-					}
-				} catch (Exception e){
-					//do nothing
-				}
-			}
-			reader.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return snps;
-	}
 	
-	public static void parseGenotypes(InputStream genotypes, List<SNP> snps, Map<String, SNP> snpLoc, List<String> sampleNames) throws IOException{
+	public static void parseGenotypes(InputStream genotypes, List<SNP> snps, Map<String, SNP> snpLoc) throws IOException{
 		System.out.println("Reading genotypes");
 		BufferedReader br = new BufferedReader(new InputStreamReader(genotypes));
 		String line = br.readLine();
@@ -95,11 +73,11 @@ public class ParseSNP {
 					else{
 						for(int i=1; i<tokens.length;i++){
 							//System.out.println(i);
-							if(sampleNames.contains(samples[i])){
+						//	if(sampleNames.contains(samples[i])){
 								
 								GenoSample genosamp = new GenoSample(samples[i], (int) Math.round(Double.parseDouble(tokens[i]))%2);
 								s.addSample(genosamp);	
-							}
+						//	}
 						}
 						s.sortSamples();
 								
