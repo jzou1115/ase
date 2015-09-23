@@ -103,8 +103,8 @@ public class Run {
 	}
 	
 	
-	public int mapASE(int[] ase, int st) throws IOException{
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+"simulation"+st+".txt")));
+	public int mapASE(int[] ase, int st, double f, String snpid) throws IOException{
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+"simulation"+st+"_"+snpid+"_"+f+".txt")));
 		
 		int variants=0;
 		
@@ -366,7 +366,7 @@ public class Run {
 				break;
 			}
 			int[] p = permute(ase, ase.length);
-			int a = mapASE(p, i);
+			int a = mapASE(p, i, f, s.getId());
 			perms[i]=(double) a;
 			if(a>1){
 				total=total+1;
