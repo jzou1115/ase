@@ -21,6 +21,7 @@ public class AssignChromState {
 		
 		int i=0;
 		for(ChromState c:chrom){
+			i++;
 			System.out.println(c.getState()+"\t"+i+"\t"+chrom.size());
 			GenomicRegion region = c.getRegion();
 			GenomicCoordinate end = region.getEnd();
