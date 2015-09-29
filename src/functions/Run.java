@@ -17,26 +17,23 @@ public class Run {
 
 	private Gene gene;
 	private List<SNP> snps;	
-	private double threshold;
 	private int errors;
 	private int perm;
 	private int sampleSize;
 	private File outdir;
 
-	public Run(Gene g, List<SNP> s, double t, int e, int p, int n, File out){
+	public Run(Gene g, List<SNP> s, int e, int p, int n, File out){
 		snps=s;
 		gene=g;
-		threshold=t;
 		errors= e;
 		perm=p;
 		sampleSize=n;
 		outdir=out;
 	}
 
-	public Run(Gene g, List<SNP> s, double t, int e, int n, File out){
+	public Run(Gene g, List<SNP> s, int e, int n, File out){
 		snps=s;
 		gene=g;
-		threshold=t;
 		errors= e;
 		sampleSize=n;
 		outdir=out;
@@ -48,9 +45,7 @@ public class Run {
 	public Gene getGene(){
 		return gene;
 	}
-	public double getThreshold(){
-		return threshold;
-	}
+
 	public int getErrors(){
 		return errors;
 	}
@@ -342,7 +337,7 @@ public class Run {
 	}
 	**/
 	
-	public int randomSimulation(int itr) throws IOException{
+	public int randomSimulation() throws IOException{
 		int pass=0;
 		//outfile.write("Number of permutations: "+perm+"\n");
 		//outfile.write("Number of samples: "+sampleSize+"\n");

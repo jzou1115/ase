@@ -53,22 +53,22 @@ public class ASE {
 	
 
 	private void startSimulation(InputStream map2, InputStream genotypes,
-			String gene2, double threshold, int error, int perm, int n, File outdir, int splits) throws IOException {
+			String gene2, int error, int perm, int n, File outdir, String filename) throws IOException {
 		Simulation sim = new Simulation();
 		sim.setTestGene(map2, gene2, genotypes);
-		sim.startRun(threshold, error, perm, n, splits, outdir);
+		sim.startRun(error, perm,n, outdir);
 		
 	}
 	
 	
 
 	private void mapASE(InputStream map, InputStream genotypes,
-			InputStream expressions, String gene, double threshold, int error, int n, File outdir) throws IOException {
+			InputStream expressions, String gene, int n, int error, File outdir, String filename) throws IOException {
 		MapASE ase = new MapASE();
 		ase.setTestGene(map, gene, genotypes);
 		ase.parseGenotypes(genotypes);
 		ase.parseExpressions(expressions, outdir);
-		ase.startRun(threshold, error, n, outdir);
+		ase.startRun(error,n, outdir);
 		
 	}
 	
@@ -109,6 +109,8 @@ public class ASE {
 		if(fcn.equals("genestosnps")){
 			InputStream snps = cmdArgs.getSNPsInput();
 			InputStream genes = cmdArgs.getGenesInput();
+			InputStream chrom = cmdArgs.getChrom();
+			InputStream tss = cmdArgs.getTss();
 			File outdir = cmdArgs.getOutputDir();
 			String filename = cmdArgs.getFilename();
 			if(snps!=null && genes!=null){
@@ -124,16 +126,15 @@ public class ASE {
 			InputStream map = cmdArgs.getMap();
 			InputStream genotypes = cmdArgs.getGenotypeData();
 			String gene = cmdArgs.getTestGene();
-			double threshold = cmdArgs.getThreshold();
 			int error = cmdArgs.getErrorNum();
 			int perm = cmdArgs.getPermNum();
 			int n = cmdArgs.getSampleNum();
 			File outdir = cmdArgs.getOutputDir();
 			//InputStream samples = cmdArgs.getSamples();
-			int split = cmdArgs.getSplits();
+			String filename = cmdArgs.getFilename();
 			
 			if(map!=null && genotypes!=null && gene!=null){
-				a.startSimulation(map, genotypes, gene, threshold, error, perm, n, outdir, split);
+				a.startSimulation(map, genotypes, gene, error, perm, n, outdir, filename);
 
 			} else{
 				cmdArgs.printHelp(System.err);
@@ -148,13 +149,13 @@ public class ASE {
 			InputStream genotypes = cmdArgs.getGenotypeData();
 			InputStream expressions = cmdArgs.getExpressionData();
 			String gene = cmdArgs.getTestGene();
-			double threshold = cmdArgs.getThreshold();
 			int error = cmdArgs.getErrorNum();
 			int n = cmdArgs.getSampleNum();
 			File outdir = cmdArgs.getOutputDir();
+			String filename = cmdArgs.getFilename();
 			
 			if(map!=null && genotypes!=null && gene!=null){
-				a.mapASE(map, genotypes, expressions, gene, threshold, error, n, outdir);
+				a.mapASE(map, genotypes, expressions, gene, error, n, outdir, filename);
 
 			} else{
 				cmdArgs.printHelp(System.err);

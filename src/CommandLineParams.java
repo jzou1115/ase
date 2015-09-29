@@ -17,15 +17,14 @@ public interface CommandLineParams {
 	public boolean help();
 	public String getTestGene();
 	public int getSampleNum();
-	public double getThreshold();
 	public InputStream getGenotypeData();
 	public InputStream getExpressionData();
 	public InputStream getMap();
 	public String getFunction();
 	public String getFilename();
 	public InputStream getSamples();
-	public int getSplits();
 	public InputStream getChrom();
 	public InputStream getVariants();
+	public InputStream getTss();
 	
 }

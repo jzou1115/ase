@@ -20,12 +20,10 @@ public class CommandLine implements CommandLineParams{
 	private static final String FILE_TAG = "-f";
 	private static final String TEST_TAG = "-t";
 	private static final String SAMPLE_TAG = "-n";
-	private static final String THRESHOLD_TAG = "-z";
 	private static final String MAP_TAG = "-m";
-	private static final String SPLIT_TAG = "-y";
-	private static final String FIXEDSAMPLES_TAG = "-x";
 	private static final String CHROM_TAG = "-c";
 	private static final String VAR_TAG = "-v";
+	private static final String TSS_TAG ="-z";
 	private static final String MAP_FCN = "genestosnps";
 	private static final String SIM_FCN = "simulation";
 	private static final String ASE_FCN = "mapase";
@@ -35,25 +33,23 @@ public class CommandLine implements CommandLineParams{
 	
 	
 	
-	private File output = new File(DEFAULT_OUTPUT_DIR);
-	private String outfile;
 	private InputStream snps = System.in;
 	private InputStream genes = System.in;
-	//private InputStream map = System.in;
+	private InputStream genotypes;
+	private InputStream expressions;
+	private InputStream map;
+	private InputStream samples;
+	private InputStream chrom;
+	private InputStream variant;
+	private InputStream tss;
 	private boolean help = false;
 	private int perm;
 	private int errors;
 	private String test;
 	private int sampleNum;
-	private double threshold;
-	private InputStream genotypes;
-	private InputStream expressions;
-	private InputStream map;
 	private String function;
-	private InputStream samples;
-	private int split;
-	private InputStream chrom;
-	private InputStream variant;
+	private File output = new File(DEFAULT_OUTPUT_DIR);
+	private String outfile;
 	
 	@Override
 	public void parse(String ... args) throws Exception{
@@ -89,7 +85,7 @@ public class CommandLine implements CommandLineParams{
 				break;
 			case MAP_TAG: 
 				assertNextArg(MAP_TAG, i, args);
-				map = parseMapArg(args[++i]);
+				map = parseDataFile(args[++i]);
 				break;
 			case PERM_TAG: 
 				assertNextArg(PERM_TAG, i, args);
@@ -107,10 +103,6 @@ public class CommandLine implements CommandLineParams{
 				assertNextArg(TEST_TAG, i, args);
 				test = parseTESTArg(args[++i]);
 				break;
-			case THRESHOLD_TAG: 
-				assertNextArg(THRESHOLD_TAG, i, args);
-				threshold = parseTHRESHOLDArg(args[++i]);
-				break;
 			case HELP_TAG:
 				help = true;
 				return;
@@ -124,65 +116,38 @@ public class CommandLine implements CommandLineParams{
 				break;
 			case GENOTYPES_TAG:
 				assertNextArg(GENOTYPES_TAG, i, args);
-				genotypes = parseGenotypesArg(args[++i]);
+				genotypes = parseDataFile(args[++i]);
 				break;
 			case EXPRESSIONS_TAG:
 				assertNextArg(EXPRESSIONS_TAG, i, args);
-				expressions = parseExpressionArg(args[++i]);
-				break;
-			case FIXEDSAMPLES_TAG:
-				assertNextArg(FIXEDSAMPLES_TAG, i, args);
-				samples = parseFixedSamplesArg(args[++i]);
-				break;
-			case SPLIT_TAG:
-				assertNextArg(SPLIT_TAG, i, args);
-				split = parseSplitArg(args[++i]);
+				expressions = parseDataFile(args[++i]);
 				break;
 			case CHROM_TAG:
 				assertNextArg(CHROM_TAG, i, args);
-				chrom = parseChromArg(args[++i]);
+				chrom = parseDataFile(args[++i]);
 				break;
 			case VAR_TAG:
 				assertNextArg(VAR_TAG,i,args);
-				variant = parseVarArg(args[++i]);
+				variant = parseDataFile(args[++i]);
 				break;
+			case TSS_TAG:
+				assertNextArg(TSS_TAG,i,args);
+				tss = parseDataFile(args[++i]);
 			default:
 				throw new Exception("Unrecognized flag: "+cur);
 			}
 		}
 	}
 	
-	private InputStream parseVarArg(String string) throws FileNotFoundException{
-		return  new BufferedInputStream( new FileInputStream(new File(string)));
-	}
-	
-	private InputStream parseChromArg(String string) throws FileNotFoundException {
-		return  new BufferedInputStream( new FileInputStream(new File(string)));
-	}
-
-	private int parseSplitArg(String string) {
-		return Integer.parseInt(string);
-	}
-
-	private InputStream parseFixedSamplesArg(String string) throws FileNotFoundException {
+	private InputStream parseDataFile(String string) throws FileNotFoundException {
 		return new BufferedInputStream( new FileInputStream(new File(string)));
 	}
+
 
 	private String parseFileTag(String string) {
 		return string.trim();
 	}
 
-	private InputStream parseMapArg(String string) throws FileNotFoundException {
-		return new BufferedInputStream( new FileInputStream(new File(string)));
-	}
-
-	private InputStream parseExpressionArg(String string) throws FileNotFoundException {
-		return new BufferedInputStream( new FileInputStream(new File(string)));
-	}
-
-	private InputStream parseGenotypesArg(String string) throws FileNotFoundException {
-		return new BufferedInputStream( new FileInputStream(new File(string)));
-	}
 
 	private double parseTHRESHOLDArg(String string) {
 		return Double.parseDouble(string);
@@ -217,7 +182,6 @@ public class CommandLine implements CommandLineParams{
 		out.println("<genestosnps>\tThis function takes a list of genes and a list of snps.  It creates a map from each gene to a list of snps.");
 		out.println("<simulation>\tThis function starts a simulation for one gene.");
 		out.println("<mapase>\tThis function maps variants to ASE.");
-		//out.println("<join>\tThis function joins output files from <simulation> or <mapase>");
 		out.println("\nOptions:");
 		out.println("-s\tSNP Locations");
 		out.println("-g\tGene Locations");
@@ -287,10 +251,6 @@ public class CommandLine implements CommandLineParams{
 		return sampleNum;
 	}
 
-	@Override
-	public double getThreshold() {
-		return threshold;
-	}
 
 	@Override
 	public InputStream getGenotypeData() {
@@ -322,10 +282,6 @@ public class CommandLine implements CommandLineParams{
 		return samples;
 	}
 
-	@Override
-	public int getSplits() {
-		return split;
-	}
 
 	@Override
 	public InputStream getChrom() {
@@ -336,6 +292,12 @@ public class CommandLine implements CommandLineParams{
 	public InputStream getVariants() {
 		return variant;
 	}
+
+	@Override
+	public InputStream getTss() {
+		return tss;
+	}
+
 
 
 	

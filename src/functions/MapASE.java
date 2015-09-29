@@ -44,8 +44,8 @@ public class MapASE {
 		ParseGene.parseExpressions(expressions, gene, outdir);
 	}
 
-	public void startRun(double threshold, int error, int n, File outdir) throws IOException {
-		Run r = new Run(gene, snps, threshold, error, n, outdir);
+	public void startRun(int error, int n, File outdir) throws IOException {
+		Run r = new Run(gene, snps, error, n, outdir);
 		r.mapASE(gene.getId());
 	}
 	

@@ -36,8 +36,8 @@ public class Simulation {
 		ParseSNP.parseGenotypes(genotypes,snps, snpLoc);
 		//System.out.println(gene.toString()+"\t"+snps.size());
 	}
-	public void startRun(double threshold, int errors, int perms, int n, int split, File outdir) throws IOException{
-		Run r = new Run(gene, snps, threshold, errors, perms, n, outdir);
-		r.randomSimulation(split);
+	public void startRun(int errors, int perms, int n, File outdir) throws IOException{
+		Run r = new Run(gene, snps, errors, perms, n, outdir);
+		r.randomSimulation();
 	}
 }
