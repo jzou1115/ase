@@ -17,6 +17,13 @@ public class ChromState implements Comparable<ChromState>{
 		return state;
 	}
 	
+	public GenomicRegion copyRegion(){
+		int chromosome = region.getChromosome();
+		GenomicCoordinate start = new GenomicCoordinate(chromosome, region.getStart().getCoord());
+		GenomicCoordinate end = new GenomicCoordinate(chromosome, region.getEnd().getCoord());
+		return new GenomicRegion(start, end);
+	}
+	
 	@Override
 	public int compareTo(ChromState c) {
 		return this.region.compareTo(c.region);
