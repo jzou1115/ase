@@ -63,12 +63,12 @@ public class ASE {
 	
 
 	private void mapASE(InputStream map, InputStream genotypes,
-			InputStream expressions, String gene, int n, int error, File outdir, String filename) throws IOException {
+			InputStream expressions, String gene, int n, int error, int perm, File outdir, String filename) throws IOException {
 		MapASE ase = new MapASE();
 		ase.setTestGene(map, gene, genotypes);
 		ase.parseGenotypes(genotypes);
 		ase.parseExpressions(expressions, outdir);
-		ase.startRun(error,n, outdir);
+		ase.startRun(error,n, perm, outdir);
 		
 	}
 	
@@ -151,11 +151,12 @@ public class ASE {
 			String gene = cmdArgs.getTestGene();
 			int error = cmdArgs.getErrorNum();
 			int n = cmdArgs.getSampleNum();
+			int perm = cmdArgs.getPermNum();
 			File outdir = cmdArgs.getOutputDir();
 			String filename = cmdArgs.getFilename();
 			
 			if(map!=null && genotypes!=null && gene!=null){
-				a.mapASE(map, genotypes, expressions, gene, error, n, outdir, filename);
+				a.mapASE(map, genotypes, expressions, gene, error, n, perm, outdir, filename);
 
 			} else{
 				cmdArgs.printHelp(System.err);
