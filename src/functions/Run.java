@@ -239,6 +239,9 @@ public class Run {
 	
 	//mapase
 	public int mapASE(String st) throws IOException{
+		
+		Map<Integer,Double> pval = testSignificance();
+		
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_mapase.txt")));
 
 		List<ExpSample> ase = gene.getExpsamples();
@@ -409,7 +412,8 @@ public class Run {
 	}
 	
 	public Map<Integer,Double> testSignificance() throws IOException{
-		
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+"significance.txt")));
+
 		Random rand = new Random(13);
 		int randInt = rand.nextInt(snps.size());
 		SNP s = snps.get(randInt);
@@ -451,7 +455,10 @@ public class Run {
 			double val = ret.get(key);
 			val = val/perm;
 			ret.put(key, val);
+			outfile.write(key+"\t"+val);
 		}
+		
+		outfile.close();
 		
 		return ret;
 	}
