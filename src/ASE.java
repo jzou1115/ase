@@ -63,7 +63,7 @@ public class ASE {
 	
 
 	private void mapASE(InputStream map, InputStream genotypes,
-			InputStream expressions, String gene, int n, int error, int perm, File outdir, String filename) throws IOException {
+			InputStream expressions, String gene, int error, int n, int perm, File outdir, String filename) throws IOException {
 		MapASE ase = new MapASE();
 		ase.setTestGene(map, gene, genotypes);
 		ase.parseGenotypes(genotypes);
