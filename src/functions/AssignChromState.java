@@ -32,11 +32,17 @@ public class AssignChromState {
 					map.put(snp, c);
 					snp.setChromState(c);
 					System.out.println(snp.getId());
-					if(ind<snps.size()-1){
+					if(ind<snps.size()){
 						ind++;
 						snp = snps.get(ind);	
 					}
+					else{
+						break;
+					}
 				}	
+			}
+			if(ind>=snps.size()){
+				break;	
 			}
 		}
 		
