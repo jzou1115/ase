@@ -245,14 +245,12 @@ public class Run {
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_mapase.txt")));
 
 		List<ExpSample> ase = gene.getExpsamples();
-		//System.out.println("Num ExpSamples: "+ase.size());
 		
 		if(ase.size()<sampleSize){
 			System.out.println("Not enough samples");
 			System.exit(1);
 		}
 
-		//outfile.write("snpID\tcorrect\tincorrect\tvariant\n");
 		int variants=0;
 		for(SNP s:snps){
 			Object[] subset = getSubset(ase.size(), sampleSize, s, gene.getExpsamples());
@@ -412,7 +410,7 @@ public class Run {
 	}
 	
 	public Map<Integer,Double> testSignificance() throws IOException{
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+"significance.txt")));
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+gene.getId()+"_significance.txt")));
 
 		Random rand = new Random(13);
 		int randInt = rand.nextInt(snps.size());
@@ -443,6 +441,7 @@ public class Run {
 			}
 			
 			if(adaptive==ret.keySet().size()){
+				outfile.write(adaptive+" errors detected, stopping permutations");
 				System.out.println(adaptive+" errors detected, stopping permutations");
 				for(int key:ret.keySet()){
 					ret.put(key, 1.0);
@@ -451,6 +450,7 @@ public class Run {
 			}	
 		}
 		
+		System.out.println("Significance key set size: "+ret.keySet().size());
 		for(int key:ret.keySet()){
 			double val = ret.get(key);
 			val = val/perm;

@@ -1,5 +1,6 @@
 package functions;
 
+import genome.ChromState;
 import genome.Gene;
 import genome.GenomicCoordinate;
 import genome.SNP;
@@ -14,7 +15,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import parse.ParseChromState;
 import parse.ParseGene;
 import parse.ParseSNP;
 
@@ -31,6 +34,15 @@ public class GenesToSNP {
 		genesToSnps();
 	}
 
+	
+	public GenesToSNP(InputStream snps, InputStream genes, InputStream chrom) throws IOException {
+		parseSnps(snps);
+		List<ChromState> chromatin = ParseChromState.parseChromState(chrom);
+		Map<SNP, ChromState> map = AssignChromState.assignStateSNP(isHetero, chromatin);
+		parseGenes(genes);
+		genesToSnps();
+	}
+	
 	public void parseSnps(InputStream inputStream){
 		System.out.println("Reading SNPs");
 		isHetero = ParseSNP.readSNPGroup(inputStream);

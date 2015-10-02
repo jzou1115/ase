@@ -30,6 +30,15 @@ public class Gene implements Comparable<Gene>{
 		map = new HashMap<String, ExpSample>();
 	}
 	
+	public Gene(String i, GenomicCoordinate start, GenomicCoordinate end, GenomicCoordinate t){
+		id=i;
+		region = new GenomicRegion(start, end);
+		esamples = new ArrayList<ExpSample>();
+		map = new HashMap<String, ExpSample>();
+		tss = t;
+	}
+	
+	
 	Gene(String i){
 		id= i;
 		map = new HashMap<String, ExpSample>();
@@ -75,7 +84,7 @@ public class Gene implements Comparable<Gene>{
 	
 
 	public String toString(){
-		return id+"\t"+region.getChromosome()+"\t"+region.getStart().getCoord()+"\t"+region.getEnd().getCoord();
+		return id+"\t"+region.getChromosome()+"\t"+region.getStart().getCoord()+"\t"+region.getEnd().getCoord()+"\t"+tss;
 	}
 
 	public void sortSamples() {

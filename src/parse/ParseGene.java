@@ -26,12 +26,14 @@ public class ParseGene {
 	public static Gene parseGene(String line){
 		String[] tokens = line.split("\t");
 		String id = tokens[0];
-		int chr = Integer.parseInt(tokens[1]);
-		long s = Long.parseLong(tokens[2]);
-		long e = Long.parseLong(tokens[3]);
+		int chr = Integer.parseInt(tokens[2]);
+		long s = Long.parseLong(tokens[3]);
+		long e = Long.parseLong(tokens[4]);
+		long t = Long.parseLong(tokens[5]);
 		GenomicCoordinate start = new GenomicCoordinate(chr, s);
 		GenomicCoordinate end = new GenomicCoordinate(chr, e);
-		return new Gene(id, start, end);
+		GenomicCoordinate tss = new GenomicCoordinate(chr, t);
+		return new Gene(id, start, end, tss);
 	}
 	public static List<Gene> readGeneGroup(InputStream in){
 		List<Gene> genes = new ArrayList<Gene>();
