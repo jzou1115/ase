@@ -107,7 +107,6 @@ public class ASE {
 		String fcn = cmdArgs.getFunction();
 		
 		if(fcn.equals("genestosnps")){
-			System.out.println("Starting genestosnps");
 			InputStream snps = cmdArgs.getSNPsInput();
 			InputStream genes = cmdArgs.getGenesInput();
 			InputStream chrom = cmdArgs.getChrom();

@@ -17,7 +17,11 @@ public class ParseSNP {
 	
 	public static SNP parseSNP(String line){
 		String[] tokens = line.split("\\s+");
-		if(tokens.length>1){
+		if(tokens.length==3){
+			SNP s= new SNP(tokens[0].trim(), Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
+			return s;
+		}
+		else if(tokens.length>3){
 			SNP s= new SNP(tokens[0].trim(), Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]), tokens[3].trim());
 			return s;
 		}
