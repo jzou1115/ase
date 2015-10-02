@@ -41,7 +41,7 @@ public class ASE {
 	}
 
 	
-	private void createMap(InputStream snps, InputStream genes, InputStream chrom, InputStream tss, File outdir, String filename) throws IOException {
+	private void createMap(InputStream snps, InputStream genes, InputStream chrom, File outdir, String filename) throws IOException {
 		GenesToSNP map = new GenesToSNP(snps, genes, chrom);
 		if(filename!=null){
 			map.write(outdir, filename);	
@@ -107,14 +107,14 @@ public class ASE {
 		String fcn = cmdArgs.getFunction();
 		
 		if(fcn.equals("genestosnps")){
+			System.out.println("Starting genestosnps");
 			InputStream snps = cmdArgs.getSNPsInput();
 			InputStream genes = cmdArgs.getGenesInput();
 			InputStream chrom = cmdArgs.getChrom();
-			InputStream tss = cmdArgs.getTss();
 			File outdir = cmdArgs.getOutputDir();
 			String filename = cmdArgs.getFilename();
 			if(snps!=null && genes!=null){
-				a.createMap(snps, genes, chrom, tss, outdir, filename);	
+				a.createMap(snps, genes, chrom, outdir, filename);	
 			}	
 			else{
 				cmdArgs.printHelp(System.err);

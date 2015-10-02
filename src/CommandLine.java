@@ -33,8 +33,8 @@ public class CommandLine implements CommandLineParams{
 	
 	
 	
-	private InputStream snps = System.in;
-	private InputStream genes = System.in;
+	private InputStream snps;
+	private InputStream genes;
 	private InputStream genotypes;
 	private InputStream expressions;
 	private InputStream map;
@@ -77,11 +77,11 @@ public class CommandLine implements CommandLineParams{
 				break;
 			case SNP_TAG: 
 				assertNextArg(SNP_TAG, i, args);
-				snps = parseSNPArg(args[++i]);
+				snps = parseDataFile(args[++i]);
 				break;
 			case GENE_TAG: 
 				assertNextArg(GENE_TAG, i, args);
-				genes = parseGeneArg(args[++i]);
+				genes = parseDataFile(args[++i]);
 				break;
 			case MAP_TAG: 
 				assertNextArg(MAP_TAG, i, args);
@@ -89,19 +89,19 @@ public class CommandLine implements CommandLineParams{
 				break;
 			case PERM_TAG: 
 				assertNextArg(PERM_TAG, i, args);
-				perm = parsePermArg(args[++i]);
+				perm = parseIntArg(args[++i]);
 				break;
 			case ERROR_TAG: 
 				assertNextArg(ERROR_TAG, i, args);
-				errors = parseERRORArg(args[++i]);
+				errors = parseIntArg(args[++i]);
 				break;
 			case SAMPLE_TAG: 
 				assertNextArg(SAMPLE_TAG, i, args);
-				sampleNum = parseSAMPLEArg(args[++i]);
+				sampleNum = parseIntArg(args[++i]);
 				break;
 			case TEST_TAG: 
 				assertNextArg(TEST_TAG, i, args);
-				test = parseTESTArg(args[++i]);
+				test = parseStringArg(args[++i]);
 				break;
 			case HELP_TAG:
 				help = true;
@@ -112,7 +112,7 @@ public class CommandLine implements CommandLineParams{
 				break;
 			case FILE_TAG:
 				assertNextArg(FILE_TAG, i, args);
-				outfile = parseFileTag(args[++i]);
+				outfile = parseStringArg(args[++i]);
 				break;
 			case GENOTYPES_TAG:
 				assertNextArg(GENOTYPES_TAG, i, args);
@@ -144,28 +144,11 @@ public class CommandLine implements CommandLineParams{
 	}
 
 
-	private String parseFileTag(String string) {
+	private String parseStringArg(String string) {
 		return string.trim();
 	}
 
-
-	private double parseTHRESHOLDArg(String string) {
-		return Double.parseDouble(string);
-	}
-
-	private int parseSAMPLEArg(String string) {
-		return Integer.parseInt(string);
-	}
-
-	private String parseTESTArg(String string) {
-		return string.trim();
-	}
-
-	private int parseERRORArg(String string) {
-		return Integer.parseInt(string);
-	}
-
-	private int parsePermArg(String string) {
+	private int parseIntArg(String string) {
 		return Integer.parseInt(string);
 	}
 
@@ -188,26 +171,17 @@ public class CommandLine implements CommandLineParams{
 		out.println("-m\tMap from gene to SNPs");
 		out.println("-a\tGenotype file");
 		out.println("-b\tExpression file");
-		out.println("-p\tNumber of permutations for simulation");
+		out.println("-p\tNumber of permutations");
 		out.println("-e\tMaximum number of errors allowed");
-		out.println("-n\tNumber of samples used");
-		out.println("-z\tSignificance threshold");
-		out.println("-o\tOutput file");
-		out.println("-x\tSample IDs to use");
-		out.println("-y\tSplits");
 		out.println("-v\tVariants");
+		out.println("-n\tNumber of samples used");
+		out.println("-o\tOutput directory");
+		out.println("-f\tFilename");
 		out.println("-h\thelp statement");
 
 	}
 	
-	private InputStream parseSNPArg(String s) throws FileNotFoundException {
-		return new BufferedInputStream( new FileInputStream(new File(s)));
-	}
-	
-	private InputStream parseGeneArg(String s) throws FileNotFoundException {
-		return new BufferedInputStream( new FileInputStream(new File(s)));
-	}
-	
+
 	@Override
 	public InputStream getSNPsInput() {
 		return snps;
