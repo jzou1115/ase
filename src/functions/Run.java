@@ -280,11 +280,17 @@ public class Run {
 			}
 			if(passThreshold(incorrect, correct)){
 				variants++;
-				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\t"+1+"\n");
 			}
-			else{
-				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\t"+0+"\n");
+			String line = s.getId()+"\t"+correct+"\t"+incorrect;
+			for(int e=0; e<=errors; e++){
+				if(incorrect<=e){
+					line = line+"\t"+1;
+				}
+				else{
+					line = line+"\t"+0;
+				}
 			}
+			outfile.write(line+"\n");
 		}
 		//outfile.write("variants: "+variants+"\n");
 		outfile.close();
@@ -455,7 +461,7 @@ public class Run {
 			double val = ret.get(key);
 			val = val/perm;
 			ret.put(key, val);
-			outfile.write(key+"\t"+val);
+			outfile.write(key+"\t"+val+"\n");
 		}
 		
 		outfile.close();
