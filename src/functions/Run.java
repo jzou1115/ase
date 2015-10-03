@@ -23,6 +23,7 @@ public class Run {
 	private int perm;
 	private int sampleSize;
 	private File outdir;
+	private Map<Integer,Double> sig;
 
 	public Run(Gene g, List<SNP> s, int e, int p, int n, File out){
 		snps=s;
@@ -283,7 +284,7 @@ public class Run {
 			}
 			String line = s.getId()+"\t"+correct+"\t"+incorrect;
 			for(int e=0; e<=errors; e++){
-				if(incorrect<=e){
+				if(isSignificant(e, incorrect, sig.get(e))){
 					line = line+"\t"+1;
 				}
 				else{
@@ -295,6 +296,15 @@ public class Run {
 		//outfile.write("variants: "+variants+"\n");
 		outfile.close();
 		return variants;
+	}
+	
+	public boolean isSignificant(int e, int incorrect, double z){
+		if(incorrect<=e){
+			if(z<=.0000025){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public int[] permute(int[] ase, int n){
@@ -452,6 +462,7 @@ public class Run {
 				for(int key:ret.keySet()){
 					ret.put(key, 1.0);
 				}
+				sig = ret;
 				return ret;
 			}	
 		}
@@ -465,7 +476,7 @@ public class Run {
 		}
 		
 		outfile.close();
-		
+		sig = ret;
 		return ret;
 	}
 	
