@@ -137,12 +137,19 @@ public class Run {
 					System.out.println("Missing data: "+sampleID );
 				}
 			}
-			if(passThreshold(incorrect, correct)){
-				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\t"+1+"\n");
+			
+			String line = s.getId()+"\t"+f+"\t"+correct+"\t"+incorrect;
+			for(int e=0; e<=errors; e++){
+				if(incorrect<=e){
+					line = line+"\t"+1;
+				}
+				else{
+					line = line+"\t"+0;
+				}
 			}
-			else{
-				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\t"+0+"\n");	
-			}
+
+			outfile.write(line+"\n");
+
 		}
 		
 		outfile.close();
@@ -378,11 +385,11 @@ public class Run {
 		Random rand = new Random();
 		int randInt = rand.nextInt(snps.size());
 		SNP s = snps.get(randInt);
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+s.getId()+"_summary.txt")));
-		outfile.write(s.toString()+"\n");
+		//BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+s.getId()+"_summary.txt")));
+		//outfile.write(s.toString()+"\n");
 
 		double f = calculateMAF(s);
-		outfile.write(f+"\n");
+		//outfile.write(f+"\n");
 		int[] ase = aseCall(s);	
 		//int x= mapASE(ase, outdir+File.separator+s.getId());
 
@@ -390,7 +397,7 @@ public class Run {
 		double[] perms = new double[perm];
 		for(int i=0; i<perm;i++){
 			if(total>=5){
-				outfile.write("1\n");
+				//outfile.write("1\n");
 				return pass;
 			}
 			int[] p = permute(ase, ase.length);
@@ -420,9 +427,9 @@ public class Run {
 		outfile.write("GeneID\tMAF\tSimulationMean\tP-value\tTotalSNPs\n");
 		outfile.write(s.getId()+"\t"+f+"\t"+mean+"\t"+p+"\t"+numSNPs+"\n");
 **/
-		outfile.write(1.0*pass/perm+"\n");
+	//	outfile.write(1.0*pass/perm+"\n");
 		
-		outfile.close();
+	//	outfile.close();
 		return pass;
 	}
 	
