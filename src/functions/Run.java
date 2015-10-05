@@ -102,7 +102,7 @@ public class Run {
 		return ret.toArray();
 	}
 	
-	
+	//simulation
 	public int mapASE(int[] ase, int st, double f, String snpid) throws IOException{
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+"simulation"+st+"_"+snpid+"_"+f+".txt")));
 		
@@ -375,7 +375,7 @@ public class Run {
 		//outfile.write("Number of samples: "+sampleSize+"\n");
 		//outfile.write("Maximum number of errors: "+errors+"\n");
 		
-		Random rand = new Random(13);
+		Random rand = new Random();
 		int randInt = rand.nextInt(snps.size());
 		SNP s = snps.get(randInt);
 	//	BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+gene.getId()+"_simulation_"+perm+"_"+sampleSize+"_"+errors+"_"+threshold+"_"+s.getId()+"_"+itr+".txt")));
