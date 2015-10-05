@@ -378,10 +378,11 @@ public class Run {
 		Random rand = new Random();
 		int randInt = rand.nextInt(snps.size());
 		SNP s = snps.get(randInt);
-	//	BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+gene.getId()+"_simulation_"+perm+"_"+sampleSize+"_"+errors+"_"+threshold+"_"+s.getId()+"_"+itr+".txt")));
-		//outfile.write("SNP used: "+s.toString()+"\n");
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+s.getId()+"_summary.txt")));
+		outfile.write(s.toString()+"\n");
 
 		double f = calculateMAF(s);
+		outfile.write(f+"\n");
 		int[] ase = aseCall(s);	
 		//int x= mapASE(ase, outdir+File.separator+s.getId());
 
@@ -389,8 +390,8 @@ public class Run {
 		double[] perms = new double[perm];
 		for(int i=0; i<perm;i++){
 			if(total>=5){
-				//outfile.write("Not Significant");
-				break;
+				outfile.write("1\n");
+				return pass;
 			}
 			int[] p = permute(ase, ase.length);
 			int a = mapASE(p, i, f, s.getId());
@@ -398,11 +399,11 @@ public class Run {
 			if(a>1){
 				total=total+1;
 				//outfile.write("PermNum"+i+"\t"+a+"\t"+1+"\n");
-				System.out.println("PermNum"+i+"\t"+a+"\t"+1);
+				//System.out.println("PermNum"+i+"\t"+a+"\t"+1);
 			}
 			else{
 				//outfile.write("PermNum"+i+"\t"+a+"\t"+0+"\n");
-				System.out.println("PermNum"+i+"\t"+a+"\t"+0);
+				//System.out.println("PermNum"+i+"\t"+a+"\t"+0);
 			}
 		}
 
@@ -418,10 +419,10 @@ public class Run {
 		}
 		outfile.write("GeneID\tMAF\tSimulationMean\tP-value\tTotalSNPs\n");
 		outfile.write(s.getId()+"\t"+f+"\t"+mean+"\t"+p+"\t"+numSNPs+"\n");
-
-		//outfile.write("power="+pass+"/"+perm+"="+1.0*pass/perm+"\n");
-		 **/
-		//outfile.close();
+**/
+		outfile.write(1.0*pass/perm+"\n");
+		
+		outfile.close();
 		return pass;
 	}
 	
