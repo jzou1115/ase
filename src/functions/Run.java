@@ -440,17 +440,13 @@ public class Run {
 		}
 		
 		outfile.close();
-		sig = ret;
+		//sig = ret;
 
 
 	}
 	
 	public Map<Integer,Double> testSignificance() throws IOException{
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+gene.getId()+"_significance.txt")));
-
-		Random rand = new Random(13);
-		int randInt = rand.nextInt(snps.size());
-		SNP s = snps.get(randInt);
 
 		int[] ase = getASE(gene);	
 
@@ -471,22 +467,23 @@ public class Run {
 					double value = ret.get(key);
 					value = value+result.get(key);
 					ret.put(key, value);
-				}
-				if(ret.get(key)==5){
-					adaptive++;
+					//if 5th snp found for error rate, increment adaptive
+					if(result.get(key)>0 && value==5){
+						adaptive++;
+					}
+
 				}
 			}
-			
+			//if all error rates have 5 snps found, stop permutations
 			if(adaptive==ret.keySet().size()){
-				outfile.write(adaptive+" errors detected, stopping permutations");
-				System.out.println(adaptive+" errors detected, stopping permutations");
+				//outfile.write(adaptive+" stopping permutations");
+				System.out.println(adaptive+" stopping permutations");
+				//make p-value 1.0 for all error rates
 				for(int key:ret.keySet()){
 					ret.put(key, 1.0);
 					outfile.write(key+"\t"+1.0+"\n");
 				}
 				outfile.close();
-				sig = ret;
-				return ret;
 			}	
 		}
 		
