@@ -376,61 +376,73 @@ public class Run {
 		return ret;
 	}
 	
-	public int randomSimulation() throws IOException{
-		int pass=0;
-		//outfile.write("Number of permutations: "+perm+"\n");
-		//outfile.write("Number of samples: "+sampleSize+"\n");
-		//outfile.write("Maximum number of errors: "+errors+"\n");
-		
-		Random rand = new Random();
+	public int[] getASE(Gene g){
+		List<ExpSample> ase = g.getExpsamples();
+		int[] ret = new int[ase.size()];
+		for(int i=0; i<ase.size();i++){
+			ret[i] = ase.get(i).getASE();
+		}
+		return ret;
+	}
+	
+	public void randomSimulation() throws IOException{
+		Random rand = new Random(13);
 		int randInt = rand.nextInt(snps.size());
 		SNP s = snps.get(randInt);
-		//BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+s.getId()+"_summary.txt")));
-		//outfile.write(s.toString()+"\n");
-
 		double f = calculateMAF(s);
-		//outfile.write(f+"\n");
-		int[] ase = aseCall(s);	
-		//int x= mapASE(ase, outdir+File.separator+s.getId());
-
-		int total=0;
-		double[] perms = new double[perm];
-		for(int i=0; i<perm;i++){
-			if(total>=5){
-				//outfile.write("1\n");
-				return pass;
-			}
-			int[] p = permute(ase, ase.length);
-			int a = mapASE(p, i, f, s.getId());
-			perms[i]=(double) a;
-			if(a>1){
-				total=total+1;
-				//outfile.write("PermNum"+i+"\t"+a+"\t"+1+"\n");
-				//System.out.println("PermNum"+i+"\t"+a+"\t"+1);
-			}
-			else{
-				//outfile.write("PermNum"+i+"\t"+a+"\t"+0+"\n");
-				//System.out.println("PermNum"+i+"\t"+a+"\t"+0);
-			}
-		}
-
-		/**
-	//	double p = calculatePValue(perms);
-
-		//double mean= 1.0*total/perm;
-
-		//int numSNPs = snps.size();
-
-		//if(p<threshold){
-			pass++;
-		}
-		outfile.write("GeneID\tMAF\tSimulationMean\tP-value\tTotalSNPs\n");
-		outfile.write(s.getId()+"\t"+f+"\t"+mean+"\t"+p+"\t"+numSNPs+"\n");
-**/
-	//	outfile.write(1.0*pass/perm+"\n");
 		
-	//	outfile.close();
-		return pass;
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+s.getId()+"_"+f+"_simulation.txt")));
+
+		int[] ase = aseCall(s);	
+
+		Map<Integer,Double> ret = new HashMap<Integer,Double>();
+		for(int i=0; i<=errors;i++){
+			ret.put(i, 0.0);
+		}
+		
+		//adaptive permutation
+		int adaptive=0; //number of error rates that have at least five snps that match permuted
+		for(int i=0; i<perm;i++){
+			int[] p = permute(ase, ase.length);
+			//key: number of errors ; value: whether or not a snp was found
+			Map<Integer,Integer> result = mapASE(p);
+			for(int key:result.keySet()){
+				if(ret.containsKey(key)){
+					double value = ret.get(key);
+					value = value+result.get(key);
+					ret.put(key, value);
+					//if 5th snp found for error rate, increment adaptive
+					if(result.get(key)>0 && value==5){
+						adaptive++;
+					}
+
+				}
+			}
+			//if all error rates have 5 snps found, stop permutations
+			if(adaptive==ret.keySet().size()){
+				//outfile.write(adaptive+" stopping permutations");
+				System.out.println(adaptive+" stopping permutations");
+				//make p-value 1.0 for all error rates
+				for(int key:ret.keySet()){
+					ret.put(key, 1.0);
+					outfile.write(key+"\t"+1.0+"\n");
+				}
+				outfile.close();
+			}	
+		}
+		
+		System.out.println("Significance key set size: "+ret.keySet().size());
+		for(int key:ret.keySet()){
+			double val = ret.get(key);
+			val = val/perm;
+			ret.put(key, val);
+			outfile.write(key+"\t"+val+"\n");
+		}
+		
+		outfile.close();
+		sig = ret;
+
+
 	}
 	
 	public Map<Integer,Double> testSignificance() throws IOException{
@@ -440,7 +452,7 @@ public class Run {
 		int randInt = rand.nextInt(snps.size());
 		SNP s = snps.get(randInt);
 
-		int[] ase = aseCall(s);	
+		int[] ase = getASE(gene);	
 
 		Map<Integer,Double> ret = new HashMap<Integer,Double>();
 		for(int i=0; i<=errors;i++){
@@ -470,7 +482,9 @@ public class Run {
 				System.out.println(adaptive+" errors detected, stopping permutations");
 				for(int key:ret.keySet()){
 					ret.put(key, 1.0);
+					outfile.write(key+"\t"+1.0+"\n");
 				}
+				outfile.close();
 				sig = ret;
 				return ret;
 			}	
