@@ -447,9 +447,10 @@ public class Run {
 			ret.put(i, 0.0);
 		}
 		
+		//adaptive permutation
+		int adaptive=0; //number of error rates that have at least five snps that match permuted
 		for(int i=0; i<perm;i++){
-			//adaptive permutation
-			int adaptive=0;
+
 			
 			int[] p = permute(ase, ase.length);
 			Map<Integer,Integer> result = mapASE(p);
@@ -459,7 +460,7 @@ public class Run {
 					value = value+result.get(key);
 					ret.put(key, value);
 				}
-				if(ret.get(key)>5){
+				if(ret.get(key)==5){
 					adaptive++;
 				}
 			}
