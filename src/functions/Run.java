@@ -202,6 +202,11 @@ public class Run {
 			}
 			
 			if(variants==(errors+1)){
+				//make significance cumulative
+				for(int e=0; e<errors; e++){
+					int temp = ret.get(e)+ ret.get(e+1);
+					ret.put(e+1, temp);
+				}
 				return ret;
 			}
 
@@ -298,7 +303,9 @@ public class Run {
 					line = line+"\t"+0;
 				}
 			}
-			outfile.write(line+"\n");
+			if(subset.length!=0){
+				outfile.write(line+"\n");
+			}
 		}
 		//outfile.write("variants: "+variants+"\n");
 		outfile.close();
