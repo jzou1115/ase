@@ -212,6 +212,11 @@ public class Run {
 
 		}
 		
+		for(int e=0; e<errors; e++){
+			int temp = ret.get(e)+ ret.get(e+1);
+			ret.put(e+1, temp);
+		}
+
 		return ret;
 	}
 	/**
