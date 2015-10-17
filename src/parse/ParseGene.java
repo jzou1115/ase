@@ -24,13 +24,25 @@ import java.util.Map;
 public class ParseGene {
 
 	public static Gene parseGene(String line){
-		String[] tokens = line.split("\t");
+		String[] tokens = line.trim().split("\\s+");
 		if(tokens.length==6){
+			System.out.println("length 6");
 			String id = tokens[0];
 			int chr = Integer.parseInt(tokens[2]);
 			long s = Long.parseLong(tokens[3]);
 			long e = Long.parseLong(tokens[4]);
 			long t = Long.parseLong(tokens[5]);
+			GenomicCoordinate start = new GenomicCoordinate(chr, s);
+			GenomicCoordinate end = new GenomicCoordinate(chr, e);
+			GenomicCoordinate tss = new GenomicCoordinate(chr, t);
+			return new Gene(id, start, end, tss);
+		}
+		if(tokens.length==5){
+			String id = tokens[0];
+			int chr = Integer.parseInt(tokens[2]);
+			long s = Long.parseLong(tokens[1]);
+			long e = Long.parseLong(tokens[3]);
+			long t = Long.parseLong(tokens[4]);
 			GenomicCoordinate start = new GenomicCoordinate(chr, s);
 			GenomicCoordinate end = new GenomicCoordinate(chr, e);
 			GenomicCoordinate tss = new GenomicCoordinate(chr, t);
@@ -54,7 +66,7 @@ public class ParseGene {
 					genes.add(parseGene(line));
 				} catch (Exception e){
 					//do nothing
-					//System.out.println("cannot add Gene");
+					System.out.println("cannot add Gene");
 				}
 			}
 			reader.close();
