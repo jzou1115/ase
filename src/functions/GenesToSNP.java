@@ -107,7 +107,7 @@ public class GenesToSNP {
 		int snp = 0;
 		for(Gene g: hasASE){
 			GenomicCoordinate end = g.getRegion().getEnd();
-			while(isHetero.get(snp).getLocation().compareTo(end)<=0){
+			while(snp<isHetero.size() && isHetero.get(snp).getLocation().compareTo(end)<=0){
 				if(match(isHetero.get(snp),g)){
 					if(map.get(g)==null){
 						List<SNP> val = new ArrayList<SNP>();
