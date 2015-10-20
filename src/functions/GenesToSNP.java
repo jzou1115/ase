@@ -106,6 +106,9 @@ public class GenesToSNP {
 		
 		int snp = 0;
 		for(Gene g: hasASE){
+			if(snp==isHetero.size()-1){
+				return;
+			}
 			GenomicCoordinate end = g.getRegion().getEnd();
 			while(snp<isHetero.size() && isHetero.get(snp).getLocation().compareTo(end)<=0){
 				if(match(isHetero.get(snp),g)){
@@ -117,7 +120,11 @@ public class GenesToSNP {
 					val.add(isHetero.get(snp));
 					map.put(g, val);
 				}
+				if(snp==isHetero.size()-1){
+					return;
+				}
 				snp++;
+				System.out.println(snp+"\t"+ isHetero.size());
 			}
 		}
 		

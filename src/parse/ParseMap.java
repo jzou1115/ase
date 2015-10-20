@@ -25,39 +25,43 @@ public class ParseMap {
 	List<SNP> snps;
 	
 	Map<String, SNP> snpLoc;
+	Map<String, SNP> snpmap;
 	
 	
 	public void parseMap(InputStream in){
 		map = new HashMap<Gene, List<SNP>>();
 		snps = new ArrayList<SNP>();
 		snpLoc = new HashMap<String, SNP>();
+		snpmap = new HashMap<String, SNP>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
 		Gene g=null;
-		List<SNP> snps= new ArrayList<SNP>();
+		List<SNP> snpsgene= new ArrayList<SNP>();
 		try{
 			while((line = reader.readLine()) != null){
 				if(line.charAt(0) == '>'){
 					if(g!=null){
-						map.put(g, snps);
+						map.put(g, snpsgene);
 						
 						g = null;
-						snps.clear();
+						snpsgene.clear();
 						
 						g = ParseGene.parseGene(line.substring(1,line.length()));
-						snps = new ArrayList<SNP>();
+						snpsgene = new ArrayList<SNP>();
 					}
 					else{
 						g = ParseGene.parseGene(line.substring(1,line.length()));
-						snps = new ArrayList<SNP>();	
+						snpsgene= new ArrayList<SNP>();	
 					}
 				}
 				else{
 					SNP s = ParseSNP.parseSNP(line);
 					snps.add(s);
+					snpmap.put(s.getId(), s);
+					snpsgene.add(s);
 					
 					snpLoc.put(s.getLocation().getChromosome()+"_"+s.getLocation().getCoord(), s);
-					System.out.println(s.getLocation().getChromosome()+"_"+s.getLocation().getCoord());
+					//System.out.println(s.getLocation().getChromosome()+"_"+s.getLocation().getCoord());
 					
 					
 				}
@@ -144,6 +148,10 @@ public class ParseMap {
 		}
 		
 		outfile.close();
+	}
+	
+	public Map<String, SNP> getSnpMap(){
+		return snpmap;
 	}
 	
 }

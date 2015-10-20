@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,24 +20,25 @@ import parse.ParseSNP;
 
 public class ASE {
 	
-	private void assignChromatin(InputStream states, InputStream genesmap, String gene, File outdir, String filename) throws IOException{
+	private void assignChromatin(InputStream states, InputStream genesmap, InputStream variants, int p, File outdir, String filename) throws IOException{
 		ParseMap parsemap = new ParseMap();
-		parsemap.parseMap(genesmap, gene);
+		parsemap.parseMap(genesmap);
 		List<SNP> s = parsemap.getSNPs();
 		
+		List<SNP> var = ParseSNP.readSNPGroup(variants);
+		Map<String,SNP> snpmap = parsemap.getSnpMap();
+		List<SNP> var2 = new ArrayList<SNP>();
+		for(SNP v: var){
+			if(snpmap.containsKey(v.getId())){
+				var2.add(snpmap.get(v.getId()));
+			}
+		}
 		
 		List<ChromState> chrom = ParseChromState.parseChromState(states);
-		Map<SNP, ChromState> map = AssignChromState.assignStateSNP(s, chrom);
 		
-		if(filename==null){
-			filename = "assignChromatinOutput.txt";
-		}
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
-
-		for(SNP snp: s){
-			outfile.write(snp.toString()+"\n");
-		}
-		outfile.close();
+		PermuteChromatin perm = new PermuteChromatin(chrom, s, var2, outdir);
+		
+		perm.testEnrichment(p);
 		
 	}
 
@@ -166,13 +168,14 @@ public class ASE {
 		else if(fcn.equals("chromatin")){
 			InputStream chrom = cmdArgs.getChrom();
 			InputStream genesmap = cmdArgs.getMap();
-			String gene = cmdArgs.getTestGene();
+			InputStream variants = cmdArgs.getVariants();
+			int p = cmdArgs.getPermNum();
 			
 			File outdir = cmdArgs.getOutputDir();
 			String filename = cmdArgs.getFilename();
 			
 			if(genesmap!=null && chrom!=null){
-				a.assignChromatin(chrom,genesmap, gene, outdir, filename);
+				a.assignChromatin(chrom,genesmap, variants, p, outdir, filename);
 			}
 			
 		}

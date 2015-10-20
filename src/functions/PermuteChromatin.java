@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import genome.ChromState;
 import genome.GenomicCoordinate;
@@ -59,7 +60,7 @@ public class PermuteChromatin {
 	public int getSize(){
 		return size;
 	}
-	public void permute(int n) throws IOException{
+	public void permute(int n){
 	//	System.out.println("Starting permutation with "+chromatin.size());
 	//	BufferedWriter file = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+"permutation"+n)));
 		
@@ -96,13 +97,13 @@ public class PermuteChromatin {
 **/
 	}
 	
-	public int mapSnps(String state){
+	public int mapSnps(){
 		Map<SNP,ChromState> map = AssignChromState.assignStateSNP(snps, chromatin);
 		int num=0;
 		for(SNP s:snps){
 			if(map.containsKey(s)){
 				//System.out.print(s.getChromState()+"_"+state);
-				if(s.getChromState().equals(state) || s.getChromState().equals("5_TxWk") || s.getChromState().equals("6_EnhG") || s.getChromState().equals("7_Enh")){
+				if( s.getChromState().equals("5_TxWk") || s.getChromState().equals("6_EnhG") || s.getChromState().equals("7_Enh")){
 					//System.out.print("YES\n");
 					num++;
 				}
@@ -115,13 +116,13 @@ public class PermuteChromatin {
 		return num;
 	}
 	
-	public int mapVar(String state){
+	public int mapVar(){
 		Map<SNP,ChromState> map = AssignChromState.assignStateSNP(variants, chromatin);
 		int num=0;
 		for(SNP s:variants){
 			if(map.containsKey(s)){
 				//System.out.print(s.getChromState()+"_"+state);
-				if(s.getChromState().equals(state)){
+				if(s.getChromState().equals("5_TxWk") || s.getChromState().equals("6_EnhG") || s.getChromState().equals("7_Enh")){
 				//	System.out.print("YES\n");
 					num++;
 				}
@@ -157,6 +158,24 @@ public class PermuteChromatin {
 	public int getSnpsSize() {
 		// TODO Auto-generated method stub
 		return snps.size();
+	}
+
+	public void testEnrichment(int p){
+		int realsnps = mapSnps();
+		int realvar = mapVar();
+		
+		int snpperm=0;
+		int varperm=0;
+		
+		Random rand = new Random();
+		for(int i=0; i<p; i++){
+			permute(rand.nextInt(chromatin.size()/2));
+			int snpmap = mapSnps();
+			if(snpmap>=realsnps){
+				snpperm++;
+			}
+		}
+		
 	}
 	
 }

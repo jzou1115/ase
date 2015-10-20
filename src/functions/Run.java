@@ -34,15 +34,6 @@ public class Run {
 		outdir=out;
 	}
 
-	/**
-	public Run(Gene g, List<SNP> s, int e, int n, File out){
-		snps=s;
-		gene=g;
-		errors= e;
-		sampleSize=n;
-		outdir=out;
-	}
-	**/
 	
 	public List<SNP> getSnps(){
 		return snps;
@@ -195,65 +186,24 @@ public class Run {
 				}
 			}
 			if(passThreshold(incorrect, correct)){
-				if(ret.get(incorrect)==0){
-					ret.put(incorrect, 1);
-					variants++;
+				for(int j: ret.keySet()){
+					if(j>=incorrect && ret.get(j)==0){
+						ret.put(j, 1);
+						variants++;
+					}
 				}
 			}
 			
 			if(variants==(errors+1)){
-				//make significance cumulative
-				for(int e=0; e<errors; e++){
-					int temp = ret.get(e)+ ret.get(e+1);
-					ret.put(e+1, temp);
-				}
+
 				return ret;
 			}
 
 		}
-		
-		for(int e=0; e<errors; e++){
-			int temp = ret.get(e)+ ret.get(e+1);
-			ret.put(e+1, temp);
-		}
 
 		return ret;
 	}
-	/**
-	public int mapASE(int[] ase, String st) throws IOException{
-		int variants=0;
-		Object[] subset = getSubset(ase.length, sampleSize);
-		
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_"+subset.length+"_simulation.txt")));
-		for(SNP s:snps){
-			List<GenoSample> gsamples = s.getGenosamples();
-			int correct=0;
-			int incorrect=0;
-			for (int i=0; i<subset.length;i++) {
-				int ind= (int) subset[i];
-				String sampleID = gsamples.get(ind).getID();
-				int isHetero = gsamples.get(ind).getHetero();
-				if(isHetero == ase[ind]){
-					correct++;
-				}
-				else if(isHetero != ase[ind]){
-					incorrect++;
-				}
-				else{
-					System.out.println("Missing data: "+sampleID );
-				}
-			}
-			if(passThreshold(incorrect, correct)){
-				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\t"+1+"\n");
-			}
-			else{
-				outfile.write(s.getId()+"\t"+correct+"\t"+incorrect+"\t"+0+"\n");	
-			}
-		}
-		outfile.close();
-		return variants;
-	}
-	**/
+
 	
 	//mapase
 	public int mapASE(String st) throws IOException{
@@ -488,7 +438,6 @@ public class Run {
 			}
 			//if all error rates have 5 snps found, stop permutations
 			if(adaptive==ret.keySet().size()){
-				//outfile.write(adaptive+" stopping permutations");
 				System.out.println(adaptive+" stopping permutations");
 				//make p-value 1.0 for all error rates
 				for(int key:ret.keySet()){
@@ -499,12 +448,11 @@ public class Run {
 			}	
 		}
 		
-		System.out.println("Significance key set size: "+ret.keySet().size());
 		for(int key:ret.keySet()){
 			double val = ret.get(key);
 			val = val/perm;
 			ret.put(key, val);
-			outfile.write(key+"\t"+val+"\n");
+			outfile.write(key+"\t"+ret.get(key)+"\n");
 		}
 		
 		outfile.close();
