@@ -103,8 +103,8 @@ public class PermuteChromatin {
 		for(SNP s:snps){
 			if(map.containsKey(s)){
 				//System.out.print(s.getChromState()+"_"+state);
-				if( s.getChromState().equals("5_TxWk") || s.getChromState().equals("6_EnhG") || s.getChromState().equals("7_Enh")){
-					//System.out.print("YES\n");
+				if( s.getChromState().equals("9_TxReg") || s.getChromState().equals("10_TxEnh5\'") || s.getChromState().equals("11_TxEnh3\'") || s.getChromState().equals("12_TxEnhW") || s.getChromState().equals("13_EnhA1") || s.getChromState().equals("14_EnhA2") || s.getChromState().equals("15_EnhAF") || s.getChromState().equals("16_EnhW1") || s.getChromState().equals("17_EnhW2")){
+					//	System.out.print("YES\n");
 					num++;
 				}
 				else{
@@ -122,7 +122,7 @@ public class PermuteChromatin {
 		for(SNP s:variants){
 			if(map.containsKey(s)){
 				//System.out.print(s.getChromState()+"_"+state);
-				if(s.getChromState().equals("5_TxWk") || s.getChromState().equals("6_EnhG") || s.getChromState().equals("7_Enh")){
+				if(s.getChromState().equals("9_TxReg") || s.getChromState().equals("10_TxEnh5\'") || s.getChromState().equals("11_TxEnh3\'") || s.getChromState().equals("12_TxEnhW") || s.getChromState().equals("13_EnhA1") || s.getChromState().equals("14_EnhA2") || s.getChromState().equals("15_EnhAF") || s.getChromState().equals("16_EnhW1") || s.getChromState().equals("17_EnhW2")){
 				//	System.out.print("YES\n");
 					num++;
 				}
@@ -132,11 +132,11 @@ public class PermuteChromatin {
 		
 	}
 
-	public double calculateT(int snpsSize, int varSize, int s, int v) {
+	public double calculateT(int snpsSize, int varSize, int v) {
 		//System.out.println(snpsSize+"\t"+varSize+"\t"+s+"\t"+v);
-		double a = CombinatoricsUtils.binomialCoefficientDouble(snpsSize,s);
+		double a = CombinatoricsUtils.binomialCoefficientDouble(snpsSize-varSize,varSize-v);
 		double b = CombinatoricsUtils.binomialCoefficientDouble(varSize,v);
-		double c = CombinatoricsUtils.binomialCoefficientDouble(snpsSize+varSize, s+v);
+		double c = CombinatoricsUtils.binomialCoefficientDouble(snpsSize, varSize);
 		
 		return 1.0*a*b/c;
 	}
@@ -161,20 +161,26 @@ public class PermuteChromatin {
 	}
 
 	public void testEnrichment(int p){
-		int realsnps = mapSnps();
+		//int realsnps = mapSnps();
+		//double realsnps_p = calculateT(snps.size(), realsnps);
+		//System.out.println(realsnps+"\t"+realsnps_p);
 		int realvar = mapVar();
+		//double realvar_p = calculateT(snps.size(), variants.size(), realvar);
+		System.out.println("Real variants: "+realvar);
+		System.out.println(variants.size());
 		
 		int snpperm=0;
-		int varperm=0;
 		
 		Random rand = new Random();
 		for(int i=0; i<p; i++){
 			permute(rand.nextInt(chromatin.size()/2));
-			int snpmap = mapSnps();
-			if(snpmap>=realsnps){
+			int varmap = mapVar();
+			System.out.println(varmap);
+			if(varmap>=realvar){
 				snpperm++;
 			}
 		}
+		System.out.println(snpperm*1.0/p);
 		
 	}
 	
