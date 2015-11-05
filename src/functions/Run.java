@@ -348,7 +348,7 @@ public class Run {
 	}
 	
 	public void randomSimulation() throws IOException{
-		Random rand = new Random(13);
+		Random rand = new Random(17);
 		int randInt = rand.nextInt(snps.size());
 		SNP s = snps.get(randInt);
 		double f = calculateMAF(s);
