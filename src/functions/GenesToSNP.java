@@ -3,6 +3,7 @@ package functions;
 import genome.ChromState;
 import genome.Gene;
 import genome.GenomicCoordinate;
+import genome.GenomicRegion;
 import genome.SNP;
 
 import java.io.BufferedWriter;
@@ -79,7 +80,7 @@ public class GenesToSNP {
 	}
 	**/
 	public boolean match(SNP s, Gene g){
-		if(g.region.expand(100000).contains(s.getLocation())){
+		if(g.region.expand(250000).contains(s.getLocation())){
 			return true;
 		}
 		return false;
@@ -97,7 +98,8 @@ public class GenesToSNP {
 		bw.close();
 	}
 	
-	
+	//Each snp mapped to nearest gene
+	/**
 	public void genesToSnps() throws IOException{
 		map = new HashMap<Gene, List<SNP>>();
 		
@@ -125,6 +127,41 @@ public class GenesToSNP {
 				}
 				snp++;
 				System.out.println(snp+"\t"+ isHetero.size());
+			}
+		}
+		
+	}
+	**/
+	
+	//snps mapped to multiple genes
+	public void genesToSnps() throws IOException{
+		map = new HashMap<Gene, List<SNP>>();
+		
+		Collections.sort(hasASE);
+		Collections.sort(isHetero);
+		
+
+		for(Gene g: hasASE){
+			int snp = 0;
+			
+			GenomicRegion proximal = g.copyRegion();
+			proximal.expand(250000);
+			GenomicCoordinate end = proximal.getEnd();
+			while(snp<isHetero.size() && isHetero.get(snp).getLocation().compareTo(end)<=0){
+				SNP s = isHetero.get(snp);
+				if(proximal.contains(s.getLocation())){
+					if(map.get(g)==null){
+						List<SNP> val = new ArrayList<SNP>();
+						map.put(g, val);
+					}
+					List<SNP> val = map.get(g);
+					val.add(s);
+					map.put(g, val);
+				}
+				if(snp==isHetero.size()-1){
+					break;
+				}
+				snp++;
 			}
 		}
 		

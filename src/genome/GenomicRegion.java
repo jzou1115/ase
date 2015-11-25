@@ -97,6 +97,9 @@ public class GenomicRegion {
 		return new GenomicRegion(start, other.end);
 	}
 	
+	public GenomicRegion copy(){
+		return new GenomicRegion(start.copy(), end.copy());
+	}
 	
 	
 	/**

@@ -37,6 +37,10 @@ public class GenomicCoordinate {
 		return coord;
 	}
 	
+	public GenomicCoordinate copy(){
+		return new GenomicCoordinate(chromosome, coord);
+	}
+	
 	@Override
 	public String toString(){
 		return chromosome+"\t"+coord;

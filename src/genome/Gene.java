@@ -44,6 +44,10 @@ public class Gene implements Comparable<Gene>{
 		map = new HashMap<String, ExpSample>();
 	}
 	
+	public GenomicRegion copyRegion(){
+		return region.copy();
+	}
+	
 	public List<ExpSample> getExpsamples(){
 		return esamples;
 	}
