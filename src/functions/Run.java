@@ -206,6 +206,7 @@ public class Run {
 
 	
 	//mapase
+	/**
 	public int mapASE(String st) throws IOException{
 		
 		Map<Integer,Double> pval = testSignificance();
@@ -266,7 +267,106 @@ public class Run {
 		outfile.close();
 		return variants;
 	}
+	**/
+
+	//mapase without permutations
+	public int mapASE(String st) throws IOException{
+		List<ExpSample> expsamples = gene.getExpsamples();
+		if(expsamples.size()<sampleSize){
+			System.out.println("Not enough samples");
+			System.exit(1);
+		}
+		List<ExpSample> ase = expsamples.subList(0, sampleSize);
+		System.out.println(ase.size());
+		Map<Integer,double[]> pval = new HashMap<Integer, double[]>();
+		String header = "Errors";
+		for(int i=0; i<ase.size()+2; i++){
+			System.out.println(i);
+			header = header+"\t"+i;
+			ComputeSig computesig = new ComputeSig(i, ase, errors);
+			pval.put(i, computesig.significance());
+		}
+		//write pval to file
+		BufferedWriter sigOut = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_significance.txt")));
+		sigOut.write(header+"\n");
+		for(int i=0; i<ase.size()+1; i++){
+			String line = ""+i;
+			double[] signif = pval.get(i);
+			for(int ind=0; ind<signif.length; ind++){
+				line = line + "\t"+ signif[ind];
+			}
+			sigOut.write(line+"\n");
+		}
+		sigOut.close();
+		
+		
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_mapase.txt")));
+
+		
+		
 	
+
+		int variants=0;
+		for(SNP s:snps){
+			Object[] subset = getSubset(ase.size(), sampleSize, s, ase);
+			//number of ones in subset
+			int ones = 0;
+			if(subset==null){
+				System.out.println("Not enough genosamples in "+s.getId());
+				continue;
+			}
+			int correct=0;
+			int incorrect=0;
+			for (int i=0; i<subset.length;i++) {
+				int ind= (int) subset[i];
+				ExpSample e = ase.get(ind);
+				String sampleID = e.getID();
+				GenoSample g = s.getSample(sampleID);
+				
+				int hasASE = e.getASE();
+				int isHetero = g.getHetero();
+				if(isHetero==1){
+					ones=ones+1;
+				}
+				if(isHetero == hasASE){
+					correct++;
+				}
+				else if(isHetero != hasASE){
+					incorrect++;
+				}	
+			
+				else{
+					System.out.println("Missing data: "+sampleID );
+				}
+			}
+			if(passThreshold(incorrect, correct)){
+				variants++;
+			}
+			String line = s.getId()+"\t"+correct+"\t"+incorrect;
+			for(int e=0; e<=errors; e++){
+				if(isSignificant(e, incorrect, pval.get(ones))){
+					line = line+"\t"+1;
+				}
+				else{
+					line = line+"\t"+0;
+				}
+			}
+			if(subset.length!=0){
+				outfile.write(line+"\n");
+			}
+		}
+		//outfile.write("variants: "+variants+"\n");
+		outfile.close();
+		return variants;
+	}
+	public boolean isSignificant(int e, int incorrect, double[] sig){
+		if(incorrect<=e){
+			if(sig[e] <= .0000025){
+				return true;
+			}
+		}
+		return false;
+	}
 	public boolean isSignificant(int e, int incorrect, double z){
 		if(incorrect<=e){
 			if(z<=.0000025){
