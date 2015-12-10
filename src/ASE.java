@@ -74,6 +74,16 @@ public class ASE {
 		
 	}
 	
+	private void approxASE(InputStream map, InputStream genotypes,
+			InputStream expressions, String gene, int error, int n, int perm, File outdir, String filename) throws IOException {
+		MapASE ase = new MapASE();
+		ase.setTestGene(map, gene, genotypes);
+		ase.parseGenotypes(genotypes);
+		ase.parseExpressions(expressions, outdir);
+		ase.startRun(error,n, perm, outdir, gene+"_approxASE.txt");
+		
+	}
+	
 	private void generateCombinations(InputStream map, String gene,
 			InputStream genotypes, double threshold, int error, int perm, int n, File outdir, String filename, InputStream samples) throws IOException {
 		if(filename!=null){
@@ -158,6 +168,26 @@ public class ASE {
 			
 			if(map!=null && genotypes!=null && gene!=null){
 				a.mapASE(map, genotypes, expressions, gene, error, n, perm, outdir, filename);
+
+			} else{
+				cmdArgs.printHelp(System.err);
+				System.exit(0);
+			}
+		}
+		
+		else if(fcn.equals("approximation")){
+			InputStream map = cmdArgs.getMap();
+			InputStream genotypes = cmdArgs.getGenotypeData();
+			InputStream expressions = cmdArgs.getExpressionData();
+			String gene = cmdArgs.getTestGene();
+			int error = cmdArgs.getErrorNum();
+			int n = cmdArgs.getSampleNum();
+			int perm = cmdArgs.getPermNum();
+			File outdir = cmdArgs.getOutputDir();
+			String filename = cmdArgs.getFilename();
+			
+			if(map!=null && genotypes!=null && gene!=null){
+				a.approxASE(map, genotypes, expressions, gene, error, n, perm, outdir, filename);
 
 			} else{
 				cmdArgs.printHelp(System.err);

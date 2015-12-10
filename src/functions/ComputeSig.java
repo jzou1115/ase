@@ -15,7 +15,6 @@ public class ComputeSig {
 	//Maximum number of errors allowed
 	int e;
 	
-	double[] sig;
 	
 	ComputeSig(int[] w, int[] v, int errors){
 		n = w.length;
@@ -29,6 +28,14 @@ public class ComputeSig {
 		k = w;
 		m = ones(ase);
 		e = errors;
+	}
+	
+	//this is currently the right constructor
+	ComputeSig(int size, int ase, int geno, int errors){
+		n=size;
+		m=ase;
+		k=geno;
+		e=errors;
 	}
 	
 	public int ones(int[] a){
@@ -46,40 +53,27 @@ public class ComputeSig {
 		}
 		return ret;
 	}
-	public double[] significance(){
-		//significance for each level of errors
-		sig = new double[e+1];
+	public double significance(){
+		double sig=0.0;
+		int min = Math.min(m, k);
+		int max = Math.max(m, k);
+		int upper1= (e-max+min)/2;
+		int upper2 = Math.min(min, upper1);
+		int upper3 = Math.min(n- max, upper2);
 		
-		//probability that a permutation will have hamming distance <= err
-		double cumulative=0;
-		for(int err=0; err<e+1; err++){
-			int alpha = err+ Math.abs(m+k);
-			//alpha must be even and positive
-			if((alpha & 1) == 0  && alpha>=0){
-				System.out.println("e="+err);
-				System.out.println("n="+n);
-				System.out.println("m="+m);
-				System.out.println("k="+k);
-				System.out.println("alpha="+alpha);
-				
-				long w1 = CombinatoricsUtils.binomialCoefficient(m,k-(alpha/2));
-				long w2 = CombinatoricsUtils.binomialCoefficient(n-m, alpha/2);
-				long possible = CombinatoricsUtils.binomialCoefficient(n, k);
-				//probability that a permutation of w will have hamming distance of err
-				double p = (double) w1*w2*1.0/possible;
-				System.out.println("p="+p);
-				cumulative = cumulative +p;
-			}
-			else{
-				System.out.println("e="+err);
-				System.out.println("n="+n);
-				System.out.println("m="+m);
-				System.out.println("k="+k);
-				System.out.println("alpha="+alpha);
-			}
-			
-			sig[err] = cumulative;
+		
+		for(int i=0; i<=upper3;i++){
+			//System.out.println("min="+min);
+			//System.out.println("max="+max);
+			//System.out.println("i="+i);
+			long w1 = CombinatoricsUtils.binomialCoefficient(max, min-i);
+			long w2 = CombinatoricsUtils.binomialCoefficient(n-max, i);
+			long total = CombinatoricsUtils.binomialCoefficient(n, min);
+			double p = w1*w2*1.0/total;
+			//System.out.println(p);
+			sig= sig+p;
 		}
+
 		return sig;
 	}
 	

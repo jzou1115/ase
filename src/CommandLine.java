@@ -25,6 +25,7 @@ public class CommandLine implements CommandLineParams{
 	private static final String VAR_TAG = "-v";
 	private static final String TSS_TAG ="-z";
 	private static final String MAP_FCN = "genestosnps";
+	private static final String APPROX_FCN = "approximation";
 	private static final String SIM_FCN = "simulation";
 	private static final String ASE_FCN = "mapase";
 	private static final String COMB_FCN = "combinations";
@@ -68,6 +69,9 @@ public class CommandLine implements CommandLineParams{
 				break;
 			case ASE_FCN:
 				function = ASE_FCN;
+				break;
+			case APPROX_FCN:
+				function = APPROX_FCN;
 				break;
 			case COMB_FCN:
 				function = COMB_FCN;

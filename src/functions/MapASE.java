@@ -44,11 +44,17 @@ public class MapASE {
 		ParseGene.parseExpressions(expressions, gene, outdir);
 	}
 
+	//with perm
 	public void startRun(int error, int n, int perm, File outdir) throws IOException {
 		Run r = new Run(gene, snps, error, perm, n, outdir);
 		r.mapASE(gene.getId());
 	}
 	
 	
+	//without perm
+	public void startRun(int error, int n, int perm, File outdir, String filename) throws IOException {
+		Run r = new Run(gene, snps, error, perm, n, outdir);
+		r.mapASE(gene.getId(), filename);
+	}
 
 }

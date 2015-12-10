@@ -140,16 +140,27 @@ public class GenesToSNP {
 		Collections.sort(hasASE);
 		Collections.sort(isHetero);
 		
-
 		for(Gene g: hasASE){
-			int snp = 0;
 			
-			GenomicRegion proximal = g.copyRegion();
-			proximal.expand(250000);
-			GenomicCoordinate end = proximal.getEnd();
-			while(snp<isHetero.size() && isHetero.get(snp).getLocation().compareTo(end)<=0){
-				SNP s = isHetero.get(snp);
-				if(proximal.contains(s.getLocation())){
+			//define proximal region
+			int chr = g.getRegion().getChromosome();
+			long start = g.getRegion().getStart().getCoord();
+			if(start-250000>=0){
+				start = start-250000;
+			}
+			else{
+				start = 0;
+			}
+			long end = g.getRegion().getEnd().getCoord()+ 250000;
+			GenomicRegion proximal = new GenomicRegion(new GenomicCoordinate(chr, start), new GenomicCoordinate(chr, end));
+
+			GenomicCoordinate endProx = proximal.getEnd();
+			
+			for(SNP s: isHetero){
+				if(s.getLocation().compareTo(endProx)>0){
+					break;
+				}
+				else if(proximal.contains(s.getLocation())){
 					if(map.get(g)==null){
 						List<SNP> val = new ArrayList<SNP>();
 						map.put(g, val);
@@ -158,11 +169,8 @@ public class GenesToSNP {
 					val.add(s);
 					map.put(g, val);
 				}
-				if(snp==isHetero.size()-1){
-					break;
-				}
-				snp++;
 			}
+			
 		}
 		
 	}
