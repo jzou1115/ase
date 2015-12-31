@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,28 +70,35 @@ public class Run {
 		return ret.toArray();
 	}
 	
-	public Object[] getSubset(int total, int num, SNP s, List<ExpSample> exp){
-		List<Integer> tried = new ArrayList<Integer>();
-		Random rand = new Random();
-		List<Integer> ret = new ArrayList<Integer>();
-		int i=0;
-		int j;
-		while(i<num){
-			if(tried.size()==total){
-				return ret.toArray();
+	public List<GenoSample> getSubset(int total, int num, SNP s, List<ExpSample> exp){
+		List<String> sampleids = new ArrayList<String>();
+		for(int j=0; j< exp.size(); j++){
+			sampleids.add(exp.get(j).getID());
+		}
+		
+		List<GenoSample> geno = new ArrayList<GenoSample>(s.getGenosamples());
+		Collections.shuffle(geno, new Random(13));
+
+		List<GenoSample> subset = new ArrayList<GenoSample>();
+		int i=0; //index for geno
+		int k=0; //index for retInd
+	
+		//iterate over genosamples and put index (i) of ones with matching expsample in retInd
+		while(k<num){
+			//not enough matching genosamples and expsamples
+			if(i>=geno.size()){
+				return null;
 			}
-			j= rand.nextInt(total);
-			if(!tried.contains(j)){
-				tried.add(j);
-				String gtexID = exp.get(j).getID();
-				if(s.getSample(gtexID)!=null){
-					ret.add(j);
-					i++;
-				}
+			//matching genosample and expsample
+			if(sampleids.contains(geno.get(i).getID())){
+				subset.add(geno.get(i));
+				k++;
 			}
+			i++;
 		}
 
-		return ret.toArray();
+		//enough matching genosamples and expsamples
+		return subset;
 	}
 	
 	//simulation
@@ -204,12 +212,10 @@ public class Run {
 		return ret;
 	}
 
-	/**
 	
+	/**
 	//temp debug perm method
 	public void mapASE(String st) throws IOException{
-
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_permASE.txt")));
 
 		List<ExpSample> ase = gene.getExpsamples();
 		
@@ -217,10 +223,12 @@ public class Run {
 			System.out.println("Not enough samples");
 			System.exit(1);
 		}
-		
+		int count =0;
 		for(SNP s:snps){
 			Object[] subset = getSubset(ase.size(), sampleSize, s, gene.getExpsamples());
 			if(subset!=null){
+				BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_"+s.getId()+"_permASE.txt")));
+
 				int correct=0;
 				int incorrect=0;
 				int[] geno = new int[sampleSize];
@@ -263,14 +271,18 @@ public class Run {
 				for(int a=0; a<sig.length;a++){
 					outfile.write(sig[a]+"\n");
 				}
-				break;
+				outfile.close();
+				count++;
+				if(count>100){
+					break;
+				}
 			}
 
 		}
 		//outfile.write("variants: "+variants+"\n");
-		outfile.close();
 	}
 	**/
+	
 	
 	//mapase with permuations
 	public void mapASE(String st) throws IOException{
@@ -285,20 +297,22 @@ public class Run {
 		}
 
 		for(SNP s:snps){
-			Object[] subset = getSubset(ase.size(), sampleSize, s, gene.getExpsamples());
+			//subset of genosamples that have expression samples
+			List<GenoSample> subset = getSubset(ase.size(), sampleSize, s, ase);
 			if(subset==null){
+				System.out.println("Not enough genosamples in "+s.getId());
 				continue;
 			}
+			
 			int correct=0;
 			int incorrect=0;
 			int[] geno = new int[sampleSize];
 			int[] aseSub = new int[sampleSize];
-			for (int i=0; i<subset.length;i++) {
-				int ind= (int) subset[i];
-				ExpSample e = ase.get(ind);
-				String sampleID = e.getID();
-				GenoSample g = s.getSample(sampleID);
-				
+			for (int i=0; i<subset.size();i++) {
+				GenoSample g = subset.get(i);
+				String sampleID = g.getID();
+				ExpSample e = gene.getSample(sampleID);
+			
 				int hasASE = e.getASE();
 				int isHetero = g.getHetero();
 				geno[i] = isHetero;
@@ -325,14 +339,13 @@ public class Run {
 				line = line+"\t"+0;
 			}
 		
-			if(subset.length!=0){
+			if(subset.size()!=0){
 				outfile.write(line+"\n");
 			}
 		}
 		//outfile.write("variants: "+variants+"\n");
 		outfile.close();
 	}
-
 
 	//mapase without permutations
 	public void mapASE(String st, String filename) throws IOException{
@@ -343,12 +356,13 @@ public class Run {
 		}
 	
 
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+filename)));
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
 
 		
 		for(SNP s:snps){
-			Object[] subset = getSubset(ase.size(), sampleSize, s, ase);
-			if(subset==null || subset.length==0){
+			//subset of genosamples that have expression samples
+			List<GenoSample> subset = getSubset(ase.size(), sampleSize, s, ase);
+			if(subset==null){
 				System.out.println("Not enough genosamples in "+s.getId());
 				continue;
 			}
@@ -361,12 +375,11 @@ public class Run {
 			
 			int correct=0;
 			int incorrect=0;
-			for (int i=0; i<subset.length;i++) {
-				int ind= (int) subset[i];
-				ExpSample e = ase.get(ind);
-				String sampleID = e.getID();
-				GenoSample g = s.getSample(sampleID);
-
+			for (int i=0; i<subset.size();i++) {
+				GenoSample g = subset.get(i);
+				String sampleID = g.getID();
+				ExpSample e = gene.getSample(sampleID);
+				
 				int hasASE = e.getASE();
 				if(hasASE==1){
 					m=m+1;
@@ -570,6 +583,7 @@ public class Run {
 
 		return total*1.0/perm;
 	}
+	
 	/**
 	//temp debug perm method
 	public double[] testSignificance(int[] geno, int[] ase, int mismatch) throws IOException{	

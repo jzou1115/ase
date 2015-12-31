@@ -44,7 +44,14 @@ public class ASE {
 
 	
 	private void createMap(InputStream snps, InputStream genes, InputStream chrom, File outdir, String filename) throws IOException {
-		GenesToSNP map = new GenesToSNP(snps, genes, chrom);
+		GenesToSNP map;
+		if(chrom==null){
+			map = new GenesToSNP(snps, genes);
+		}
+		else{
+			map = new GenesToSNP(snps, genes, chrom);
+		}
+		
 		if(filename!=null){
 			map.write(outdir, filename);	
 		} else{

@@ -39,8 +39,8 @@ public class ParseGene {
 		}
 		if(tokens.length==5){
 			String id = tokens[0];
-			int chr = Integer.parseInt(tokens[2]);
-			long s = Long.parseLong(tokens[1]);
+			int chr = Integer.parseInt(tokens[1]);
+			long s = Long.parseLong(tokens[2]);
 			long e = Long.parseLong(tokens[3]);
 			long t = Long.parseLong(tokens[4]);
 			GenomicCoordinate start = new GenomicCoordinate(chr, s);
