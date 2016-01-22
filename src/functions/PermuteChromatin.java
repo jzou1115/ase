@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -17,6 +18,7 @@ import genome.GenomicRegion;
 import genome.SNP;
 
 import org.apache.commons.math3.util.CombinatoricsUtils;// MathUtils.binomialCoefficient;
+import org.apache.commons.math3.distribution.BinomialDistribution; //binomial distribution cdf
 
 public class PermuteChromatin {
 	
@@ -31,7 +33,9 @@ public class PermuteChromatin {
 
 	int size;
 	File outdir;
-	public PermuteChromatin(List<ChromState> chrom, List<SNP> snp, List<SNP> variant, File out){
+	String filename;
+	
+	public PermuteChromatin(List<ChromState> chrom, List<SNP> snp, List<SNP> variant, File out, String f){
 		chromatin = chrom;
 		snps = snp;
 		variants = variant;
@@ -43,6 +47,7 @@ public class PermuteChromatin {
 		chromosome = new GenomicRegion(new GenomicCoordinate(chromNum,min), new GenomicCoordinate(chromNum,max));
 	
 		outdir=out;
+		filename=f;
 	}
 	
 	public void filterChromatin(){
@@ -60,10 +65,8 @@ public class PermuteChromatin {
 	public int getSize(){
 		return size;
 	}
-	public void permute(int n){
-	//	System.out.println("Starting permutation with "+chromatin.size());
+	public void permute(int n) throws IOException{
 	//	BufferedWriter file = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+"permutation"+n)));
-		
 		List<ChromState> chromatin2 = new ArrayList<ChromState>();
 		for(int i=0; i<chromatin.size();i++){
 			int ind;
@@ -71,9 +74,7 @@ public class PermuteChromatin {
 				ind = i+n;
 			}
 			else{
-				//System.out.println(i+"+"+n+"="+(i+n));
 				int offset = (i+n)-chromatin.size();
-				//System.out.println(offset);
 				ind = offset;
 			}
 			
@@ -84,70 +85,75 @@ public class PermuteChromatin {
 		}
 		
 		if(chromatin2.size()!=chromatin.size()){
-			System.out.print("errorerrorerror");
+			System.out.print("error in chrom perm");
 		}
-
-		chromatin = chromatin2;
-		Collections.sort(chromatin);
 		/**
-		for(ChromState c:chromatin){
-			file.write(c.toString()+"\n");
+		for(int i=0; i<chromatin.size(); i++){
+			file.write(chromatin.get(i).toString()+"\n");
+			file.write(chromatin2.get(i).toString()+"\n");
 		}
 		file.close();
-**/
+		**/
+		chromatin = chromatin2;
+		Collections.sort(chromatin);
+		
+	
+		
 	}
 	
-	public int mapSnps(){
-		Map<SNP,ChromState> map = AssignChromState.assignStateSNP(snps, chromatin);
-		int num=0;
-		for(SNP s:snps){
+	public Map<String, Double> mapVar(){
+		Map<String, Double> ret = new HashMap<String, Double>();
+		Map<SNP,ChromState> map = AssignChromState.assignStateSNP(variants, chromatin);
+
+		for(SNP s:variants){
 			if(map.containsKey(s)){
-				//System.out.print(s.getChromState()+"_"+state);
-				if( s.getChromState().equals("9_TxReg") || s.getChromState().equals("10_TxEnh5\'") || s.getChromState().equals("11_TxEnh3\'") || s.getChromState().equals("12_TxEnhW") || s.getChromState().equals("13_EnhA1") || s.getChromState().equals("14_EnhA2") || s.getChromState().equals("15_EnhAF") || s.getChromState().equals("16_EnhW1") || s.getChromState().equals("17_EnhW2")){
-					//	System.out.print("YES\n");
-					num++;
+				String state = map.get(s).getState();
+				if(!ret.containsKey(state)){
+					ret.put(state, 0.0);
 				}
-				else{
-					//System.out.print("\n");
-				}
+
+				Double val = ret.get(state);
+				val = val+1;
+				ret.put(state, val);
+
 			}
 		}
 		
-		return num;
+
+		int numVar = variants.size();
+		for(String chromState:ret.keySet()){
+			Double prop = ret.get(chromState)*1.0/numVar;
+			ret.put(chromState, prop);
+		}
+
+		return ret;
+		
 	}
 	
-	public int mapVar(){
+	public Map<String, Integer> countVar(){
+		Map<String, Integer> ret = new HashMap<String, Integer>();
 		Map<SNP,ChromState> map = AssignChromState.assignStateSNP(variants, chromatin);
-		int num=0;
+
 		for(SNP s:variants){
 			if(map.containsKey(s)){
-				//System.out.print(s.getChromState()+"_"+state);
-				if(s.getChromState().equals("9_TxReg") || s.getChromState().equals("10_TxEnh5\'") || s.getChromState().equals("11_TxEnh3\'") || s.getChromState().equals("12_TxEnhW") || s.getChromState().equals("13_EnhA1") || s.getChromState().equals("14_EnhA2") || s.getChromState().equals("15_EnhAF") || s.getChromState().equals("16_EnhW1") || s.getChromState().equals("17_EnhW2")){
-				//	System.out.print("YES\n");
-					num++;
+				String state = map.get(s).getState();
+				if(!ret.containsKey(state)){
+					ret.put(state, 0);
 				}
+
+				int val = ret.get(state);
+				val = val+1;
+				ret.put(state, val);
+
 			}
 		}
-		return num;
+		return ret;
 		
 	}
 
-	public double calculateT(int snpsSize, int varSize, int v) {
-		//System.out.println(snpsSize+"\t"+varSize+"\t"+s+"\t"+v);
-		double a = CombinatoricsUtils.binomialCoefficientDouble(snpsSize-varSize,varSize-v);
-		double b = CombinatoricsUtils.binomialCoefficientDouble(varSize,v);
-		double c = CombinatoricsUtils.binomialCoefficientDouble(snpsSize, varSize);
-		
-		return 1.0*a*b/c;
-	}
-	
-	public double calculateT(int total, int s){
-		double a = CombinatoricsUtils.binomialCoefficientDouble(total,s);
-		double p = 1.0*s/total;
-		double q  = 1-p;
-		int not = total-s;
-		
-		return a*Math.pow(p, s)*Math.pow(q,not);
+	public double calculatePValue(int trials, int variants, double p){
+		BinomialDistribution bin = new BinomialDistribution(trials,p);
+		return 1.0- bin.cumulativeProbability(variants);
 	}
 
 	public int getVarSize() {
@@ -160,28 +166,47 @@ public class PermuteChromatin {
 		return snps.size();
 	}
 
-	public void testEnrichment(int p){
-		//int realsnps = mapSnps();
-		//double realsnps_p = calculateT(snps.size(), realsnps);
-		//System.out.println(realsnps+"\t"+realsnps_p);
-		int realvar = mapVar();
-		//double realvar_p = calculateT(snps.size(), variants.size(), realvar);
-		System.out.println("Real variants: "+realvar);
-		System.out.println(variants.size());
+	public void testEnrichment(int p) throws IOException{
+
+		Map<String,Integer> realvar = countVar();
 		
-		int snpperm=0;
+		Map<String,Double> allPerm = new HashMap<String, Double>();
 		
+		//circular permutations to get null mean
 		Random rand = new Random();
 		for(int i=0; i<p; i++){
+			if(i%1000==0){
+				System.out.println(i);
+			}
 			permute(rand.nextInt(chromatin.size()/2));
-			int varmap = mapVar();
-			System.out.println(varmap);
-			if(varmap>=realvar){
-				snpperm++;
+			Map<String, Double> perm = mapVar();
+			for(String chromState:perm.keySet()){
+				if(! allPerm.containsKey(chromState)){
+					allPerm.put(chromState, 0.0);
+				}
+				double numVar = perm.get(chromState) + allPerm.get(chromState);
+				allPerm.put(chromState, numVar);
 			}
 		}
-		System.out.println(snpperm*1.0/p);
+		//Calculate averages of each chromatin state
+		for(String chromState:allPerm.keySet()){
+			double avg = allPerm.get(chromState)*1.0/p;
+			allPerm.put(chromState, avg);
+		}
 		
+		//calculate p-values of chromatin state enrichment and write to file
+		BufferedWriter file = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename+"_enrichment.txt")));
+		for(String chromState:allPerm.keySet()){
+			if(realvar.containsKey(chromState)){
+				double pval = calculatePValue(variants.size(), realvar.get(chromState), allPerm.get(chromState));
+				file.write(chromState+"\t"+ allPerm.get(chromState)*variants.size()+"\t"+realvar.get(chromState)+"\t"+pval+"\n");
+			}
+			else{
+				double pval = calculatePValue(variants.size(), 0, allPerm.get(chromState));
+				file.write(chromState+"\t"+ allPerm.get(chromState)*variants.size()+"\t"+0.0+"\t"+pval+"\n");
+			}
+		}
+		file.close();
 	}
 	
 }

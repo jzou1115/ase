@@ -70,6 +70,7 @@ public class Run {
 		return ret.toArray();
 	}
 	
+	//return subset of genosamples that also have expsamples
 	public List<GenoSample> getSubset(int total, int num, SNP s, List<ExpSample> exp){
 		List<String> sampleids = new ArrayList<String>();
 		for(int j=0; j< exp.size(); j++){
@@ -212,77 +213,7 @@ public class Run {
 		return ret;
 	}
 
-	
-	/**
-	//temp debug perm method
-	public void mapASE(String st) throws IOException{
 
-		List<ExpSample> ase = gene.getExpsamples();
-		
-		if(ase.size()<sampleSize){
-			System.out.println("Not enough samples");
-			System.exit(1);
-		}
-		int count =0;
-		for(SNP s:snps){
-			Object[] subset = getSubset(ase.size(), sampleSize, s, gene.getExpsamples());
-			if(subset!=null){
-				BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+st+"_"+s.getId()+"_permASE.txt")));
-
-				int correct=0;
-				int incorrect=0;
-				int[] geno = new int[sampleSize];
-				int[] aseSub = new int[sampleSize];
-				int m=0;
-				int k=0;
-				for (int i=0; i<subset.length;i++) {
-					int ind= (int) subset[i];
-					ExpSample e = ase.get(ind);
-					String sampleID = e.getID();
-					GenoSample g = s.getSample(sampleID);
-
-					int hasASE = e.getASE();
-					if(hasASE==1){
-						m++;
-					}
-					int isHetero = g.getHetero();
-					if(isHetero==1){
-						k++;
-					}
-					geno[i] = isHetero;
-					aseSub[i] = hasASE;
-					if(isHetero == hasASE){
-						correct++;
-					}
-					else if(isHetero != hasASE){
-						incorrect++;
-					}	
-
-					else{
-						System.out.println("Missing data: "+sampleID );
-					}
-				}
-				ComputeSig si = new ComputeSig(sampleSize, m, k, incorrect);
-				double p = si.significance();
-				
-				double[] sig = testSignificance(geno,aseSub, incorrect);
-				String line = s.getId()+"\t"+correct+"\t"+incorrect+"\t"+p;
-				outfile.write(line+"\n");
-				for(int a=0; a<sig.length;a++){
-					outfile.write(sig[a]+"\n");
-				}
-				outfile.close();
-				count++;
-				if(count>100){
-					break;
-				}
-			}
-
-		}
-		//outfile.write("variants: "+variants+"\n");
-	}
-	**/
-	
 	
 	//mapase with permuations
 	public void mapASE(String st) throws IOException{
@@ -357,7 +288,7 @@ public class Run {
 	
 
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
-
+		BufferedWriter outfile2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename+"_significant.txt")));
 		
 		for(SNP s:snps){
 			//subset of genosamples that have expression samples
@@ -402,9 +333,10 @@ public class Run {
 
 			ComputeSig sig = new ComputeSig(sampleSize, m, k, incorrect);
 			double p = sig.significance();
-			String line = s.getId()+"\t"+correct+"\t"+incorrect+"\t"+p;
+			String line = gene.toString()+"\t"+s.toString()+"\t"+correct+"\t"+incorrect+"\t"+p;
 			if(isSignificant(errors, incorrect, p)){
 				line = line+"\t"+1;
+				outfile2.write(line);
 			}
 			else{
 				line = line+"\t"+0;
@@ -413,10 +345,8 @@ public class Run {
 			outfile.write(line+"\n");
 		}
 
-
-	
-		//outfile.write("variants: "+variants+"\n");
 		outfile.close();
+		outfile2.close();
 
 	}
 
@@ -499,7 +429,7 @@ public class Run {
 		}
 		return ret;
 	}
-	
+
 	public void randomSimulation() throws IOException{
 		Random rand = new Random(17);
 		int randInt = rand.nextInt(snps.size());
@@ -584,26 +514,7 @@ public class Run {
 		return total*1.0/perm;
 	}
 	
-	/**
-	//temp debug perm method
-	public double[] testSignificance(int[] geno, int[] ase, int mismatch) throws IOException{	
-		double[] pvals = new double[perm];
-		int total=0; //number of permutations that have equal or less mismatches
-		for(int i=0; i<perm;i++){
 
-			int[] p = permute(geno, geno.length);
-			int h = hamming(ase, p);
-			
-			if(h<=mismatch){
-				total++;
-			}
-			pvals[i] = total*1.0/(i+1);
-			
-		}
-		
-		return pvals;
-	}
-	**/
 	private int hamming(int[] ase, int[] p){
 		int errors=0;
 		if(ase.length != p.length){

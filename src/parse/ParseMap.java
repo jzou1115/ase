@@ -56,14 +56,15 @@ public class ParseMap {
 				}
 				else{
 					SNP s = ParseSNP.parseSNP(line);
-					snps.add(s);
-					snpmap.put(s.getId(), s);
-					snpsgene.add(s);
-					
-					snpLoc.put(s.getLocation().getChromosome()+"_"+s.getLocation().getCoord(), s);
-					//System.out.println(s.getLocation().getChromosome()+"_"+s.getLocation().getCoord());
-					
-					
+					if(s != null || s.getLocation()==null){
+						snps.add(s);
+						snpmap.put(s.getId(), s);
+						snpsgene.add(s);
+						
+						snpLoc.put(s.getLocation().getChromosome()+"_"+s.getLocation().getCoord(), s);
+						//System.out.println(s.getLocation().getChromosome()+"_"+s.getLocation().getCoord());	
+						
+					}
 				}
 			}
 		} catch (IOException e) {

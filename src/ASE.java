@@ -36,7 +36,7 @@ public class ASE {
 		
 		List<ChromState> chrom = ParseChromState.parseChromState(states);
 		
-		PermuteChromatin perm = new PermuteChromatin(chrom, s, var2, outdir);
+		PermuteChromatin perm = new PermuteChromatin(chrom, s, var2, outdir, filename);
 		
 		perm.testEnrichment(p);
 		
@@ -92,17 +92,13 @@ public class ASE {
 	}
 	
 	private void generateCombinations(InputStream map, String gene,
-			InputStream genotypes, double threshold, int error, int perm, int n, File outdir, String filename, InputStream samples) throws IOException {
-		if(filename!=null){
-			Combinations combinations = new Combinations(map, gene, genotypes, outdir, samples);
-			combinations.write(filename);
-			combinations.simulate(threshold, error, perm, n);
+			InputStream genotypes, InputStream expression, int n, int e, File out, String f) throws IOException {
+		if(f!=null){
+			Combinations combinations = new Combinations(map, gene, genotypes, expression, n, e, out, f);
 		}
 		else{
-			filename = "combinations.txt";
-			Combinations combinations = new Combinations(map, gene, genotypes, outdir, samples);
-			combinations.write(filename);
-			combinations.simulate(threshold, error, perm, n);
+			f = gene+"_approxASE.txt.txt";
+			Combinations combinations = new Combinations(map, gene, genotypes, expression, n, e, out, f);
 		}
 	}
 	
@@ -216,30 +212,24 @@ public class ASE {
 			}
 			
 		}
-		/**
 		else if(fcn.equals("combinations")){
 			InputStream map = cmdArgs.getMap();
 			String gene = cmdArgs.getTestGene();
 			InputStream genotypes = cmdArgs.getGenotypeData();
-			File outdir = cmdArgs.getOutputDir();
-			String outfile = cmdArgs.getFilename();
-			//InputStream expressions = cmdArgs.getExpressionData();
-			 InputStream samples = cmdArgs.getSamples();
-			
-			double threshold = cmdArgs.getThreshold();
-			int error = cmdArgs.getErrorNum();
-			int perm = cmdArgs.getPermNum();
+			InputStream expression = cmdArgs.getExpressionData();
 			int n = cmdArgs.getSampleNum();
+			int e = cmdArgs.getErrorNum();
+			File out = cmdArgs.getOutputDir();
+			String f = cmdArgs.getFilename();
 			
-			if(map!=null && gene!=null && genotypes!=null){
-				a.generateCombinations(map, gene, genotypes, threshold, error, perm, n, outdir, outfile, samples);
+			if(map!=null && gene!=null && genotypes!=null && expression!=null){
+				a.generateCombinations(map, gene, genotypes, expression, n, e, out, f);
 			} else{
 				cmdArgs.printHelp(System.err);
 				System.exit(0);
 			}
 			
 		}
-		**/
 		else{
 			System.out.println("Function not recognized");
 			cmdArgs.printHelp(System.err);

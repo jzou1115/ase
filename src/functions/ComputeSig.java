@@ -1,7 +1,7 @@
 package functions;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
-
-import org.apache.commons.math3.util.CombinatoricsUtils;
 
 import sample.ExpSample;
 
@@ -63,18 +63,85 @@ public class ComputeSig {
 		
 		
 		for(int i=0; i<=upper3;i++){
-			//System.out.println("min="+min);
-			//System.out.println("max="+max);
-			//System.out.println("i="+i);
-			long w1 = CombinatoricsUtils.binomialCoefficient(max, min-i);
-			long w2 = CombinatoricsUtils.binomialCoefficient(n-max, i);
-			long total = CombinatoricsUtils.binomialCoefficient(n, min);
-			double p = w1*w2*1.0/total;
-			//System.out.println(p);
+			double logw1 = logchoose(max, min-i);
+			double logw2 = logchoose(n-max, i);
+			double logtotal = logchoose(n, min);
+			
+			double logp = logw1+logw2-logtotal;
+			double p = Math.exp(logp);
 			sig= sig+p;
+		}
+		
+		//roundoff error
+		if(sig>1){
+			sig = 1.0;
 		}
 
 		return sig;
 	}
+	
+	public double logchoose(int a, int b){
+		double lc = 0.0;
+	
+		if(a==b){
+			return 0.0;
+		}
+		if(b==1 || b==(a-1)){
+			return Math.log(a);
+		}
+		
+		if(b > (a-b)){
+			for(int i=b+1; i<=a; i++){
+				lc = lc + Math.log(i);
+			}
+			for(int j=1; j<=(a-b); j++){
+				lc = lc - Math.log(j);
+			}
+		}
+		else{
+			for(int i=(a-b+1); i<=a; i++){
+				lc = lc + Math.log(i);
+			}
+			for(int j=1; j<=b; j++){
+				lc = lc - Math.log(j);
+			}
+		}
+		
+		return lc;
+	}
+	
+	/**
+	public BigDecimal choose(int a, int b){
+		BigDecimal bc;
+		if(a==b){
+			return BigDecimal.valueOf(1);
+		}
+		if(b==1 || b==a-1){
+			return BigDecimal.valueOf(a);
+		}
+		BigDecimal numerator = BigDecimal.valueOf(1);
+		BigDecimal denominator = BigDecimal.valueOf(1);
+		if(b > (a-b)){
+			for(int i=b+1; i<=a;i++){
+				numerator = numerator.multiply(BigDecimal.valueOf(i));
+			}
+			for(int j=1; j<=(a-b); j++){
+				denominator = denominator.multiply(BigDecimal.valueOf(j));
+			}
+			bc = numerator.divide(denominator);
+		}
+		
+		else{
+			for(int i=(a-b+1); i<=a;i++){
+				numerator = numerator.multiply(BigDecimal.valueOf(i));
+			}
+			for(int j=1; j<=b; j++){
+				denominator = denominator.multiply(BigDecimal.valueOf(j));
+			}
+			bc = numerator.divide(denominator);
+		}
+		return bc;
+	}
+	**/
 	
 }

@@ -88,7 +88,7 @@ public class Gene implements Comparable<Gene>{
 	
 
 	public String toString(){
-		return id+"\t"+region.getChromosome()+"\t"+region.getStart().getCoord()+"\t"+region.getEnd().getCoord()+"\t"+tss;
+		return id+"\t"+region.getChromosome()+"\t"+region.getStart().getCoord()+"\t"+region.getEnd().getCoord()+"\t"+tss.getCoord();
 	}
 
 	public void sortSamples() {
@@ -97,5 +97,9 @@ public class Gene implements Comparable<Gene>{
 
 	public ExpSample getSample(String s){
 		return map.get(s);
+	}
+	
+	public GenomicCoordinate getTSS(){
+		return tss;
 	}
 }
