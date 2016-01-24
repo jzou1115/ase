@@ -53,6 +53,7 @@ public class ComputeSig {
 		}
 		return ret;
 	}
+	/**
 	public double significance(){
 		double sig=0.0;
 		int min = Math.min(m, k);
@@ -79,6 +80,7 @@ public class ComputeSig {
 
 		return sig;
 	}
+	*
 	
 	public double logchoose(int a, int b){
 		double lc = 0.0;
@@ -109,8 +111,35 @@ public class ComputeSig {
 		
 		return lc;
 	}
+	**/
+	public double significance(){
+		double sig=0.0;
+		int min = Math.min(m, k);
+		int max = Math.max(m, k);
+		int upper1= (e-max+min)/2;
+		int upper2 = Math.min(min, upper1);
+		int upper3 = Math.min(n- max, upper2);
+		
+		
+		for(int i=0; i<=upper3;i++){
+			BigDecimal logw1 = choose(max, min-i);
+			BigDecimal logw2 = choose(n-max, i);
+			BigDecimal logtotal =choose(n, min);
+			
+			BigDecimal bd = logw1.multiply(logw2).divide(logtotal, 10, BigDecimal.ROUND_HALF_UP);
+			double p = bd.doubleValue();
+			
+			sig= sig+p;
+		}
+		
+		//roundoff error
+		if(sig>1){
+			sig = 1.0;
+		}
+
+		return sig;
+	}
 	
-	/**
 	public BigDecimal choose(int a, int b){
 		BigDecimal bc;
 		if(a==b){
@@ -142,6 +171,5 @@ public class ComputeSig {
 		}
 		return bc;
 	}
-	**/
 	
 }

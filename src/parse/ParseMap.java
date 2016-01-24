@@ -77,6 +77,7 @@ public class ParseMap {
 		map = new HashMap<Gene, List<SNP>>();
 		snps = new ArrayList<SNP>();
 		snpLoc = new HashMap<String, SNP>();
+		snpmap = new HashMap<String, SNP>();
 		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
@@ -102,6 +103,12 @@ public class ParseMap {
 						}
 						else{
 							System.out.println("snp duplicate: "+key);
+						}
+						if(!snpmap.containsKey(s.getId())){
+							snpmap.put(s.getId(), s);	
+						}
+						else{
+							System.out.println("snp duplicate: "+s.getId());
 						}
 						
 					}

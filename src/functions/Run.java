@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import sample.*;
 import genome.*;
@@ -72,33 +74,25 @@ public class Run {
 	
 	//return subset of genosamples that also have expsamples
 	public List<GenoSample> getSubset(int total, int num, SNP s, List<ExpSample> exp){
-		List<String> sampleids = new ArrayList<String>();
-		for(int j=0; j< exp.size(); j++){
-			sampleids.add(exp.get(j).getID());
+		Set<String> sampleids = new HashSet<String>();
+		for(ExpSample e:exp){
+			sampleids.add(e.getID());
 		}
 		
 		List<GenoSample> geno = new ArrayList<GenoSample>(s.getGenosamples());
-		Collections.shuffle(geno, new Random(13));
-
-		List<GenoSample> subset = new ArrayList<GenoSample>();
-		int i=0; //index for geno
-		int k=0; //index for retInd
-	
-		//iterate over genosamples and put index (i) of ones with matching expsample in retInd
-		while(k<num){
-			//not enough matching genosamples and expsamples
-			if(i>=geno.size()){
-				return null;
-			}
-			//matching genosample and expsample
-			if(sampleids.contains(geno.get(i).getID())){
-				subset.add(geno.get(i));
-				k++;
-			}
-			i++;
+		Set<String> sampleids2 = new HashSet<String>();
+		for(int j=0; j< geno.size(); j++){
+			sampleids2.add(geno.get(j).getID());
 		}
-
-		//enough matching genosamples and expsamples
+		
+		sampleids.retainAll(sampleids2);
+		
+		List<GenoSample> subset = new ArrayList<GenoSample>();
+		for(GenoSample g:geno){
+			if(sampleids.contains(g.getID())){
+				subset.add(g);
+			}
+		}
 		return subset;
 	}
 	
@@ -281,20 +275,20 @@ public class Run {
 	//mapase without permutations
 	public void mapASE(String st, String filename) throws IOException{
 		List<ExpSample> ase = gene.getExpsamples();
+/**
 		if(ase.size()<sampleSize){
 			System.out.println("Not enough expsamples");
 			System.exit(1);
 		}
-	
+**/
 
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
-		BufferedWriter outfile2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename+"_significant.txt")));
+		//BufferedWriter outfile2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename+"_significant.txt")));
 		
 		for(SNP s:snps){
 			//subset of genosamples that have expression samples
 			List<GenoSample> subset = getSubset(ase.size(), sampleSize, s, ase);
 			if(subset==null){
-				System.out.println("Not enough genosamples in "+s.getId());
 				continue;
 			}
 			
@@ -331,12 +325,13 @@ public class Run {
 				}
 			}
 
-			ComputeSig sig = new ComputeSig(sampleSize, m, k, incorrect);
+			ComputeSig sig = new ComputeSig(subset.size(), m, k, incorrect);
 			double p = sig.significance();
-			String line = gene.toString()+"\t"+s.toString()+"\t"+correct+"\t"+incorrect+"\t"+p;
+			String line = gene.toString()+"\t"+s.toString()+"\t"+m+"\t"+k+"\t"+subset.size()+"\t"+incorrect+"\t"+p;
+			
 			if(isSignificant(errors, incorrect, p)){
 				line = line+"\t"+1;
-				outfile2.write(line);
+			//	outfile2.write(line);
 			}
 			else{
 				line = line+"\t"+0;
@@ -346,7 +341,7 @@ public class Run {
 		}
 
 		outfile.close();
-		outfile2.close();
+		//outfile2.close();
 
 	}
 

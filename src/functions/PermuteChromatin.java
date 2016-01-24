@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Random;
 
 import genome.ChromState;
+import genome.Gene;
 import genome.GenomicCoordinate;
 import genome.GenomicRegion;
 import genome.SNP;
@@ -31,13 +32,14 @@ public class PermuteChromatin {
 	long min;
 	long max;
 
-	int size;
 	File outdir;
 	String filename;
 	
-	public PermuteChromatin(List<ChromState> chrom, List<SNP> snp, List<SNP> variant, File out, String f){
+	public PermuteChromatin(List<ChromState> chrom, List<SNP> snp, List<SNP> variant, Gene gene, File out, String f){
 		chromatin = chrom;
 		snps = snp;
+		filtersnps(gene);
+		filterchrom(gene);
 		variants = variant;
 		
 		chromNum = snps.get(0).getLocation().getChromosome();
@@ -50,20 +52,29 @@ public class PermuteChromatin {
 		filename=f;
 	}
 	
-	public void filterChromatin(){
-		List<ChromState> chrom = new ArrayList<ChromState>();
-		for(ChromState c:chromatin){
-			if(c.getRegion().getChromosome()==chromNum){
-				chrom.add(c);
+	public void filtersnps(Gene g){
+		GenomicRegion proximal = g.copyRegion().expand(250000);
+		List<SNP> filtered = new ArrayList<SNP>();
+		for(SNP s:snps){
+			if(proximal.contains(s.getLocation())){
+				filtered.add(s);
 			}
 		}
-		//System.out.println("filter chromatin: "+chromatin.size()+"\t"+chrom.size());
-		chromatin = chrom;
-		size = chrom.size();
+		snps = filtered;
 	}
-	
-	public int getSize(){
-		return size;
+
+	public void filterchrom(Gene g){
+		GenomicRegion proximal = g.copyRegion().expand(250000);
+		List<ChromState> filtered = new ArrayList<ChromState>();
+		for(ChromState c: chromatin){
+			if(proximal.overlaps(c.getRegion())){
+				filtered.add(c);
+			}
+		}
+		System.out.println("Chromatin size: "+chromatin.size());
+		chromatin = filtered;
+		System.out.println("Filtered chromatin size: "+chromatin.size());
+		System.out.println(filtered.size());
 	}
 	public void permute(int n) throws IOException{
 	//	BufferedWriter file = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+"permutation"+n)));

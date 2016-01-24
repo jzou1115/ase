@@ -12,6 +12,7 @@ import java.util.Map;
 //import parse.ParseSNP;
 import functions.*;
 import genome.ChromState;
+import genome.Gene;
 import genome.SNP;
 import parse.ParseChromState;
 import parse.ParseMap;
@@ -20,9 +21,10 @@ import parse.ParseSNP;
 
 public class ASE {
 	
-	private void assignChromatin(InputStream states, InputStream genesmap, InputStream variants, int p, File outdir, String filename) throws IOException{
+	private void assignChromatin(InputStream states, InputStream genesmap, InputStream variants, int p, String gene, File outdir, String filename) throws IOException{
 		ParseMap parsemap = new ParseMap();
-		parsemap.parseMap(genesmap);
+		parsemap.parseMap(genesmap, gene);
+		Gene g = parsemap.getGene();
 		List<SNP> s = parsemap.getSNPs();
 		
 		List<SNP> var = ParseSNP.readSNPGroup(variants);
@@ -36,7 +38,7 @@ public class ASE {
 		
 		List<ChromState> chrom = ParseChromState.parseChromState(states);
 		
-		PermuteChromatin perm = new PermuteChromatin(chrom, s, var2, outdir, filename);
+		PermuteChromatin perm = new PermuteChromatin(chrom, s, var2, g, outdir, filename);
 		
 		perm.testEnrichment(p);
 		
@@ -202,13 +204,14 @@ public class ASE {
 			InputStream chrom = cmdArgs.getChrom();
 			InputStream genesmap = cmdArgs.getMap();
 			InputStream variants = cmdArgs.getVariants();
+			String gene = cmdArgs.getTestGene();
 			int p = cmdArgs.getPermNum();
 			
 			File outdir = cmdArgs.getOutputDir();
 			String filename = cmdArgs.getFilename();
 			
 			if(genesmap!=null && chrom!=null){
-				a.assignChromatin(chrom,genesmap, variants, p, outdir, filename);
+				a.assignChromatin(chrom,genesmap, variants, p, gene, outdir, filename);
 			}
 			
 		}
