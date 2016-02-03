@@ -53,7 +53,7 @@ public class ComputeSig {
 		}
 		return ret;
 	}
-	/**
+	
 	public double significance(){
 		double sig=0.0;
 		int min = Math.min(m, k);
@@ -77,10 +77,13 @@ public class ComputeSig {
 		if(sig>1){
 			sig = 1.0;
 		}
-
+		if(sig<0){
+			sig = 0.0;
+		}
+		
 		return sig;
 	}
-	*
+	
 	
 	public double logchoose(int a, int b){
 		double lc = 0.0;
@@ -111,7 +114,8 @@ public class ComputeSig {
 		
 		return lc;
 	}
-	**/
+	
+	/**
 	public double significance(){
 		double sig=0.0;
 		int min = Math.min(m, k);
@@ -139,7 +143,7 @@ public class ComputeSig {
 
 		return sig;
 	}
-	
+	**/
 	public BigDecimal choose(int a, int b){
 		BigDecimal bc;
 		if(a==b){

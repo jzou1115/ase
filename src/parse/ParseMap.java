@@ -72,7 +72,7 @@ public class ParseMap {
 			e.printStackTrace();
 		}
 	}
-	
+	/**
 	public Map<String,SNP> parseMap(InputStream in, String gene){
 		map = new HashMap<Gene, List<SNP>>();
 		snps = new ArrayList<SNP>();
@@ -133,7 +133,57 @@ public class ParseMap {
 		
 		return snpLoc;
 	}
-	
+	**/
+
+	public Map<String,SNP> parseMap(InputStream in, String gene){
+		map = new HashMap<Gene, List<SNP>>();
+		snpLoc = new HashMap<String, SNP>();
+		snpmap = new HashMap<String, SNP>();
+		
+		g = new Gene(gene);
+		snps = new ArrayList<SNP>();
+		System.out.println(g.toString());
+		
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		String line;
+		try{
+			while((line = reader.readLine()) != null){
+				String[] tokens = line.split("\\s+");
+				String snpid = tokens[0];
+				String[] snpTokens = snpid.split("_");
+				int chr = Integer.parseInt(snpTokens[0]);
+				long loc = Long.parseLong(snpTokens[1]);
+				
+				SNP s = new SNP(snpid, chr, loc);
+				snps.add(s);
+				
+				String key = s.getLocation().getChromosome()+"_"+s.getLocation().getCoord();
+				if(!snpLoc.containsKey(key)){
+					snpLoc.put(key, s);	
+				}
+				else{
+					System.out.println("snp duplicate: "+key);
+				}
+				if(!snpmap.containsKey(s.getId())){
+					snpmap.put(s.getId(), s);	
+				}
+				else{
+					System.out.println("snp duplicate: "+s.getId());
+				}
+				
+			}
+			
+			map.put(g, snps);
+
+				
+		} catch (IOException e) {
+			System.out.println("no lines");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return snpLoc;
+	}
 	public Gene getGene(){
 		return g;
 	}

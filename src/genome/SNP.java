@@ -80,7 +80,13 @@ public class SNP implements Comparable<SNP>{
 	}
 
 	public String toString(){
-		return id+"\t"+location.getChromosome()+"\t"+location.getCoord()+"\t"+chrom;
+		if(location != null && chrom!=null){
+			return id+"\t"+location.getChromosome()+"\t"+location.getCoord()+"\t"+chrom;
+		}
+		else if(location!=null){
+			return id+"\t"+location.getChromosome()+"\t"+location.getCoord();
+		}
+		return id;
 	}
 	
 	public String samplesToString(){

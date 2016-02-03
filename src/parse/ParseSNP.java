@@ -54,34 +54,24 @@ public class ParseSNP {
 	}
 	
 	
-	public static void parseGenotypes(InputStream genotypes, List<SNP> snps, Map<String, SNP> snpLoc) throws IOException{
+	public static void parseGenotypes(InputStream genotypes, List<SNP> snps, Map<String, SNP> snpMap) throws IOException{
 		System.out.println("Reading genotypes");
 		BufferedReader br = new BufferedReader(new InputStreamReader(genotypes));
 		String line = br.readLine();
-		//System.out.println(line);
+
 		String[] samples = line.split("\t");
-		//System.out.println("snploc size: " + snpLoc.size());
-		//System.out.println(samples.length);
-		//System.out.println(sampleNames.size());
+
 		try {
 			while((line = br.readLine()) != null){
 					String[] tokens = line.split("\\s+");
-					String[] snpTokens = tokens[0].split("_");
-					int chr = Integer.parseInt(snpTokens[0]);
-					int pos = Integer.parseInt(snpTokens[1]);
-					String snpid = chr+"_"+pos;
-					SNP s = snpLoc.get(snpid);
+					SNP s = snpMap.get(tokens[0]);
 					if(s==null){
 						//System.out.println(snpid+" not found in snpLoc");
 					}
 					else{
-						for(int i=1; i<tokens.length;i++){
-							//System.out.println(i);
-						//	if(sampleNames.contains(samples[i])){
-								
+						for(int i=1; i<tokens.length;i++){	
 								GenoSample genosamp = new GenoSample(samples[i], (int) Math.round(Double.parseDouble(tokens[i]))%2);
 								s.addSample(genosamp);	
-						//	}
 						}
 						s.sortSamples();
 								
@@ -90,7 +80,7 @@ public class ParseSNP {
 			}
 
 			br.close();
-			//System.out.println("done reading genotypes");
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

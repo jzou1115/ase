@@ -39,9 +39,10 @@ public class Gene implements Comparable<Gene>{
 	}
 	
 	
-	Gene(String i){
+	public Gene(String i){
 		id= i;
 		map = new HashMap<String, ExpSample>();
+		esamples = new ArrayList<ExpSample>();
 	}
 	
 	public GenomicRegion copyRegion(){
@@ -88,7 +89,10 @@ public class Gene implements Comparable<Gene>{
 	
 
 	public String toString(){
-		return id+"\t"+region.getChromosome()+"\t"+region.getStart().getCoord()+"\t"+region.getEnd().getCoord()+"\t"+tss.getCoord();
+		if(region!=null && tss!=null){
+			return id+"\t"+region.getChromosome()+"\t"+region.getStart().getCoord()+"\t"+region.getEnd().getCoord()+"\t"+tss.getCoord();
+		}
+		return id;
 	}
 
 	public void sortSamples() {

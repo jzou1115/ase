@@ -72,7 +72,7 @@ public class ASE {
 	}
 	
 	
-
+/**
 	private void mapASE(InputStream map, InputStream genotypes,
 			InputStream expressions, String gene, int error, int n, int perm, File outdir, String filename) throws IOException {
 		MapASE ase = new MapASE();
@@ -82,7 +82,7 @@ public class ASE {
 		ase.startRun(error,n, perm, outdir);
 		
 	}
-	
+**/	
 	private void approxASE(InputStream map, InputStream genotypes,
 			InputStream expressions, String gene, int error, int n, int perm, File outdir, String filename) throws IOException {
 		MapASE ase = new MapASE();
@@ -159,7 +159,7 @@ public class ASE {
 
 
 		}
-		
+		/**
 		else if(fcn.equals("mapase")){
 			InputStream map = cmdArgs.getMap();
 			InputStream genotypes = cmdArgs.getGenotypeData();
@@ -179,7 +179,7 @@ public class ASE {
 				System.exit(0);
 			}
 		}
-		
+		**/
 		else if(fcn.equals("approximation")){
 			InputStream map = cmdArgs.getMap();
 			InputStream genotypes = cmdArgs.getGenotypeData();

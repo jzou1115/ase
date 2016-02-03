@@ -38,6 +38,6 @@ public class Simulation {
 	}
 	public void startRun(int errors, int perms, int n, File outdir) throws IOException{
 		Run r = new Run(gene, snps, errors, perms, n, outdir);
-		r.randomSimulation();
+		//r.randomSimulation();
 	}
 }

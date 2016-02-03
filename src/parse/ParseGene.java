@@ -110,7 +110,7 @@ public class ParseGene {
 			br.close();
 			System.out.println("reads size: "+reads.size());
 			System.out.println("ref size: "+ref.size());
-			BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+g.getId()+"_ase.txt")));
+			//BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+g.getId()+"_ase.txt")));
 
 			
 			for(String sample: reads.keySet()){
@@ -133,11 +133,11 @@ public class ParseGene {
 
 				g.addSample(expsamp);
 				
-				outfile.write(sample+"\t"+allelicRatio+"\t"+hasASE+"\n");
+			//	outfile.write(sample+"\t"+allelicRatio+"\t"+hasASE+"\n");
 		
 			}
 			g.sortSamples();
-			outfile.close();
+			//outfile.close();
 		
 
 		} catch (IOException e) {
