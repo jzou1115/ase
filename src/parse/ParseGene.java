@@ -77,77 +77,7 @@ public class ParseGene {
 		return genes;
 	}
 	
-	public static List<ExpSample> parseExpressions(InputStream expressions, Gene g, File outdir) throws IOException{
-		System.out.println("Reading expressions");
-		BufferedReader br = new BufferedReader(new InputStreamReader(expressions));
-		String line;
-		
-		Map<String, Integer> reads = new HashMap<String,Integer>();
-		Map<String, Integer> ref = new HashMap<String,Integer>();
-		try {
-			while((line = br.readLine()) != null){
-				try{
-					String[] tokens = line.split("\\s+");
-					String gtexid = tokens[6].trim();
-					int refAllele = Integer.parseInt(tokens[8]);
-					int totalReads = Integer.parseInt(tokens[10]);
-				//	if(sampleNames.contains(gtexid)){
-						if(!reads.containsKey(gtexid)){
-							reads.put(gtexid, 0);
-							ref.put(gtexid, 0);
-						}
-						int refKey = ref.get(gtexid) + refAllele;
-						int readsKey = reads.get(gtexid) + totalReads;
-						ref.put(gtexid, refKey);
-						reads.put(gtexid, readsKey);
-				//	}
-					
-				} catch (Exception e){
-					//do nothing
-				}
-			}
 
-			br.close();
-			System.out.println("reads size: "+reads.size());
-			System.out.println("ref size: "+ref.size());
-			//BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+g.getId()+"_ase.txt")));
-
-			
-			for(String sample: reads.keySet()){
-				
-				ExpSample expsamp;
-				double allelicRatio = 1.0*ref.get(sample) / reads.get(sample);
-				int hasASE;
-				if(allelicRatio>0.65){
-					expsamp = new ExpSample(sample, 1);
-					hasASE=1;
-				}
-				else if(allelicRatio<0.35){
-					expsamp = new ExpSample(sample, 1);
-					hasASE=1;
-				}
-				else{
-					expsamp = new ExpSample(sample, 0);
-					hasASE=0;
-				}
-
-				g.addSample(expsamp);
-				
-			//	outfile.write(sample+"\t"+allelicRatio+"\t"+hasASE+"\n");
-		
-			}
-			g.sortSamples();
-			//outfile.close();
-		
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return g.getExpsamples();
-		
-	}
 	
 
 }

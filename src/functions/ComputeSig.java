@@ -16,42 +16,11 @@ public class ComputeSig {
 	int e;
 	
 	
-	ComputeSig(int[] w, int[] v, int errors){
-		n = w.length;
-		k = ones(w);
-		m = ones(v);
-		e = errors;
-	}
-	
-	ComputeSig(int w,List<ExpSample> ase, int errors){
-		n = ase.size();
-		k = w;
-		m = ones(ase);
-		e = errors;
-	}
-	
-	//this is currently the right constructor
 	ComputeSig(int size, int ase, int geno, int errors){
 		n=size;
 		m=ase;
 		k=geno;
 		e=errors;
-	}
-	
-	public int ones(int[] a){
-		int ret = 0;
-		for(int i=0; i<a.length; i++){
-			ret = ret + a[i];
-		}
-		return ret;
-	}
-	
-	public int ones(List<ExpSample> ase){
-		int ret =0;
-		for(int i=0; i< ase.size();i++){
-			ret=ret+ase.get(i).getASE();
-		}
-		return ret;
 	}
 	
 	public double significance(){
@@ -82,6 +51,39 @@ public class ComputeSig {
 		}
 		
 		return sig;
+	}
+	
+	public double[] possiblePValues(){
+
+		int min = Math.min(m, k);
+		int max = Math.max(m, k);
+		
+		int maxerrors = Math.min(min,  n-max);
+
+		double[] ret = new double[maxerrors+1];
+				
+		double sig=0.0;
+		for(int i=0; i<maxerrors+1;i++){
+			double logw1 = logchoose(max, min-i);
+			double logw2 = logchoose(n-max, i);
+			double logtotal = logchoose(n, min);
+			
+			double logp = logw1+logw2-logtotal;
+			double p = Math.exp(logp);
+			sig= sig+p;
+			
+			//roundoff error
+			if(sig>1){
+				ret[i] = 1.0;
+			}
+			if(sig<0){
+				ret[i] = 0.0;
+			}
+			ret[i] = sig;
+		}
+		
+		return ret;
+		
 	}
 	
 	

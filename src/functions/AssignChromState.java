@@ -19,15 +19,15 @@ public class AssignChromState {
 		Collections.sort(snps);
 		Collections.sort(chrom);
 		
-		int i=0;
+		int total=0;
 		for(ChromState c:chrom){
-			i++;
 			//System.out.println(c.getState()+"\t"+i+"\t"+chrom.size());
 			GenomicRegion region = c.getRegion();
 			GenomicCoordinate end = region.getEnd();
 			
 			SNP snp = snps.get(ind);
 			if(region.contains(snp.getLocation())){
+				total++;
 				while(region.contains(snp.getLocation())){
 					map.put(snp, c);
 					snp.setChromState(c);
@@ -45,7 +45,7 @@ public class AssignChromState {
 			}
 		}
 		
-		//System.out.println("Chromatin state assigned for snp index: "+ind);
+		System.out.println("Chromatin state assigned: "+total);
 		
 		return map;
 	}

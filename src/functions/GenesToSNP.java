@@ -58,27 +58,6 @@ public class GenesToSNP {
 		System.out.println("Number of genes: "+ hasASE.size());
 	}
 
-	/**
-	public void genesToSnps() throws IOException{
-		map = new HashMap<Gene, List<SNP>>();
-	
-		for(SNP s:isHetero){
-			for(Gene g:hasASE){
-				if(match(s,g)){
-					if(map.get(g)==null){
-						List<SNP> val = new ArrayList<SNP>();
-						val.add(s);
-						map.put(g, val);
-					}
-					else{
-						map.get(g).add(s);
-					}
-				}
-			}
-		}
-		
-	}
-	**/
 	public boolean match(SNP s, Gene g){
 		if(g.region.expand(250000).contains(s.getLocation())){
 			return true;
@@ -97,42 +76,7 @@ public class GenesToSNP {
 		}
 		bw.close();
 	}
-	
-	//Each snp mapped to nearest gene
-	/**
-	public void genesToSnps() throws IOException{
-		map = new HashMap<Gene, List<SNP>>();
-		
-		Collections.sort(hasASE);
-		Collections.sort(isHetero);
-		
-		int snp = 0;
-		for(Gene g: hasASE){
-			if(snp==isHetero.size()-1){
-				return;
-			}
-			GenomicCoordinate end = g.getRegion().getEnd();
-			while(snp<isHetero.size() && isHetero.get(snp).getLocation().compareTo(end)<=0){
-				if(match(isHetero.get(snp),g)){
-					if(map.get(g)==null){
-						List<SNP> val = new ArrayList<SNP>();
-						map.put(g, val);
-					}
-					List<SNP> val = map.get(g);
-					val.add(isHetero.get(snp));
-					map.put(g, val);
-				}
-				if(snp==isHetero.size()-1){
-					return;
-				}
-				snp++;
-				System.out.println(snp+"\t"+ isHetero.size());
-			}
-		}
-		
-	}
-	**/
-	
+
 	//snps mapped to multiple genes
 	public void genesToSnps() throws IOException{
 		map = new HashMap<Gene, List<SNP>>();

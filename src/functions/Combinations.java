@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import parse.ParseExpressions;
 import parse.ParseGene;
+import parse.ParseGenotypes;
 import parse.ParseMap;
 import parse.ParseSNP;
 import parse.ParseSamples;
@@ -39,8 +41,8 @@ public class Combinations {
 		outdir =out;
 		filename = f;
 		setTestGene(map, gene);
-		ParseSNP.parseGenotypes(genotypes, snps, snpLoc);
-		ParseGene.parseExpressions(expression, g, outdir);
+		ParseGenotypes.parseGenotypes(genotypes, snps, snpLoc);
+		ParseExpressions.parseExpressions(expression, g, outdir);
 	//	getCombinations();
 	//	write("disnps.txt");
 		mapASE();

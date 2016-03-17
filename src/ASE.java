@@ -14,6 +14,7 @@ import functions.*;
 import genome.ChromState;
 import genome.Gene;
 import genome.SNP;
+import parse.ParseCausalVariants;
 import parse.ParseChromState;
 import parse.ParseMap;
 import parse.ParseSNP;
@@ -21,13 +22,14 @@ import parse.ParseSNP;
 
 public class ASE {
 	
-	private void assignChromatin(InputStream states, InputStream genesmap, InputStream variants, int p, String gene, File outdir, String filename) throws IOException{
+	private void assignChromatin(File states, InputStream genesmap, InputStream variants, int p, String gene, File outdir, String filename) throws IOException{
 		ParseMap parsemap = new ParseMap();
 		parsemap.parseMap(genesmap, gene);
 		Gene g = parsemap.getGene();
 		List<SNP> s = parsemap.getSNPs();
 		
-		List<SNP> var = ParseSNP.readSNPGroup(variants);
+		List<SNP> var = ParseCausalVariants.readVariantGroup(variants);
+		/**
 		Map<String,SNP> snpmap = parsemap.getSnpMap();
 		List<SNP> var2 = new ArrayList<SNP>();
 		for(SNP v: var){
@@ -35,12 +37,10 @@ public class ASE {
 				var2.add(snpmap.get(v.getId()));
 			}
 		}
+		**/
+		PermuteChromatin perm = new PermuteChromatin(states, s, var, g, outdir, filename);
 		
-		List<ChromState> chrom = ParseChromState.parseChromState(states);
-		
-		PermuteChromatin perm = new PermuteChromatin(chrom, s, var2, g, outdir, filename);
-		
-		perm.testEnrichment(p);
+		perm.testEnrichmentGene(p);
 		
 	}
 
@@ -71,26 +71,17 @@ public class ASE {
 		
 	}
 	
-	
-/**
-	private void mapASE(InputStream map, InputStream genotypes,
-			InputStream expressions, String gene, int error, int n, int perm, File outdir, String filename) throws IOException {
-		MapASE ase = new MapASE();
-		ase.setTestGene(map, gene, genotypes);
-		ase.parseGenotypes(genotypes);
-		ase.parseExpressions(expressions, outdir);
-		ase.startRun(error,n, perm, outdir);
-		
-	}
-**/	
-	private void approxASE(InputStream map, InputStream genotypes,
-			InputStream expressions, String gene, int error, int n, int perm, File outdir, String filename) throws IOException {
-		MapASE ase = new MapASE();
-		ase.setTestGene(map, gene, genotypes);
-		ase.parseGenotypes(genotypes);
-		ase.parseExpressions(expressions, outdir);
-		ase.startRun(error,n, perm, outdir, gene+"_approxASE.txt");
-		
+	void mapase(InputStream map, InputStream genotypes,
+			InputStream expressions, String gene, int perm, File outdir, String filename) throws IOException {
+		if(filename==null){
+			MapASE ase = new MapASE( map,  genotypes, expressions,  gene,  perm,  outdir,  gene+"_mapase.txt");
+			ase.mapase();
+		}
+		else{
+			MapASE ase = new MapASE( map,  genotypes, expressions,  gene,  perm,  outdir,  filename);
+			ase.mapase();
+		}
+
 	}
 	
 	private void generateCombinations(InputStream map, String gene,
@@ -126,7 +117,7 @@ public class ASE {
 		if(fcn.equals("genestosnps")){
 			InputStream snps = cmdArgs.getSNPsInput();
 			InputStream genes = cmdArgs.getGenesInput();
-			InputStream chrom = cmdArgs.getChrom();
+			InputStream chrom = cmdArgs.getChromFile();
 			File outdir = cmdArgs.getOutputDir();
 			String filename = cmdArgs.getFilename();
 			if(snps!=null && genes!=null){
@@ -180,19 +171,17 @@ public class ASE {
 			}
 		}
 		**/
-		else if(fcn.equals("approximation")){
+		else if(fcn.equals("mapase")){
 			InputStream map = cmdArgs.getMap();
 			InputStream genotypes = cmdArgs.getGenotypeData();
 			InputStream expressions = cmdArgs.getExpressionData();
 			String gene = cmdArgs.getTestGene();
-			int error = cmdArgs.getErrorNum();
-			int n = cmdArgs.getSampleNum();
 			int perm = cmdArgs.getPermNum();
 			File outdir = cmdArgs.getOutputDir();
 			String filename = cmdArgs.getFilename();
 			
-			if(map!=null && genotypes!=null && gene!=null){
-				a.approxASE(map, genotypes, expressions, gene, error, n, perm, outdir, filename);
+			if(map!=null && genotypes!=null && expressions!=null && gene!=null){
+				a.mapase(map, genotypes, expressions, gene, perm, outdir, filename);
 
 			} else{
 				cmdArgs.printHelp(System.err);
@@ -201,7 +190,7 @@ public class ASE {
 		}
 		
 		else if(fcn.equals("chromatin")){
-			InputStream chrom = cmdArgs.getChrom();
+			File chrom = cmdArgs.getChrom();
 			InputStream genesmap = cmdArgs.getMap();
 			InputStream variants = cmdArgs.getVariants();
 			String gene = cmdArgs.getTestGene();

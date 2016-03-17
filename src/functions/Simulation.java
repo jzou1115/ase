@@ -33,7 +33,7 @@ public class Simulation {
 		snps = parsemap.getSNPs();
 		snpLoc = parsemap.getSnpLoc();
 		//TODO: implement -x arg
-		ParseSNP.parseGenotypes(genotypes,snps, snpLoc);
+		//ParseSNP.parseGenotypes(genotypes,snps, snpLoc);
 		//System.out.println(gene.toString()+"\t"+snps.size());
 	}
 	public void startRun(int errors, int perms, int n, File outdir) throws IOException{

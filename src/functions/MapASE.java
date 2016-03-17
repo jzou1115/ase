@@ -14,72 +14,89 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.math3.stat.inference.AlternativeHypothesis;
+import org.apache.commons.math3.stat.inference.BinomialTest;
+
+
+
 import genome.Gene;
 import genome.SNP;
-import parse.ParseGene;
+import parse.ParseExpressions;
+import parse.ParseGenotypes;
 import parse.ParseMap;
-import parse.ParseSNP;
 import sample.ExpSample;
 import sample.GenoSample;
 
 public class MapASE {
+	
 	Gene gene;
 	List<SNP> snps;
 	Map<String, SNP> snpMap;
+	Map<SNP, double[]> pmap;
 	
-	public void setTestGene(Gene g, List<SNP> s){
-		gene = g;
-		snps = s;
-		snpMap = new HashMap<String, SNP>();
-		//System.out.println(gene.toString()+"\t"+snps.size());
-	}
+	int perm;
+	//double adaptive;
+	File outdir;
+	String filename;
 	
-	public void setTestGene(InputStream map, String g, InputStream genotypes) throws IOException {
+	
+	public MapASE(InputStream map, InputStream genotypes,
+			InputStream expressions, String g, int p, File o, String f) throws IOException{
+		
+		pmap = new HashMap<SNP, double[]>();
+		
+		perm=p; //total number of permutations
+		//adaptive = .0000025*perm; //cutoff for adaptive permutations (.0000025 is Bonferonni correction for 20000 genes and alpha=.05)
+		
+		//output
+		outdir = o;
+		filename=f;
+		
 		ParseMap parsemap = new ParseMap();
 		parsemap.parseMap(map, g);
 		gene = parsemap.getGene();
 		snps = parsemap.getSNPs();
-		snpMap = parsemap.getSnpMap();
+		snpMap = parsemap.getSnpMap();	
 		
+		ParseGenotypes.parseGenotypes(genotypes,snps, snpMap);
+		ParseExpressions.parseExpressions(expressions, gene, outdir);
 	}
 
 
-	public void parseGenotypes(InputStream genotypes) throws IOException{
-		ParseSNP.parseGenotypes(genotypes,snps, snpMap);
-	}
-	
-	public void parseExpressions(InputStream expressions, File outdir) throws IOException {
-		ParseGene.parseExpressions(expressions, gene, outdir);
-	}
-	
-
-	public void startRun(int error, int n, int perm, File outdir, String filename) throws IOException {
+	public void mapase() throws IOException {
 
 		List<ExpSample> ase = gene.getExpsamples();
-		//System.out.println("Expsamples: "+ase.size());
-		List<Double> realPValues = new ArrayList<Double>();
-		Map<SNP, String> lines = new HashMap<SNP, String>();
-		pointwisePValue(ase, realPValues, lines);
-		//System.out.println("pointwise: "+realPValues.size());
-		
-		double minPointwise = Collections.min(realPValues);
-		System.out.println(minPointwise);
-		//for adaptive permutations, notSig>25 does not meet genome wide significance threhold of 2.5*10^-6 with 10^7 permutations
+
+		//Calculate pointwise p-values using real genotype and ase data
+		//also fills pmap
+		List<Double> pointwisePValues = new ArrayList<Double>(); //list of p-values for SNPs in snps
+		Map<SNP, String> lines = new HashMap<SNP, String>(); //lines for output
+		pointwisePValue(ase, pointwisePValues, lines);
+
+		//When there are more than $adaptive permutations that are lower than $minPointwise, no SNPs are significant.  Stop permutations when $notSig>$adaptive 
+		double minPointwise = Collections.min(pointwisePValues);
 		int notSig=0;
-		List<Double> permPValues = new ArrayList<Double>();
+		List<Double> permPValues = new ArrayList<Double>(); //list of minimum p-value for each permutation
+
+		boolean adaptive=false;
 		for(int p=0; p<perm; p++){
-			double min = Collections.min(pointwisePValue(ase));
+			double min = permutationPValue(ase);
 			permPValues.add(min);
-			//System.out.println(min);
-			if(min<=minPointwise){
-				notSig++;
+			/**
+			if(notSig>adaptive){
+				System.out.println("Permutations: "+ p);
+				break;
 			}
-			if(notSig>25){
+			**/
+			//New adaptive permutations
+			BinomialTest bt = new BinomialTest();
+			if(bt.binomialTest(p, notSig, .0000025, AlternativeHypothesis.GREATER_THAN, .05)){
+				System.out.println("Permutations: "+ p);
 				break;
 			}
 		}
-		
-		if(notSig>25){
+		//nothing is significant
+		if(adaptive){
 			BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
 			for(int i=0; i<snps.size(); i++){
 				SNP s = snps.get(i);
@@ -89,9 +106,9 @@ public class MapASE {
 			outfile.close();
 		}
 		else{
-			System.out.println("Perm pvalues: "+permPValues.size());
-			List<Double> pValues = calcPValues(realPValues, permPValues);
-			System.out.println("pValues: "+ pValues.size());
+			System.out.println("Permutations: "+ perm);
+			
+			List<Double> pValues = calcPValues(pointwisePValues, permPValues); //p-values from permutation test
 			
 			BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
 			for(int i=0; i<snps.size(); i++){
@@ -101,7 +118,6 @@ public class MapASE {
 
 				if(isSignificant(pv)){
 					line = line+"\t"+1;
-					//	outfile2.write(line);
 				}
 				else{
 					line = line+"\t"+0;
@@ -117,96 +133,98 @@ public class MapASE {
 	}
 
 
-
-	private List<Double> calcPValues(List<Double> realPValues, List<Double> permPValues) {
-		List<Double> pValues = new ArrayList<Double>();
-		int perm = permPValues.size();
-		for(int i=0; i<realPValues.size(); i++){
-			double real = realPValues.get(i);
-			int count = 0;
-			for(int j=0; j<perm; j++){
-				if(permPValues.get(j)<=real){
-					count++;
-				}
-			}
-			pValues.add(count*1.0/perm);
-		}
-		return pValues;
-	}
-
-	//real data
+	//Calculates pointwise p-values and populates $realPValues and $lines
 	public void pointwisePValue(List<ExpSample> ase, List<Double> realPValues, Map<SNP, String> lines){
 		for(SNP s:snps){
 			//subset of genosamples that have expression samples
 			List<GenoSample> subset = getSubset(ase.size(), s, ase);
+		
 			if(subset==null){
 				continue;
 			}
 
-			//m and k are used to approximate significance
 			//number of ones in ase samples
 			int m=0;
 			//number of ones in genotype samples
 			int k=0;
 
-			int correct=0;
 			int incorrect=0;
 			for (int i=0; i<subset.size();i++) {
 				GenoSample g = subset.get(i);
 				String sampleID = g.getID();
 				ExpSample e = gene.getSample(sampleID);
+				
+				if(g==null || e==null){
+					System.out.println("Subset function does not work.  Either missing GenoSample or missing ExpSample for individual "+sampleID);
+					System.exit(1);
+				}
 
 				int hasASE = e.getASE();
 				if(hasASE==1){
-					m=m+1;
+					m=m+1; //increment count of number of individuals with ASE
 				}
 				int isHetero = g.getHetero();
 				if(isHetero==1){
-					k=k+1;
+					k=k+1; //increment count of number of individuals that are heterozygous
 				}
 
-				if(isHetero == hasASE){
-					correct++;
-				}
-				else if(isHetero != hasASE){
-					incorrect++;
+				if(isHetero != hasASE){
+					incorrect++; //increment counter for number of mismatches
 				}	
-				else{
-					System.out.println("Missing data: "+sampleID );
-				}
+
 			}
 
+			//calculate p-value based on hypergeometric distribution
 			ComputeSig sig = new ComputeSig(subset.size(), m, k, incorrect);
 			double p = sig.significance();
 			realPValues.add(p);
+			
+			double[] poss = sig.possiblePValues();
+			pmap.put(s, poss);
+			/**
+			int j = (incorrect - Math.abs(m-k))/2;
+			if(poss[j]!=p){
+				System.out.println("Bug in cache hypergeometric");
+				System.exit(1);
+			}
+			**/
 			String line = gene.toString()+"\t"+s.toString()+"\t"+m+"\t"+k+"\t"+subset.size()+"\t"+incorrect+"\t"+p;
-		//	System.out.println(line);
 			lines.put(s, line);
 		}
 
 	}
 	
-	//permuted data
-	public List<Double> pointwisePValue(List<ExpSample> ase){
-		List<Double> ret = new ArrayList<Double>();
+	//returns minimum pointwise p-value from permuted data
+	public double permutationPValue(List<ExpSample> ase){
+		List<Double> pvals = new ArrayList<Double>();
 		for(SNP s:snps){
+			List<GenoSample> subsetGeno = s.getGenosamples();
+			/**
 			//subset of genosamples that have expression samples
 			List<GenoSample> subsetGeno = getSubset(ase.size(), s, ase);
 			if(subsetGeno==null){
 				continue;
 			}
+			**/
 			List<ExpSample> subsetExp = new ArrayList<ExpSample>();
 			for(GenoSample g: subsetGeno){
-				subsetExp.add(gene.getSample(g.getID()));
+				ExpSample e = gene.getSample(g.getID());
+				if(e==null){
+					System.out.println("ERROR");
+					System.exit(1);
+				}
+				
+				subsetExp.add(e);
 			}
+			
+			//permute genotypes
 			Collections.shuffle(subsetGeno);
-			//m and k are used to approximate significance
+			
 			//number of ones in ase samples
 			int m=0;
 			//number of ones in genotype samples
 			int k=0;
 
-			int correct=0;
 			int incorrect=0;
 			for (int i=0; i<subsetGeno.size();i++) {
 				GenoSample g = subsetGeno.get(i);
@@ -221,46 +239,80 @@ public class MapASE {
 					k=k+1;
 				}
 
-				if(isHetero == hasASE){
-					correct++;
-				}
 				else if(isHetero != hasASE){
 					incorrect++;
 				}	
 			}
+			int j = (incorrect - Math.abs(m-k))/2;
+			double p = pmap.get(s)[j];
+		
+			/**
 			//System.out.println(s.getId()+"\t"+subsetGeno.size()+"\t"+m+"\t"+k+"\t"+incorrect);
 			ComputeSig sig = new ComputeSig(subsetGeno.size(), m, k, incorrect);
 			double p = sig.significance();
-			ret.add(p);
+		**/	
+			pvals.add(p);
 		}
-		return ret;
+		return Collections.min(pvals);
 	}
 	
 
 	//return subset of genosamples that also have expsamples
 	public List<GenoSample> getSubset(int total, SNP s, List<ExpSample> exp){
+		//sampleids of expsamples
 		Set<String> sampleids = new HashSet<String>();
 		for(ExpSample e:exp){
 			sampleids.add(e.getID());
 		}
-		
-		List<GenoSample> geno = new ArrayList<GenoSample>(s.getGenosamples());
-		Set<String> sampleids2 = new HashSet<String>();
-		for(int j=0; j< geno.size(); j++){
-			sampleids2.add(geno.get(j).getID());
-		}
-		
-		sampleids.retainAll(sampleids2);
-		
+
+		//find subset of genosamples that have matching expsamples
 		List<GenoSample> subset = new ArrayList<GenoSample>();
-		for(GenoSample g:geno){
+		List<String> remove = new ArrayList<String>();
+		for(GenoSample g: s.getGenosamples()){
 			if(sampleids.contains(g.getID())){
 				subset.add(g);
 			}
+			else{
+				remove.add(g.getID());
+			}
 		}
+		
+		//remove genosamples that do not have expsample
+		//System.out.println("SNPs before: "+s.getGenosamples().size());
+		for(String id:remove){
+			s.removeGenoSample(id);
+		}
+		
+		//System.out.println("SNPs after: "+s.getGenosamples().size());
 		return subset;
 	}
 	
+	
+
+
+	private List<Double> calcPValues(List<Double> pointwisePValues, List<Double> permPValues) {
+		if(permPValues.size()!=perm){
+			System.out.println("Not all permutations completed");
+			System.exit(1);
+		}
+		
+		List<Double> pValues = new ArrayList<Double>();
+		
+		//iterate over pointwise p-values for SNPs
+		for(int i=0; i<pointwisePValues.size(); i++){
+			double p = pointwisePValues.get(i); //pointwise p-value for ith SNP in $snps
+			int count = 0; //number of permuted p-values that are equal to or lower than $p
+			for(int j=0; j<perm; j++){
+				if(permPValues.get(j)<=p){
+					count++;
+				}
+			}
+			pValues.add(count*1.0/perm); //add permutation p-value for SNP i to $pValues
+		}
+		return pValues;
+	}
+	
+	//test whether pvalue passes genome-wide significance threshold
 	public boolean isSignificant(double z){
 		if(z<=.0000025){
 			return true;

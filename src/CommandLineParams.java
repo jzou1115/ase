@@ -23,8 +23,9 @@ public interface CommandLineParams {
 	public String getFunction();
 	public String getFilename();
 	public InputStream getSamples();
-	public InputStream getChrom();
+	public File getChrom();
 	public InputStream getVariants();
 	public InputStream getTss();
+	public InputStream getChromFile();
 	
 }

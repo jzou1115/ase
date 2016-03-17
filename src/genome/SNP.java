@@ -117,5 +117,14 @@ public class SNP implements Comparable<SNP>{
 	public void setChromState(ChromState c){
 		chrom = c.getState();
 	}
+	
+	public void removeGenoSample(String s){
+		for(GenoSample g:gsamples){
+			if(g.getID().equals(s)){
+				gsamples.remove(g);
+				return;
+			}
+		}
+	}
 
 }

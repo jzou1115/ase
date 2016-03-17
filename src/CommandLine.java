@@ -30,7 +30,7 @@ public class CommandLine implements CommandLineParams{
 	private static final String ASE_FCN = "mapase";
 	private static final String COMB_FCN = "combinations";
 	private static final String CHROM_FCN = "chromatin";
-	
+	private static final String CHROM_FILE = "-q";
 	
 	
 	
@@ -40,7 +40,8 @@ public class CommandLine implements CommandLineParams{
 	private InputStream expressions;
 	private InputStream map;
 	private InputStream samples;
-	private InputStream chrom;
+	private InputStream cf;
+	private File chrom;
 	private InputStream variant;
 	private InputStream tss;
 	private boolean help = false;
@@ -128,7 +129,7 @@ public class CommandLine implements CommandLineParams{
 				break;
 			case CHROM_TAG:
 				assertNextArg(CHROM_TAG, i, args);
-				chrom = parseDataFile(args[++i]);
+				chrom = new File(args[++i]);
 				break;
 			case VAR_TAG:
 				assertNextArg(VAR_TAG,i,args);
@@ -137,6 +138,10 @@ public class CommandLine implements CommandLineParams{
 			case TSS_TAG:
 				assertNextArg(TSS_TAG,i,args);
 				tss = parseDataFile(args[++i]);
+			case CHROM_FILE:
+				assertNextArg(CHROM_FILE, i ,args);
+				cf = parseDataFile(args[++i]);
+				break;
 			default:
 				throw new Exception("Unrecognized flag: "+cur);
 			}
@@ -262,7 +267,7 @@ public class CommandLine implements CommandLineParams{
 
 
 	@Override
-	public InputStream getChrom() {
+	public File getChrom() {
 		return chrom;
 	}
 
@@ -274,6 +279,11 @@ public class CommandLine implements CommandLineParams{
 	@Override
 	public InputStream getTss() {
 		return tss;
+	}
+
+	@Override
+	public InputStream getChromFile() {
+		return cf;
 	}
 
 
