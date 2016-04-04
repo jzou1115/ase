@@ -12,13 +12,16 @@ import genome.SNP;
 import sample.GenoSample;
 
 public class ParseGenotypes {
-	public static void parseGenotypes(InputStream genotypes, List<SNP> snps, Map<String, SNP> snpMap) throws IOException{
+	public static List<String> parseGenotypes(InputStream genotypes, List<SNP> snps, Map<String, SNP> snpMap) throws IOException{
 		System.out.println("Reading genotypes");
 		BufferedReader br = new BufferedReader(new InputStreamReader(genotypes));
 		String line = br.readLine();
 
 		String[] samples = line.split("\t");
-
+		List<String> ret = new ArrayList<String>();
+		for(int i=1; i<samples.length; i++){
+			ret.add(samples[i]);
+		}
 		try {
 			while((line = br.readLine()) != null){
 					String[] tokens = line.split("\\s+");
@@ -43,7 +46,7 @@ public class ParseGenotypes {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+		return ret;
 	}
 	
 	public static List<SNP> parseGenotypes(InputStream genotypes) throws IOException{

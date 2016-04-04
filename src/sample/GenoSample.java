@@ -16,25 +16,6 @@ public class GenoSample extends Sample{
 		return isHetero;
 	}
 	
-	@Override
-	public int compareTo(Sample o) {
-		return this.getID().compareTo(o.getID());
-	}
-	
-    @Override
-    public boolean equals(Object obj) {
-    	if(obj instanceof Sample){
-    		Sample other = (Sample) obj;
-    		if(this.getID().equals(other.getID())){
-    			return true;
-    		}
-    	}
-        return false;
-    }
 
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
     
 }

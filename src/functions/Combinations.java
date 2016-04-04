@@ -281,13 +281,8 @@ public class Combinations {
 	public double permutationPValue(List<ExpSample> ase){
 		List<Double> pvals = new ArrayList<Double>();
 		for(int i=0; i<genotypes.length; i++){
-			/**
-			List<Integer> subsetGeno = new ArrayList<Integer>();
-			for(int j=0; j<genotypes[i].length; j++){
-				subsetGeno.add(genotypes[i][j]);
-			}
-			**/
-			//Collections.shuffle(ase);
+
+			Collections.shuffle(ase);
 			
 			//System.out.println(subsetGeno.size()+"\t"+ase.size());
 			

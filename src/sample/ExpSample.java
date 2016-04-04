@@ -15,23 +15,6 @@ public class ExpSample extends Sample{
 	public int getASE(){
 		return hasASE;
 	}
-	
-	
-    @Override
-    public boolean equals(Object obj) {
-    	if(obj instanceof GenoSample){
-    		GenoSample other = (GenoSample) obj;
-    		if(this.getID().equals(other.getID())){
-    			return true;
-    		}
-    	}
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
 
 	
 }

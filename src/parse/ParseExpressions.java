@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import genome.Gene;
@@ -16,19 +18,21 @@ import sample.ExpSample;
 
 public class ParseExpressions {
 	
-	public static void parseExpressions(InputStream expressions, Gene g, File outdir) throws IOException{
+	public static List<String> parseExpressions(InputStream expressions, Gene g, File outdir) throws IOException{
 		System.out.println("Reading expressions");
 		BufferedReader br = new BufferedReader(new InputStreamReader(expressions));
 		String line;
 		
 		Map<String, Integer> reads = new HashMap<String,Integer>(); //Map GTEx id of individual to total number of reads for individual
 		Map<String, Integer> ref = new HashMap<String,Integer>(); //Map GTEx id of individual to number of reference reads for individual
+		List<String> ret = new ArrayList<String>();
 		try {
 			//iterate over lines in file (SNPs used to call ASE)
 			while((line = br.readLine()) != null){
 				try{
 					String[] tokens = line.split("\\s+");
 					String gtexid = tokens[6].trim();
+					ret.add(gtexid);
 					int refAllele = Integer.parseInt(tokens[8]);
 					int totalReads = Integer.parseInt(tokens[10]);
 					
@@ -90,7 +94,7 @@ public class ParseExpressions {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+		return ret;
 		
 	}
 }
