@@ -14,8 +14,6 @@ public class SNP implements Comparable<SNP>{
 	String id;
 	GenomicCoordinate location;
 	
-	List<GenoSample> gsamples;
-	
 	Map<String, GenoSample> map;
 	
 	String chrom;
@@ -23,7 +21,6 @@ public class SNP implements Comparable<SNP>{
 	public SNP(String i, int c, long l, String ch){
 		id=i;
 		location = new GenomicCoordinate(c, l);
-		gsamples = new ArrayList<GenoSample>();
 		map = new HashMap<String, GenoSample>();
 		chrom = ch;
 	}
@@ -31,33 +28,33 @@ public class SNP implements Comparable<SNP>{
 	public SNP(String i, int c, long l){
 		id=i;
 		location = new GenomicCoordinate(c, l);
-		gsamples = new ArrayList<GenoSample>();
 		map = new HashMap<String, GenoSample>();
 	}
 	
 	public SNP(String i){
 		id=i;
-		gsamples = new ArrayList<GenoSample>();
 		map = new HashMap<String, GenoSample>();
 	}
 
 	public void addSamples(List<GenoSample> s){
 		for(GenoSample g:s){
-			gsamples.add(g);
 			map.put(g.getID(), g);
 		}
 	}
 	
 	public void addSample(GenoSample g){
-		gsamples.add(g);
 		map.put(g.getID(), g);
 	}
 	
 	public int getNumSamples(){
-		return gsamples.size();
+		return map.size();
 	}
 	public List<GenoSample> getGenosamples(){
-		return gsamples;
+		List<GenoSample> ret = new ArrayList<GenoSample>();
+		for(String key:map.keySet()){
+			ret.add(map.get(key));
+		}
+		return ret;
 	}
 	public String getId(){
 		return id;
@@ -88,20 +85,8 @@ public class SNP implements Comparable<SNP>{
 		}
 		return id;
 	}
+
 	
-	public String samplesToString(){
-		String ret = id;
-		
-		for(GenoSample g:gsamples){
-			ret = ret+"\t"+ g.getHetero();
-		}
-		
-		return ret;
-	}
-	
-	public void sortSamples(){
-		Collections.sort(gsamples);
-	}
 
 	public GenoSample getSample(String sampleID) {
 		if(map.keySet().contains(sampleID)){
@@ -119,12 +104,7 @@ public class SNP implements Comparable<SNP>{
 	}
 	
 	public void removeGenoSample(String s){
-		for(GenoSample g:gsamples){
-			if(g.getID().equals(s)){
-				gsamples.remove(g);
-				return;
-			}
-		}
+		map.remove(s);
 	}
 
 }

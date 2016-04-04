@@ -2,6 +2,7 @@ package functions;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +32,7 @@ public class MapASE {
 	
 	Gene gene;
 	List<SNP> snps;
-	Map<String, SNP> snpMap;
+	//Map<String, SNP> snpMap;
 	Map<SNP, double[]> pmap;
 	
 	int perm;
@@ -56,10 +57,20 @@ public class MapASE {
 		parsemap.parseMap(map, g);
 		gene = parsemap.getGene();
 		snps = parsemap.getSNPs();
-		snpMap = parsemap.getSnpMap();	
+		Map<String, SNP> snpMap = parsemap.getSnpMap();	
 		
 		ParseGenotypes.parseGenotypes(genotypes,snps, snpMap);
 		ParseExpressions.parseExpressions(expressions, gene, outdir);
+	}
+	
+	public MapASE(Gene g, List<SNP> s, int p, File o, String f){
+		gene = g;
+		snps = s;
+		perm = p;
+		outdir = o;
+		filename = f;
+		
+		pmap = new HashMap<SNP, double[]>();
 	}
 
 
@@ -71,30 +82,34 @@ public class MapASE {
 		//also fills pmap
 		List<Double> pointwisePValues = new ArrayList<Double>(); //list of p-values for SNPs in snps
 		Map<SNP, String> lines = new HashMap<SNP, String>(); //lines for output
+		
 		pointwisePValue(ase, pointwisePValues, lines);
-
+		
+		writePointwise(lines);
+		
 		//When there are more than $adaptive permutations that are lower than $minPointwise, no SNPs are significant.  Stop permutations when $notSig>$adaptive 
 		double minPointwise = Collections.min(pointwisePValues);
 		int notSig=0;
 		List<Double> permPValues = new ArrayList<Double>(); //list of minimum p-value for each permutation
 
 		boolean adaptive=false;
-		for(int p=0; p<perm; p++){
+		for(int p=1; p<=perm; p++){
 			double min = permutationPValue(ase);
 			permPValues.add(min);
-			/**
-			if(notSig>adaptive){
-				System.out.println("Permutations: "+ p);
-				break;
+			
+			if(min>=minPointwise){
+				notSig++;
 			}
-			**/
 			//New adaptive permutations
 			BinomialTest bt = new BinomialTest();
-			if(bt.binomialTest(p, notSig, .0000025, AlternativeHypothesis.GREATER_THAN, .05)){
+			//System.out.println("bt param: "+p+"\t"+notSig);
+			if(bt.binomialTest(p, notSig, .0000025, AlternativeHypothesis.GREATER_THAN, .0000025)){
 				System.out.println("Permutations: "+ p);
+				adaptive=true;
 				break;
 			}
 		}
+		
 		//nothing is significant
 		if(adaptive){
 			BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
@@ -132,6 +147,15 @@ public class MapASE {
 		
 	}
 
+
+	private void writePointwise(Map<SNP, String> lines) throws IOException {
+		System.out.println("Writing pointwise p-values to file");
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+gene.getId()+"_pointwise.txt")));
+		for(SNP s: lines.keySet()){
+			outfile.write(lines.get(s));
+		}
+		outfile.close();
+	}
 
 	//Calculates pointwise p-values and populates $realPValues and $lines
 	public void pointwisePValue(List<ExpSample> ase, List<Double> realPValues, Map<SNP, String> lines){

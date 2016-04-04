@@ -15,12 +15,14 @@ public class Gene implements Comparable<Gene>{
 	List<ExpSample> esamples;
 	public GenomicCoordinate tss;
 	Map<String, ExpSample> map;
+	List<SNP> cis;
 	
 	public Gene(String i, GenomicCoordinate start, GenomicCoordinate end){
 		id=i;
 		region = new GenomicRegion(start, end);
 		esamples = new ArrayList<ExpSample>();
 		map = new HashMap<String, ExpSample>();
+		cis = new ArrayList<SNP>();
 	}
 	
 	public Gene(String i, GenomicCoordinate t){
@@ -28,6 +30,7 @@ public class Gene implements Comparable<Gene>{
 		esamples = new ArrayList<ExpSample>();
 		tss = t;
 		map = new HashMap<String, ExpSample>();
+		cis = new ArrayList<SNP>();
 	}
 	
 	public Gene(String i, GenomicCoordinate start, GenomicCoordinate end, GenomicCoordinate t){
@@ -36,6 +39,7 @@ public class Gene implements Comparable<Gene>{
 		esamples = new ArrayList<ExpSample>();
 		map = new HashMap<String, ExpSample>();
 		tss = t;
+		cis = new ArrayList<SNP>();
 	}
 	
 	
@@ -43,6 +47,7 @@ public class Gene implements Comparable<Gene>{
 		id= i;
 		map = new HashMap<String, ExpSample>();
 		esamples = new ArrayList<ExpSample>();
+		cis = new ArrayList<SNP>();
 	}
 	
 	public GenomicRegion copyRegion(){
@@ -105,5 +110,30 @@ public class Gene implements Comparable<Gene>{
 	
 	public GenomicCoordinate getTSS(){
 		return tss;
+	}
+	
+	public void addSNP(SNP s){
+		cis.add(s);
+	}
+	
+	public List<SNP> getSNPs(){
+		return cis;
+	}
+	
+	public void removeSample(String id){
+		for(ExpSample e:esamples){
+			if(e.getID().equals(id)){
+				esamples.remove(e);
+			}
+		}
+	}
+	
+	public void removeSample(int ind){
+		esamples.remove(ind);
+	}
+
+	public void replaceSamples(List<ExpSample> newexpsamples) {
+		esamples = newexpsamples;
+		
 	}
 }

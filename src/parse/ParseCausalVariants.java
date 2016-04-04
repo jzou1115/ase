@@ -7,25 +7,43 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import genome.Gene;
 import genome.SNP;
 
 public class ParseCausalVariants {
-
+	
 	public static SNP parseSNP(String line){
-		String[] tokens = line.split("\\s+");
-		String[] snpTokens = tokens[1].split("_");
-		return new SNP(tokens[1], Integer.parseInt(snpTokens[0]), Integer.parseInt(snpTokens[1]));
+		String[] snpTokens = line.split("_");
+		SNP s= new SNP(line, Integer.parseInt(snpTokens[0]), Integer.parseInt(snpTokens[1]));
+		return s;
 	}
-	public static List<SNP> readVariantGroup(InputStream in){
-		List<SNP> snps = new ArrayList<SNP>();
+	public static List<Gene> readVariantGroup(InputStream in){
+		List<Gene> genes = new ArrayList<Gene>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
 		try {
 			while((line = reader.readLine()) != null){
 				try{
-					SNP s = parseSNP(line);
+					String[] tokens = line.split("\\s+");
+					SNP s = parseSNP(tokens[1]);
 					if(s!=null){
-						snps.add(s);
+						String geneid = tokens[0];
+						
+						boolean addGene = true;
+		
+						for(Gene g:genes){
+							if(g.getId().equals(geneid)){
+								g.addSNP(s);
+								addGene=false;
+							}
+						}
+						
+						if(addGene){
+							Gene g = new Gene(tokens[0]);
+							g.addSNP(s);
+							genes.add(g);
+						}
+	
 					}
 				} catch (Exception e){
 					//do nothing
@@ -36,6 +54,6 @@ public class ParseCausalVariants {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return snps;
+		return genes;
 	}
 }

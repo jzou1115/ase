@@ -5,7 +5,11 @@ public class Sample implements Comparable<Sample>{
 
 	@Override
 	public int compareTo(Sample o) {
-		return id.compareTo(o.id);
+		return this.getID().compareTo(o.getID());
+	}
+	
+	public String getID(){
+		return id;
 	}
 	
 }

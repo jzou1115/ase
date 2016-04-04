@@ -23,12 +23,20 @@ import parse.ParseSNP;
 public class ASE {
 	
 	private void assignChromatin(File states, InputStream genesmap, InputStream variants, int p, String gene, File outdir, String filename) throws IOException{
-		ParseMap parsemap = new ParseMap();
-		parsemap.parseMap(genesmap, gene);
-		Gene g = parsemap.getGene();
-		List<SNP> s = parsemap.getSNPs();
+
+		List<Gene> genes = ParseCausalVariants.readVariantGroup(variants);
+		List<String> geneids = new ArrayList<String>();
+		List<SNP> var = new ArrayList<SNP>();
+		for(Gene g:genes){
+			var.addAll(g.getSNPs());
+			geneids.add(g.getId());
+		}
+	
 		
-		List<SNP> var = ParseCausalVariants.readVariantGroup(variants);
+		ParseMap map = new ParseMap();
+		map.parseMap(genesmap, geneids);
+		List<SNP> snps = map.getSNPs();
+		
 		/**
 		Map<String,SNP> snpmap = parsemap.getSnpMap();
 		List<SNP> var2 = new ArrayList<SNP>();
@@ -38,7 +46,7 @@ public class ASE {
 			}
 		}
 		**/
-		PermuteChromatin perm = new PermuteChromatin(states, s, var, g, outdir, filename);
+		PermuteChromatin perm = new PermuteChromatin(states, snps, var, genes, outdir, filename);
 		
 		perm.testEnrichmentGene(p);
 		
@@ -85,13 +93,13 @@ public class ASE {
 	}
 	
 	private void generateCombinations(InputStream map, String gene,
-			InputStream genotypes, InputStream expression, int n, int e, File out, String f) throws IOException {
+			InputStream genotypes, InputStream expression, int p, File out, String f) throws IOException {
 		if(f!=null){
-			Combinations combinations = new Combinations(map, gene, genotypes, expression, n, e, out, f);
+			Combinations combinations = new Combinations(map, gene, genotypes, expression, p, out, f);
 		}
 		else{
-			f = gene+"_approxASE.txt.txt";
-			Combinations combinations = new Combinations(map, gene, genotypes, expression, n, e, out, f);
+			f = gene+"_combASE.txt";
+			Combinations combinations = new Combinations(map, gene, genotypes, expression, p, out, f);
 		}
 	}
 	
@@ -206,16 +214,15 @@ public class ASE {
 		}
 		else if(fcn.equals("combinations")){
 			InputStream map = cmdArgs.getMap();
-			String gene = cmdArgs.getTestGene();
 			InputStream genotypes = cmdArgs.getGenotypeData();
 			InputStream expression = cmdArgs.getExpressionData();
-			int n = cmdArgs.getSampleNum();
-			int e = cmdArgs.getErrorNum();
+			String gene = cmdArgs.getTestGene();
+			int p = cmdArgs.getPermNum();
 			File out = cmdArgs.getOutputDir();
 			String f = cmdArgs.getFilename();
 			
 			if(map!=null && gene!=null && genotypes!=null && expression!=null){
-				a.generateCombinations(map, gene, genotypes, expression, n, e, out, f);
+				a.generateCombinations(map, gene, genotypes, expression, p, out, f);
 			} else{
 				cmdArgs.printHelp(System.err);
 				System.exit(0);
