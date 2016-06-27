@@ -30,6 +30,7 @@ public class CommandLine implements CommandLineParams{
 	private static final String ASE_FCN = "mapase";
 	private static final String COMB_FCN = "combinations";
 	private static final String CHROM_FCN = "chromatin";
+	private static final String FDR_FCN = "fdr";
 	private static final String CHROM_FILE = "-q";
 	
 	
@@ -79,6 +80,9 @@ public class CommandLine implements CommandLineParams{
 				break;
 			case CHROM_FCN:
 				function = CHROM_FCN;
+				break;
+			case FDR_FCN:
+				function = FDR_FCN;
 				break;
 			case SNP_TAG: 
 				assertNextArg(SNP_TAG, i, args);

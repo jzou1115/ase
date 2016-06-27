@@ -64,6 +64,8 @@ public class ParseExpressions {
 
 			//determine whether each individual has ASE or not
 			//BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+g.getId()+"_ase.txt")));		
+			
+			int totalASE=0;
 			for(String sample: reads.keySet()){
 				ExpSample expsamp;
 				double allelicRatio = 1.0*ref.get(sample) / reads.get(sample);
@@ -72,10 +74,12 @@ public class ParseExpressions {
 				if(allelicRatio>0.65){
 					expsamp = new ExpSample(sample, 1);
 					hasASE=1;
+					totalASE++;
 				}
 				else if(allelicRatio<0.35){
 					expsamp = new ExpSample(sample, 1);
 					hasASE=1;
+					totalASE++;
 				}
 				else{
 					expsamp = new ExpSample(sample, 0);
@@ -87,6 +91,7 @@ public class ParseExpressions {
 				//outfile.write(sample+"\t"+allelicRatio+"\t"+hasASE+"\n");
 		
 			}
+			//outfile.write(g.getId()+"\t"+totalASE+"\t"+reads.size()+"\t"+totalASE*1.0/reads.size());
 			//outfile.close();
 		
 

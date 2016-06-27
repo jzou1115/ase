@@ -35,6 +35,12 @@ public class GenoMatrix {
 		}
 	}
 	
+	public GenoMatrix(int[][] geno, String[] sampleids2, String[] snpids2) {
+		genotypes = geno;
+		sampleids = sampleids2;
+		snpids = snpids2;
+	}
+
 	public int[][] getGenotypes(){
 		return genotypes;
 	}

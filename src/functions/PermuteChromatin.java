@@ -10,9 +10,11 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import genome.ChromState;
 import genome.Gene;
@@ -33,6 +35,7 @@ public class PermuteChromatin {
 	List<SNP> snps;
 	List<SNP> variants;
 	List<Gene> genes;
+	List<String> stateIDs;
 	
 	GenomicRegion chromosome;
 	int chromNum;
@@ -62,7 +65,7 @@ public class PermuteChromatin {
 	**/
 	
 	//allows list of genes
-	public PermuteChromatin(File chrom, List<SNP> snp, List<SNP> variant, List<Gene> gene, File out, String f) throws FileNotFoundException{
+	public PermuteChromatin(File chrom, List<SNP> snp, List<SNP> variant, List<Gene> gene, List<String> stateids, File out, String f) throws FileNotFoundException{
 		snps = snp;
 		variants = variant;
 		genes = gene;
@@ -77,53 +80,34 @@ public class PermuteChromatin {
 		//max = chromatin.get(chromatin.size()-1).getRegion().getEnd().getCoord();
 		
 //		chromosome = new GenomicRegion(new GenomicCoordinate(chromNum,min), new GenomicCoordinate(chromNum,max));
-	
+		stateIDs = stateids;
 		outdir=out;
 		filename=f;
 	}
 	
 	public HashMap<Gene,File> mapFiles(File chrom){
 		HashMap<Gene,File> ret = new HashMap<Gene,File>();
-		for(Gene g:genes){
-			String id = g.getId();
-			String chr = g.getSNPs().get(0).getId().split("_")[0];
-			File file = new File(chrom+File.separator+"chr"+chr+File.separator+id+"_chromatin.txt");
-			if(file.exists()){
-				ret.put(g, file);
-			}
-			else{
-				System.out.println(id+" chromatin file missing");
-				System.exit(1);
+		if(genes.size()==1){
+			Gene g = genes.get(0);
+			ret.put(g, new File(chrom+File.separator+g.getId()+"_chromatin.txt"));
+		}
+		else{
+			for(Gene g:genes){
+				String id = g.getId();
+				String chr = g.getSNPs().get(0).getId().split("_")[0];
+				File file = new File(chrom+File.separator+"chr"+chr+File.separator+id+"_chromatin.txt");
+				if(file.exists()){
+					ret.put(g, file);
+				}
+				else{
+					System.out.println(id+" chromatin file missing");
+					System.exit(1);
+				}
 			}
 		}
 		return ret;
 	}
-	/**
-	public void filtersnps(Gene g){
-		GenomicRegion proximal = g.copyRegion().expand(250000);
-		List<SNP> filtered = new ArrayList<SNP>();
-		for(SNP s:snps){
-			if(proximal.contains(s.getLocation())){
-				filtered.add(s);
-			}
-		}
-		snps = filtered;
-	}
 
-	public void filterchrom(Gene g){
-		GenomicRegion proximal = g.copyRegion().expand(250000);
-		List<ChromState> filtered = new ArrayList<ChromState>();
-		for(ChromState c: chromatin){
-			if(proximal.overlaps(c.getRegion())){
-				filtered.add(c);
-			}
-		}
-		System.out.println("Chromatin size: "+chromatin.size());
-		chromatin = filtered;
-		System.out.println("Filtered chromatin size: "+chromatin.size());
-		System.out.println(filtered.size());
-	}
-	**/
 	
 	public void permute(int n) throws IOException{
 	//	BufferedWriter file = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+"permutation"+n)));
@@ -157,6 +141,39 @@ public class PermuteChromatin {
 		chromatin = chromatin2;
 		Collections.sort(chromatin);
 		
+	}
+	
+	public List<ChromState> permute(List<ChromState> chrom, int n) throws IOException{
+	//	BufferedWriter file = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+"permutation"+n)));
+		List<ChromState> chromatin2 = new ArrayList<ChromState>();
+		for(int i=0; i<chrom.size();i++){
+			int ind;
+			if((i+n)<chrom.size()){
+				ind = i+n;
+			}
+			else{
+				int offset = (i+n)-chrom.size();
+				ind = offset;
+			}
+			
+			ChromState c = chrom.get(i);
+			ChromState c2 = chrom.get(ind);
+			chromatin2.add(new ChromState(c2.getState(), c.copyRegion()));
+			
+		}
+		
+		if(chromatin2.size()!=chrom.size()){
+			System.out.print("error in chrom perm");
+		}
+		/**
+		for(int i=0; i<chromatin.size(); i++){
+			file.write(chromatin.get(i).toString()+"\n");
+			file.write(chromatin2.get(i).toString()+"\n");
+		}
+		file.close();
+		**/
+		Collections.sort(chromatin2);
+		return chromatin2;
 	}
 	
 
@@ -309,9 +326,6 @@ public class PermuteChromatin {
 		//circular permutations to get null mean
 		Random rand = new Random();
 		for(int i=0; i<p; i++){
-			if(i%1000==0){
-				System.out.println(i);
-			}
 			permute(rand.nextInt(chromatin.size()/2));
 			Map<String, Double> perm = mapVar();
 			for(String chromState:perm.keySet()){
@@ -344,7 +358,7 @@ public class PermuteChromatin {
 	}
 	
 	public void testEnrichmentGene(int p) throws IOException{
-		
+
 		//Real data
 		Map<String,Integer> realvar = new HashMap<String,Integer>();
 		for(Gene g:genes){
@@ -359,72 +373,76 @@ public class PermuteChromatin {
 		}
 		System.out.println(realvar.toString());
 		
+		
 		//Permuted data
 		Map<String,Double> allPerm = new HashMap<String, Double>();
+		for(String chromState:stateIDs){
+			allPerm.put(chromState, 0.0);
+			if(!realvar.containsKey(chromState)){
+				realvar.put(chromState,0);
+			}
+		}
+		System.out.println(allPerm.toString());
+		
 		
 		File[] listOfFiles = permFile.listFiles();
+		/**
 		if(listOfFiles.length<p){
 			System.out.println("Not enough gene chromatin state files");
 			System.exit(1);
 		}
-		
+		**/
 		Random rand = new Random(13);
 		int totalSNPs = 0;
+		for(Gene g:genes){
+			totalSNPs = totalSNPs + g.getSNPs().size();
+		}
 		for(int i=0; i<p; i++){
 			int fileNum = rand.nextInt(listOfFiles.length);
 			File chromF = listOfFiles[fileNum];
-			List<ChromState> chrom = ParseChromState.parseChromState(new BufferedInputStream( new FileInputStream(chromF)));
+			//two lines modified for bqtl stuff
+			List<ChromState> chrom0 = ParseChromState.parseChromState(new BufferedInputStream( new FileInputStream(chromF)));
+			List<ChromState> chrom = permute(chrom0,rand.nextInt(chrom0.size()/2));
+			
 			int chr1 = chrom.get(0).getRegion().getStart().getChromosome();
 			long start1 = chrom.get(0).getRegion().getStart().getCoord();
 			
+			Map<String, Double> perm = new HashMap<String,Double>();
+			for(String chromState:stateIDs){
+				perm.put(chromState, 0.0);
+			}
 			for(Gene g:genes){
-				totalSNPs = totalSNPs + g.getSNPs().size();
 				File chromF2 = chromatinFiles.get(g);
 				List<ChromState> chrom2 = ParseChromState.parseChromState(new BufferedInputStream( new FileInputStream(chromF2)));
 				long start2 = chrom2.get(0).getRegion().getStart().getCoord();
 				List<SNP> newvar = alignSNPs(g.getSNPs(), start2, chr1, start1);
-				Map<String, Double> perm = mapVar(newvar, chrom);
+				Map<String, Double> permGene = mapVar(newvar, chrom);
+				//transfer counts from gene to map for all counts in the current permutation
+				//initialize state in perm, allPerm, realvar
+				for(String state:permGene.keySet()){
 				
-				for(String chromState:perm.keySet()){
-					if(realvar.containsKey(chromState)){
-						if(realvar.get(chromState) <= perm.get(chromState)){
-							if(! allPerm.containsKey(chromState)){
-								allPerm.put(chromState, 0.0);
-							}
-							double temp = allPerm.get(chromState) +1;
-							allPerm.put(chromState, temp);
-						}
-					}
-					else{
-						realvar.put(chromState, 0);
-						if(realvar.get(chromState) <= perm.get(chromState)){
-							if(! allPerm.containsKey(chromState)){
-								allPerm.put(chromState, 0.0);
-							}
-							double temp = allPerm.get(chromState) +1;
-							allPerm.put(chromState, temp);
-						}
-						
-					}
+					double temp = perm.get(state) + permGene.get(state);
+					perm.put(state, temp);
 				}
 			}
-		
-
+			System.out.println(perm.toString());
+			for(String chromState:stateIDs){
+				if(realvar.get(chromState) <= perm.get(chromState)){
+					double temp = allPerm.get(chromState) +1.0;
+					allPerm.put(chromState, temp);
+				}
+			}
+			System.out.println(allPerm.toString());
 		}
-		/**
-		
-		//Calculate averages of each chromatin state
-		for(String chromState:allPerm.keySet()){
-			double avg = allPerm.get(chromState)*1.0/(p*totalSNPs);
-			allPerm.put(chromState, avg);
-		}
-		System.out.println("Avg perm: "+ allPerm.toString());
-		**/
-		for(String chromState:allPerm.keySet()){
+		//System.out.println(allPerm.toString());
+		for(String chromState:stateIDs){
+			if(!allPerm.containsKey(chromState)){
+				allPerm.put(chromState, 0.0);
+			}
 			double avg = allPerm.get(chromState)*1.0/(p);
 			allPerm.put(chromState, avg);
 		}
-		
+
 		//calculate p-values of chromatin state enrichment and write to file
 		BufferedWriter file = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename+"_enrichment.txt")));
 		for(String chromState:allPerm.keySet()){

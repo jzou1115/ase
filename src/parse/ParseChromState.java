@@ -44,4 +44,22 @@ public class ParseChromState {
 		return ret;
 	}
 	
+	public static List<String> parseStateID(InputStream in){
+		List<String> ret = new ArrayList<String>();
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		String line;
+		try{
+			while((line = reader.readLine()) != null){
+				ret.add(line.trim());
+			}
+			
+		} catch (IOException e) {
+			System.out.println("no lines");
+			e.printStackTrace();
+		}
+		
+		return ret;
+	}
+	
 }

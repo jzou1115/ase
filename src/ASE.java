@@ -22,7 +22,7 @@ import parse.ParseSNP;
 
 public class ASE {
 	
-	private void assignChromatin(File states, InputStream genesmap, InputStream variants, int p, String gene, File outdir, String filename) throws IOException{
+	private void assignChromatin(File states, InputStream genesmap, InputStream variants, int p, String gene, InputStream stateIDs, File outdir, String filename) throws IOException{
 
 		List<Gene> genes = ParseCausalVariants.readVariantGroup(variants);
 		List<String> geneids = new ArrayList<String>();
@@ -37,18 +37,14 @@ public class ASE {
 		map.parseMap(genesmap, geneids);
 		List<SNP> snps = map.getSNPs();
 		
-		/**
-		Map<String,SNP> snpmap = parsemap.getSnpMap();
-		List<SNP> var2 = new ArrayList<SNP>();
-		for(SNP v: var){
-			if(snpmap.containsKey(v.getId())){
-				var2.add(snpmap.get(v.getId()));
-			}
-		}
-		**/
-		PermuteChromatin perm = new PermuteChromatin(states, snps, var, genes, outdir, filename);
-		
+
+		List<String> stateids = ParseChromState.parseStateID(stateIDs);
+
+		PermuteChromatin perm = new PermuteChromatin(states, snps, var, genes, stateids, outdir, filename);
 		perm.testEnrichmentGene(p);
+		
+
+		
 		
 	}
 
@@ -103,6 +99,10 @@ public class ASE {
 		}
 	}
 	
+	private void computefdr(InputStream genotypes, InputStream expression, String gene, int p, File out, String f) throws NumberFormatException, IOException {
+		ComputeFDR fdr = new ComputeFDR(genotypes, expression, Integer.parseInt(gene), p, out, f);
+		
+	}
 	
 	public static void main(String args[]) throws IOException{
 		
@@ -201,6 +201,7 @@ public class ASE {
 			File chrom = cmdArgs.getChrom();
 			InputStream genesmap = cmdArgs.getMap();
 			InputStream variants = cmdArgs.getVariants();
+			InputStream states = cmdArgs.getChromFile();
 			String gene = cmdArgs.getTestGene();
 			int p = cmdArgs.getPermNum();
 			
@@ -208,7 +209,7 @@ public class ASE {
 			String filename = cmdArgs.getFilename();
 			
 			if(genesmap!=null && chrom!=null){
-				a.assignChromatin(chrom,genesmap, variants, p, gene, outdir, filename);
+				a.assignChromatin(chrom,genesmap, variants, p, gene,states, outdir, filename);
 			}
 			
 		}
@@ -229,6 +230,19 @@ public class ASE {
 			}
 			
 		}
+		
+		else if(fcn.equals("fdr")){
+			InputStream genotypes = cmdArgs.getGenotypeData();
+			InputStream expression = cmdArgs.getExpressionData();
+			String gene = cmdArgs.getTestGene();
+			int p = cmdArgs.getPermNum();
+			File out = cmdArgs.getOutputDir();
+			String f = cmdArgs.getFilename();
+			
+			if(genotypes!= null && expression!=null && gene!=null){
+				a.computefdr(genotypes, expression, gene, p, out, f);
+			}
+		}
 		else{
 			System.out.println("Function not recognized");
 			cmdArgs.printHelp(System.err);
@@ -237,6 +251,8 @@ public class ASE {
 
 		
 	}
+
+
 
 
 

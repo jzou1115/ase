@@ -206,7 +206,9 @@ public class Run {
 			}
 
 			ComputeSig sig = new ComputeSig(subset.size(), m, k, incorrect);
-			double p = sig.significance();
+			double[] poss = sig.significance();
+			int j = (incorrect - Math.abs(m-k))/2;
+			double p = poss[j];
 			String line = gene.toString()+"\t"+s.toString()+"\t"+m+"\t"+k+"\t"+subset.size()+"\t"+incorrect+"\t"+p;
 			
 			if(isSignificant(errors, incorrect, p)){

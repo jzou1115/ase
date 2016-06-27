@@ -15,7 +15,6 @@ public class ComputeSig {
 	//Maximum number of errors allowed
 	int e;
 	
-	
 	ComputeSig(int size, int ase, int geno, int errors){
 		n=size;
 		m=ase;
@@ -23,16 +22,14 @@ public class ComputeSig {
 		e=errors;
 	}
 	
-	public double significance(){
+	public double[] significance(){
 		double sig=0.0;
 		int min = Math.min(m, k);
 		int max = Math.max(m, k);
-		int upper1= (e-max+min)/2;
-		int upper2 = Math.min(min, upper1);
-		int upper3 = Math.min(n- max, upper2);
+		int upper = Math.max(min, n-max);
 		
-		
-		for(int i=0; i<=upper3;i++){
+		double[] possible = new double[upper+1];
+		for(int i=0; i<=upper;i++){
 			double logw1 = logchoose(max, min-i);
 			double logw2 = logchoose(n-max, i);
 			double logtotal = logchoose(n, min);
@@ -40,50 +37,17 @@ public class ComputeSig {
 			double logp = logw1+logw2-logtotal;
 			double p = Math.exp(logp);
 			sig= sig+p;
-		}
-		
-		//roundoff error
-		if(sig>1){
-			sig = 1.0;
-		}
-		if(sig<0){
-			sig = 0.0;
-		}
-		
-		return sig;
-	}
-	
-	public double[] possiblePValues(){
-
-		int min = Math.min(m, k);
-		int max = Math.max(m, k);
-		
-		int maxerrors = Math.min(min,  n-max);
-
-		double[] ret = new double[maxerrors+1];
-				
-		double sig=0.0;
-		for(int i=0; i<maxerrors+1;i++){
-			double logw1 = logchoose(max, min-i);
-			double logw2 = logchoose(n-max, i);
-			double logtotal = logchoose(n, min);
-			
-			double logp = logw1+logw2-logtotal;
-			double p = Math.exp(logp);
-			sig= sig+p;
-			
 			//roundoff error
 			if(sig>1){
-				ret[i] = 1.0;
+				sig = 1.0;
 			}
 			if(sig<0){
-				ret[i] = 0.0;
+				sig = 0.0;
 			}
-			ret[i] = sig;
+			possible[i] = sig;
 		}
 		
-		return ret;
-		
+		return possible;
 	}
 	
 	
@@ -145,7 +109,7 @@ public class ComputeSig {
 
 		return sig;
 	}
-	**/
+	
 	public BigDecimal choose(int a, int b){
 		BigDecimal bc;
 		if(a==b){
@@ -177,5 +141,5 @@ public class ComputeSig {
 		}
 		return bc;
 	}
-	
+	**/
 }

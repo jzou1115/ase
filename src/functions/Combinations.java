@@ -259,10 +259,15 @@ public class Combinations {
 			//System.out.println("incorrect: "+incorrect+" m: "+m+" k: "+k);
 			//calculate p-value based on hypergeometric distribution
 			ComputeSig sig = new ComputeSig(subsetSize, m, k, incorrect);
-			double p = sig.significance();
+			double[] poss = sig.significance();
+			int j = (incorrect - Math.abs(m-k))/2;
+			if(poss.length!= j+1){
+				System.out.println("poss vec not correct");
+				System.exit(1);
+			}
+			double p = poss[j];
 			pointwisePValues[i]=p;
 			
-			double[] poss = sig.possiblePValues();
 			pmap.put(combids[i], poss);
 			/**
 			int j = (incorrect - Math.abs(m-k))/2;

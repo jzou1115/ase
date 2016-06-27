@@ -23,6 +23,22 @@ public class ExpMatrix {
 		
 	}
 	
+	public ExpMatrix(List<GenoSample> geno){
+		sampleids = new String[geno.size()];
+		expressions = new int[geno.size()];
+		for(int i=0; i< geno.size(); i++){
+			GenoSample g = geno.get(i);
+			sampleids[i]=g.getID();
+			expressions[i] = g.getHetero();
+		}
+		
+	}
+	
+	public ExpMatrix(int[] expr, String[] sampleids2) {
+		expressions = expr;
+		sampleids = sampleids2;
+	}
+
 	public int[] getExpressions(){
 		return expressions;
 	}
