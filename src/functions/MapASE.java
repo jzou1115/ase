@@ -44,6 +44,7 @@ public class MapASE {
 	int numSamples;
 	
 	Map<String, double[]> pmap;
+	double[] pointwise;
 	
 	int perm;
 	File outdir;
@@ -86,82 +87,25 @@ public class MapASE {
 		}
 
 	}
-	/**
-	public MapASE(InputStream map, InputStream genotypesInput, String g, int p, File o, String f) throws IOException{
-		perm=p;
-		outdir = o;
-		filename=f;
-		
-		//get gene and cis-snp info
-		ParseMap parsemap = new ParseMap();
-		parsemap.parseMap(map, g);
-		Gene gene = parsemap.getGene();
-		geneName = gene.getId();
-		List<SNP> snps = parsemap.getSNPs();
-		numSNPs = snps.size();
-		Map<String, SNP> snpMap = parsemap.getSnpMap();	
-		
-		//parse genotype and ASE data
-		List<String> genosampleIDs = ParseGenotypes.parseGenotypes(genotypesInput,snps, snpMap);
-		numSamples = genosampleIDs.size();
-		
-		//get subset of genotype and ASE data that have matching samples
-		GenoMatrix genomat = new GenoMatrix(snps, genosampleIDs);
-		genotypes = genomat.getGenotypes();
-		snpids = genomat.getSnpids();
-		
-		
-		ExpMatrix expmat = new ExpMatrix(snps.get(0).getGenosamples());
-		expressions = expmat.getExpressions();
-		sampleids = expmat.getSampleids();
-		
-		if(genotypes[0].length!=expressions.length){
-			System.out.println("Sample subset not working");
-			System.exit(1);
-		}
-	}
 
-**/
-	public MapASE(GenoMatrix genotypes2, ExpMatrix expmat, String geneid, int perm2, File outfile, String filename2) {
-		perm = perm2;
-		outdir = outfile;
-		filename = filename2;
-		Gene g = new Gene(geneid);
-		
-	}
-
-	public MapASE(int[][] geno, int[] is, String[] sampleids2, String[] snpids2, String geneid, int perm2, File outfile,
-			String filename2) {
-		genotypes = geno;
-		expressions = is;
-		sampleids = sampleids2;
-		snpids = snpids2;
-		perm = perm2;
-		outdir = outfile;
-		filename = filename2;
-		Gene g = new Gene(geneid);
-		numSNPs = snpids.length;
-		numSamples = sampleids.length;
-	}
+	
 	public void mapase() throws IOException {
 		pmap = new HashMap<String, double[]>(); //possible p-values for all SNPs
 		
-		String line = pointwisePValue();
-		String[] tokens = line.split("\\s+");
-		System.out.println(line);
-		int i = tokens.length-1;
-		double minPointwise = Double.parseDouble(tokens[i]);
+		pointwise = new double[numSNPs]; //array to store pointwise p-values
+		String[] line = pointwisePValue(); //populate pointwise array and return array of output for each snp
 		
 		double[] permPValues = new double[perm]; //list of minimum p-value for each permutation
 		for(int p=1; p<=perm; p++){
 			permPValues[p-1]= permutationPValue();
 		}
 
-
-		double genePValue = calcPValues(minPointwise, permPValues);
+		double[] permutationPValue = calcPValues(permPValues);
 		
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
-		outfile.write(line+"\t"+genePValue+"\n");
+		for(int i=0; i<numSNPs; i++){
+			outfile.write(line[i]+"\t"+permutationPValue[i]+"\n");
+		}
 		outfile.close();
 
 	}
@@ -169,9 +113,8 @@ public class MapASE {
 
 
 	//Calculates pointwise p-values and populates $realPValues and $lines
-	public String pointwisePValue(){
-		String line="";
-		double min=1;
+	public String[] pointwisePValue(){
+		String[] line=new String[numSNPs];
 		for(int i=0; i<numSNPs; i++){
 			//number of ones in ase samples
 			int m=0;
@@ -200,15 +143,13 @@ public class MapASE {
 			//calculate p-value based on hypergeometric distribution
 			ComputeSig sig = new ComputeSig(numSamples, m, k, incorrect);
 			double[] poss = sig.significance();
-			int j = (incorrect - Math.abs(m-k))/2;
-			double p = poss[j];
-			if(p<min){
-				min = p;
-				line = geneName+"\t"+snpids[i]+"\t"+m+"\t"+k+"\t"+numSamples+"\t"+incorrect+"\t"+p;
-			}
+			pmap.put(snpids[i], poss); //store possible p-values for snp i
 			
-			pmap.put(snpids[i], poss);
+			int j = (incorrect - Math.abs(m-k))/2; //index of pointwise p-value in array of possible p-values
+			double p = poss[j]; //pointwise p-value for snp i
+			pointwise[i] = p; // store pointwise p-value
 			
+			line[i] = geneName+"\t"+snpids[i]+"\t"+m+"\t"+k+"\t"+numSamples+"\t"+incorrect+"\t"+p; //create line of output for SNP
 		}
 		
 		return line;
@@ -271,8 +212,8 @@ public class MapASE {
 	      ar[i] = a;
 	    }
 	  }
-
-
+/**
+//For e-gene style calculation
 	private double calcPValues(double minPointwise, double[] permPValues) {
 		if(permPValues.length!=perm){
 			System.out.println("Not all permutations completed");
@@ -290,6 +231,22 @@ public class MapASE {
 	}
 	
 
+**/
+	private double[] calcPValues(double[] permPValues) {
+		int perm = permPValues.length;
+		double[] permutationPValues = new double[numSNPs];
+		for(int i=0; i<numSNPs; i++){
+			double point = pointwise[i];
+			int sig = 0;
+			for(int j=0; j<perm; j++){
+				if(permPValues[j]<=point){
+					sig++;
+				}
+			}
+			permutationPValues[i] = sig*1.0/perm;
+		}
+		return permutationPValues;
+	}
 
 
 }

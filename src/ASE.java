@@ -98,11 +98,7 @@ public class ASE {
 			Combinations combinations = new Combinations(map, gene, genotypes, expression, p, out, f);
 		}
 	}
-	
-	private void computefdr(InputStream genotypes, InputStream expression, String gene, int p, File out, String f) throws NumberFormatException, IOException {
-		ComputeFDR fdr = new ComputeFDR(genotypes, expression, Integer.parseInt(gene), p, out, f);
-		
-	}
+
 	
 	public static void main(String args[]) throws IOException{
 		
@@ -231,18 +227,7 @@ public class ASE {
 			
 		}
 		
-		else if(fcn.equals("fdr")){
-			InputStream genotypes = cmdArgs.getGenotypeData();
-			InputStream expression = cmdArgs.getExpressionData();
-			String gene = cmdArgs.getTestGene();
-			int p = cmdArgs.getPermNum();
-			File out = cmdArgs.getOutputDir();
-			String f = cmdArgs.getFilename();
-			
-			if(genotypes!= null && expression!=null && gene!=null){
-				a.computefdr(genotypes, expression, gene, p, out, f);
-			}
-		}
+
 		else{
 			System.out.println("Function not recognized");
 			cmdArgs.printHelp(System.err);
