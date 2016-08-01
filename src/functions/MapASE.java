@@ -123,6 +123,11 @@ public class MapASE {
 			//number of mismatches
 			int incorrect=0;
 			
+			//number of ASE and heterozygous
+			int a = 0;
+			//number of not ASE and heterozygous
+			int b = 0;
+			
 			for (int j=0; j<numSamples;j++) {
 				int hasASE = expressions[j];
 				int isHetero = genotypes[i][j];
@@ -138,6 +143,14 @@ public class MapASE {
 					incorrect++; //increment counter for number of mismatches
 				}	
 
+				if(hasASE==1 && isHetero==1){
+					a=a+1;
+				}
+				
+				if(hasASE==0 && isHetero==1){
+					b=b+1;
+				}
+				
 			}
 
 			//calculate p-value based on hypergeometric distribution
@@ -149,7 +162,16 @@ public class MapASE {
 			double p = poss[j]; //pointwise p-value for snp i
 			pointwise[i] = p; // store pointwise p-value
 			
-			line[i] = geneName+"\t"+snpids[i]+"\t"+m+"\t"+k+"\t"+numSamples+"\t"+incorrect+"\t"+p; //create line of output for SNP
+			//proportion of heterozygous individuals w/i ASE subset
+			double p1 = a*1.0/m;
+			//proportion of heterozygous individuals w/i balanced subset
+			double p2 = b*1.0/(numSamples - m);
+			
+			//calculate statistic
+			double p3 = (p1+p2)/2;
+			double s = (p1 - p2) / Math.sqrt(2.0*p3*(1-p3)/numSamples);
+			
+			line[i] = geneName+"\t"+snpids[i]+"\t"+a+"\t"+b+"\t"+p1+"\t"+p2+"\t"+s+"\t"+m+"\t"+k+"\t"+numSamples+"\t"+incorrect+"\t"+p; //create line of output for SNP
 		}
 		
 		return line;
