@@ -159,8 +159,8 @@ public class MapASE {
 	//returns minimum pointwise p-value from permuted data
 	public double permutationPValue(){
 		double min=1;
+		shuffleArray(expressions);
 		for(int i=0; i<numSNPs; i++){
-			shuffleArray(expressions);
 		
 			//number of ones in ase samples
 			int m=0;
