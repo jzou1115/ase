@@ -78,7 +78,7 @@ public class ASE {
 	void mapase(InputStream map, InputStream genotypes,
 			InputStream expressions, String gene, int perm, File outdir, String filename) throws IOException {
 		if(filename==null){
-			MapASE ase = new MapASE( map,  genotypes, expressions,  gene,  perm,  outdir,  gene+"_mapase.txt");
+			MapASE ase = new MapASE( map,  genotypes, expressions,  gene,  perm,  outdir,  gene+"_mapase");
 			ase.mapase();
 		}
 		else{

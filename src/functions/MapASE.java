@@ -76,6 +76,11 @@ public class MapASE {
 		//get subset of genotype and ASE data that have matching samples
 		GenoMatrix genomat = new GenoMatrix(snps, genosampleIDs);
 		ExpMatrix expmat = new ExpMatrix(gene.getExpsamples(), genosampleIDs);
+		
+		//write genotype and expression matrices
+		genomat.write(new File(o+File.separator+"genotypes"+File.separator+g+"_genotypes.txt") );
+		expmat.write(new File(o+File.separator+"expressions"+File.separator+g+"_expression.txt"), g);
+		
 		genotypes = genomat.getGenotypes();
 		expressions = expmat.getExpressions();
 		sampleids = expmat.getSampleids();
@@ -164,12 +169,15 @@ public class MapASE {
 			
 			//proportion of heterozygous individuals w/i ASE subset
 			double p1 = a*1.0/m;
+			int n1 = m*2;
+			
 			//proportion of heterozygous individuals w/i balanced subset
 			double p2 = b*1.0/(numSamples - m);
+			int n2 = 2*(numSamples-m);
 			
 			//calculate statistic
 			double p3 = (p1+p2)/2;
-			double s = (p1 - p2) / Math.sqrt(2.0*p3*(1-p3)/numSamples);
+			double s = (p1 - p2) / Math.sqrt((p3*(1-p3))*(n1+n2)/(n1*n2));
 			
 			line[i] = geneName+"\t"+snpids[i]+"\t"+a+"\t"+b+"\t"+p1+"\t"+p2+"\t"+s+"\t"+m+"\t"+k+"\t"+numSamples+"\t"+incorrect+"\t"+p; //create line of output for SNP
 		}

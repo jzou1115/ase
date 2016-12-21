@@ -32,21 +32,24 @@ public class ParseExpressions {
 				try{
 					String[] tokens = line.split("\\s+");
 					String gtexid = tokens[6].trim();
-					ret.add(gtexid);
+					
 					int refAllele = Integer.parseInt(tokens[8]);
 					int totalReads = Integer.parseInt(tokens[10]);
 					
-					//initialize individual to have 0 reference reads and 0 total reads
-					if(!reads.containsKey(gtexid)){
-						reads.put(gtexid, 0);
-						ref.put(gtexid, 0);
+					if(totalReads>=10){
+						ret.add(gtexid);
+						//initialize individual to have 0 reference reads and 0 total reads
+						if(!reads.containsKey(gtexid)){
+							reads.put(gtexid, 0);
+							ref.put(gtexid, 0);
+						}
+						
+						//Update read count
+						int refKey = ref.get(gtexid) + refAllele;
+						int readsKey = reads.get(gtexid) + totalReads;
+						ref.put(gtexid, refKey);
+						reads.put(gtexid, readsKey);	
 					}
-					
-					//Update read count
-					int refKey = ref.get(gtexid) + refAllele;
-					int readsKey = reads.get(gtexid) + totalReads;
-					ref.put(gtexid, refKey);
-					reads.put(gtexid, readsKey);
 
 				} catch (Exception e){
 					e.printStackTrace();

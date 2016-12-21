@@ -1,5 +1,11 @@
 package sample;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 public class ExpMatrix {
@@ -45,5 +51,22 @@ public class ExpMatrix {
 	
 	public String[] getSampleids(){
 		return sampleids;
+	}
+	
+	public void write(File out, String gene) throws IOException{
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out)));
+		String header= "";
+		for(String sample: sampleids){
+			header = header+ sample+"\t";
+		}
+		outfile.write(header.trim()+"\n");
+		
+		String line = gene+"\t";
+		for(int e: expressions){
+			line = line+e+"\t";
+		}
+		outfile.write(line.trim()+"\n");
+		
+		outfile.close();
 	}
 }

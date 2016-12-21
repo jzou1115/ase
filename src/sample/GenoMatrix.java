@@ -1,5 +1,10 @@
 package sample;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 import genome.SNP;
@@ -51,5 +56,25 @@ public class GenoMatrix {
 	
 	public String[] getSnpids(){
 		return snpids;
+	}
+	
+	public void write(File out) throws IOException{
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out)));
+		String header= "";
+		for(String sample: sampleids){
+			header = header+ sample+"\t";
+		}
+		outfile.write(header.trim()+"\n");
+		
+		for(int i=0; i< snpids.length; i++){
+			String snp = snpids[i];
+			String line = snp+"\t";
+			for(int j=0; j< genotypes[i].length; j++){
+				line = line+genotypes[i][j]+"\t";
+			}
+			outfile.write(line.trim()+"\n");
+		}
+		
+		outfile.close();
 	}
 }
