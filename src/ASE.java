@@ -11,60 +11,15 @@ import java.util.Map;
 
 //import parse.ParseSNP;
 import functions.*;
-import genome.ChromState;
 import genome.Gene;
 import genome.SNP;
 import parse.ParseCausalVariants;
-import parse.ParseChromState;
 import parse.ParseMap;
 import parse.ParseSNP;
 
 
 public class ASE {
 	
-	private void assignChromatin(File states, InputStream genesmap, InputStream variants, int p, String gene, InputStream stateIDs, File outdir, String filename) throws IOException{
-
-		List<Gene> genes = ParseCausalVariants.readVariantGroup(variants);
-		List<String> geneids = new ArrayList<String>();
-		List<SNP> var = new ArrayList<SNP>();
-		for(Gene g:genes){
-			var.addAll(g.getSNPs());
-			geneids.add(g.getId());
-		}
-	
-		
-		ParseMap map = new ParseMap();
-		map.parseMap(genesmap, geneids);
-		List<SNP> snps = map.getSNPs();
-		
-
-		List<String> stateids = ParseChromState.parseStateID(stateIDs);
-
-		PermuteChromatin perm = new PermuteChromatin(states, snps, var, genes, stateids, outdir, filename);
-		perm.testEnrichmentGene(p);
-		
-
-		
-		
-	}
-
-	
-	private void createMap(InputStream snps, InputStream genes, InputStream chrom, File outdir, String filename) throws IOException {
-		GenesToSNP map;
-		if(chrom==null){
-			map = new GenesToSNP(snps, genes);
-		}
-		else{
-			map = new GenesToSNP(snps, genes, chrom);
-		}
-		
-		if(filename!=null){
-			map.write(outdir, filename);	
-		} else{
-			filename = "genestosnps.txt";
-			map.write(outdir, filename);	
-		}
-	}
 	
 
 	private void startSimulation(InputStream map2, InputStream genotypes,
@@ -88,16 +43,6 @@ public class ASE {
 
 	}
 	
-	private void generateCombinations(InputStream map, String gene,
-			InputStream genotypes, InputStream expression, int p, File out, String f) throws IOException {
-		if(f!=null){
-			Combinations combinations = new Combinations(map, gene, genotypes, expression, p, out, f);
-		}
-		else{
-			f = gene+"_combASE.txt";
-			Combinations combinations = new Combinations(map, gene, genotypes, expression, p, out, f);
-		}
-	}
 
 	
 	public static void main(String args[]) throws IOException{
@@ -118,22 +63,8 @@ public class ASE {
 		ASE a= new ASE();
 		String fcn = cmdArgs.getFunction();
 		
-		if(fcn.equals("genestosnps")){
-			InputStream snps = cmdArgs.getSNPsInput();
-			InputStream genes = cmdArgs.getGenesInput();
-			InputStream chrom = cmdArgs.getChromFile();
-			File outdir = cmdArgs.getOutputDir();
-			String filename = cmdArgs.getFilename();
-			if(snps!=null && genes!=null){
-				a.createMap(snps, genes, chrom, outdir, filename);	
-			}	
-			else{
-				cmdArgs.printHelp(System.err);
-				System.exit(0);
-			}
-		}
-		
-		else if(fcn.equals("simulation")){
+	
+		if(fcn.equals("simulation")){
 			InputStream map = cmdArgs.getMap();
 			InputStream genotypes = cmdArgs.getGenotypeData();
 			String gene = cmdArgs.getTestGene();
@@ -193,39 +124,6 @@ public class ASE {
 			}
 		}
 		
-		else if(fcn.equals("chromatin")){
-			File chrom = cmdArgs.getChrom();
-			InputStream genesmap = cmdArgs.getMap();
-			InputStream variants = cmdArgs.getVariants();
-			InputStream states = cmdArgs.getChromFile();
-			String gene = cmdArgs.getTestGene();
-			int p = cmdArgs.getPermNum();
-			
-			File outdir = cmdArgs.getOutputDir();
-			String filename = cmdArgs.getFilename();
-			
-			if(genesmap!=null && chrom!=null){
-				a.assignChromatin(chrom,genesmap, variants, p, gene,states, outdir, filename);
-			}
-			
-		}
-		else if(fcn.equals("combinations")){
-			InputStream map = cmdArgs.getMap();
-			InputStream genotypes = cmdArgs.getGenotypeData();
-			InputStream expression = cmdArgs.getExpressionData();
-			String gene = cmdArgs.getTestGene();
-			int p = cmdArgs.getPermNum();
-			File out = cmdArgs.getOutputDir();
-			String f = cmdArgs.getFilename();
-			
-			if(map!=null && gene!=null && genotypes!=null && expression!=null){
-				a.generateCombinations(map, gene, genotypes, expression, p, out, f);
-			} else{
-				cmdArgs.printHelp(System.err);
-				System.exit(0);
-			}
-			
-		}
 		
 
 		else{
