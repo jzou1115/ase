@@ -212,26 +212,7 @@ public class MapASE {
 	      ar[i] = a;
 	    }
 	  }
-/**
-//For e-gene style calculation
-	private double calcPValues(double minPointwise, double[] permPValues) {
-		if(permPValues.length!=perm){
-			System.out.println("Not all permutations completed");
-			System.exit(1);
-		}
-		
-		int count = 0; //number of permuted p-values that are equal to or lower than $p
-		for(int j=0; j<perm; j++){
-			if(permPValues[j]<=minPointwise){
-				count++;
-			}
-		}
-		
-		return(count*1.0/perm);
-	}
-	
 
-**/
 	private double[] calcPValues(double[] permPValues) {
 		int perm = permPValues.length;
 		double[] permutationPValues = new double[numSNPs];

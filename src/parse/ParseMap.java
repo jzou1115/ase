@@ -72,62 +72,6 @@ public class ParseMap {
 		}
 	}
 	
-/*	public void parseMap(InputStream in, List<String> g) throws IOException{
-		snpLoc = new HashMap<String, SNP>();
-		snpmap = new HashMap<String, SNP>();
-		
-		genes = g;
-		snps = new ArrayList<SNP>();
-		//System.out.println(g.toString());
-		
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		String line = reader.readLine();
-		try{
-			while((line = reader.readLine()) != null){
-				String[] tokens = line.split("\\s+");
-				String geneid=tokens[1];
-				
-				if(containsId(geneid)){
-					
-					String snpid = tokens[0];
-					String[] snpTokens = snpid.split("_");
-					int chr = Integer.parseInt(snpTokens[0]);
-					long loc = Long.parseLong(snpTokens[1]);
-
-					SNP s = new SNP(snpid, chr, loc);
-					snps.add(s);
-
-					String key = chr+"_"+loc;
-					if(!snpLoc.containsKey(key)){
-						snpLoc.put(key, s);	
-					}
-					else{
-						//	System.out.println("snp duplicate: "+key);
-					}
-					if(!snpmap.containsKey(snpid)){
-						snpmap.put(snpid, s);	
-					}
-					else{
-						//	System.out.println("snp duplicate: "+s.getId());
-					}	
-				}
-
-			}
-		
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}*/
-	
-/*	public boolean containsId(String id){
-		for(String g:genes){
-			if(id.contains(g)){
-				return true;
-			}
-		}
-		return false;
-	}*/
 	
 	public Gene getGene(){
 		return g;
