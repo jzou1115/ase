@@ -19,20 +19,20 @@ import java.util.Map;
 
 public class ParseMap {
 	Gene g;
-	List<String> genes;
+	//List<String> genes;
 	List<SNP> snps;
 	
 	Map<String, SNP> snpLoc;
 	Map<String, SNP> snpmap;
 	
 
+	// get list of SNPs objects
 	public void parseMap(InputStream in, String gene){
 		snpLoc = new HashMap<String, SNP>();
 		snpmap = new HashMap<String, SNP>();
 		
 		g = new Gene(gene);
 		snps = new ArrayList<SNP>();
-		System.out.println(g.toString());
 		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
@@ -52,13 +52,16 @@ public class ParseMap {
 					snpLoc.put(key, s);	
 				}
 				else{
-				//	System.out.println("snp duplicate: "+key);
+					System.out.println("snp duplicate: "+key);
+					System.exit(1);
 				}
+				
 				if(!snpmap.containsKey(snpid)){
 					snpmap.put(snpid, s);	
 				}
 				else{
-				//	System.out.println("snp duplicate: "+s.getId());
+					System.out.println("snp duplicate: "+s.getId());
+					System.exit(1);
 				}
 				
 			}
@@ -69,7 +72,7 @@ public class ParseMap {
 		}
 	}
 	
-	public void parseMap(InputStream in, List<String> g) throws IOException{
+/*	public void parseMap(InputStream in, List<String> g) throws IOException{
 		snpLoc = new HashMap<String, SNP>();
 		snpmap = new HashMap<String, SNP>();
 		
@@ -115,16 +118,16 @@ public class ParseMap {
 			e.printStackTrace();
 			System.exit(1);
 		}
-	}
+	}*/
 	
-	public boolean containsId(String id){
+/*	public boolean containsId(String id){
 		for(String g:genes){
 			if(id.contains(g)){
 				return true;
 			}
 		}
 		return false;
-	}
+	}*/
 	
 	public Gene getGene(){
 		return g;

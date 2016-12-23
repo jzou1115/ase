@@ -22,6 +22,7 @@ public class ParseGenotypes {
 		for(int i=1; i<samples.length; i++){
 			ret.add(samples[i]);
 		}
+		
 		try {
 			while((line = br.readLine()) != null){
 					String[] tokens = line.split("\\s+");
@@ -30,6 +31,7 @@ public class ParseGenotypes {
 					//	System.out.println(tokens[0] +" not found in gene to SNP map");
 					}
 					else{
+						//System.out.println(tokens[0] +" found in gene to SNP map");
 						//skip token[0] (SNP id)
 						for(int i=1; i<tokens.length;i++){	
 								// 0, 2 homozygous; 1 heterozygous

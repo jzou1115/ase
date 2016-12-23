@@ -23,11 +23,10 @@ public class ASE {
 	
 
 	private void startSimulation(InputStream map2, InputStream genotypes,
-			String gene2, int error, int perm, int n, File outdir, String filename) throws IOException {
+			String gene2, File outdir, String filename) throws IOException {
 		Simulation sim = new Simulation();
-		sim.setTestGene(map2, gene2, genotypes);
-		sim.startRun(error, perm,n, outdir);
-		
+		sim.setTestGene(map2, gene2, genotypes, outdir);
+		sim.mapASE(filename);
 	}
 	
 	void mapase(InputStream map, InputStream genotypes,
@@ -68,15 +67,11 @@ public class ASE {
 			InputStream map = cmdArgs.getMap();
 			InputStream genotypes = cmdArgs.getGenotypeData();
 			String gene = cmdArgs.getTestGene();
-			int error = cmdArgs.getErrorNum();
-			int perm = cmdArgs.getPermNum();
-			int n = cmdArgs.getSampleNum();
 			File outdir = cmdArgs.getOutputDir();
-			//InputStream samples = cmdArgs.getSamples();
 			String filename = cmdArgs.getFilename();
 			
 			if(map!=null && genotypes!=null && gene!=null){
-				a.startSimulation(map, genotypes, gene, error, perm, n, outdir, filename);
+				a.startSimulation(map, genotypes, gene, outdir, filename);
 
 			} else{
 				cmdArgs.printHelp(System.err);
@@ -124,8 +119,6 @@ public class ASE {
 			}
 		}
 		
-		
-
 		else{
 			System.out.println("Function not recognized");
 			cmdArgs.printHelp(System.err);

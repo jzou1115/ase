@@ -9,31 +9,30 @@ public class CommandLine implements CommandLineParams{
 	
 	private static final String DEFAULT_OUTPUT_DIR = "ase_output";
 	
-	private static final String SNP_TAG = "-s";
-	private static final String GENE_TAG = "-g";
+	private static final String TEST_TAG = "-t";
 	private static final String GENOTYPES_TAG = "-a";
 	private static final String EXPRESSIONS_TAG = "-b";
-	private static final String PERM_TAG = "-p";
-	private static final String ERROR_TAG = "-e";
 	private static final String HELP_TAG = "-h";
 	private static final String OUTPUT_TAG = "-o";
 	private static final String FILE_TAG = "-f";
-	private static final String TEST_TAG = "-t";
-	private static final String SAMPLE_TAG = "-n";
 	private static final String MAP_TAG = "-m";
-	private static final String CHROM_TAG = "-c";
-	private static final String VAR_TAG = "-v";
-	private static final String TSS_TAG ="-z";
-	private static final String MAP_FCN = "genestosnps";
-	private static final String APPROX_FCN = "approximation";
 	private static final String SIM_FCN = "simulation";
 	private static final String ASE_FCN = "mapase";
+	
+	private static final String MAP_FCN = "genestosnps";
+	private static final String APPROX_FCN = "approximation";
 	private static final String COMB_FCN = "combinations";
 	private static final String CHROM_FCN = "chromatin";
 	private static final String FDR_FCN = "fdr";
 	private static final String CHROM_FILE = "-q";
-	
-	
+	private static final String CHROM_TAG = "-c";
+	private static final String VAR_TAG = "-v";
+	private static final String TSS_TAG ="-z";
+	private static final String SAMPLE_TAG = "-n";
+	private static final String PERM_TAG = "-p";
+	private static final String ERROR_TAG = "-e";
+	private static final String SNP_TAG = "-s";
+	private static final String GENE_TAG = "-g";
 	
 	private InputStream snps;
 	private InputStream genes;
