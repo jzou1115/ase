@@ -19,4 +19,6 @@ public interface CommandLineParams {
 	public String getFunction();
 	public String getFilename();
 	public int getPermNum();
+
+	public int getSampleSize();
 }

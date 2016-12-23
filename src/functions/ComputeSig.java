@@ -1,9 +1,5 @@
 package functions;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.List;
 
-import sample.ExpSample;
 
 public class ComputeSig {
 	//Number of samples = length of w and v
@@ -15,6 +11,7 @@ public class ComputeSig {
 	//Maximum number of errors allowed
 	int e;
 	
+	int upper;
 	ComputeSig(int size, int ase, int geno, int errors){
 		n=size;
 		m=ase;
@@ -22,12 +19,16 @@ public class ComputeSig {
 		e=errors;
 	}
 	
+	/**
+	 * This function computes significant values for all possible numbers of errors given the states: n,k,m,e
+	 * @return Array of possible p-values sorted from most to least probable
+	 */
 	public double[] significance(){
 		double sig=0.0;
 		int min = Math.min(m, k);
 		int max = Math.max(m, k);
-		int upper = Math.max(min, n-max);
-		
+		upper = Math.max(min, n-max);
+
 		double[] possible = new double[upper+1];
 		for(int i=0; i<=upper;i++){
 			double logw1 = logchoose(max, min-i);
@@ -81,4 +82,7 @@ public class ComputeSig {
 		return lc;
 	}
 	
+	public int getUpper(){
+		return upper;
+	}
 }

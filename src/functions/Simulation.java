@@ -1,6 +1,5 @@
 package functions;
 
-
 import genome.Gene;
 import genome.SNP;
 
@@ -29,13 +28,20 @@ public class Simulation {
 	List<String> sampleNames;
 	
 	private File outdir;
-	private Map<Integer,Double> sig;
 	
-	public void setTestGene(InputStream map2, String gene2, InputStream genotypes, File out) throws IOException{
+	/**
+	 * Reads input files and sets state for simulation class
+	 * @param map Map file for genes and SNPs
+	 * @param g Gene id
+	 * @param genotypes Genotype file
+	 * @param out Output directory
+	 * @throws IOException
+	 */
+	public void setTestGene(InputStream map, String g, InputStream genotypes, File out) throws IOException{
 		outdir = out;
 				
 		ParseMap parsemap = new ParseMap();
-		parsemap.parseMap(map2, gene2);
+		parsemap.parseMap(map, g);
 		gene = parsemap.getGene();
 		snps = parsemap.getSNPs();
 		snpMap = parsemap.getSnpMap();
@@ -44,17 +50,9 @@ public class Simulation {
 
 	}
 	
-	
-	public List<SNP> getSnps(){
-		return snps;
-	}
-	public Gene getGene(){
-		return gene;
-	}
-
 
 	
-	public Object[] getSubset(int total, int num){
+	public List<Integer> getSubset(int total, int num){
 		Random rand = new Random();
 		List<Integer> ret = new ArrayList<Integer>();
 		int i=0;
@@ -67,9 +65,9 @@ public class Simulation {
 			}
 		}
 
-		return ret.toArray();
+		return ret;
 	}
-	
+/*	
 	//return subset of genosamples that also have expsamples
 	public List<GenoSample> getSubset(int total, SNP s, List<ExpSample> exp){
 		Set<String> sampleids = new HashSet<String>();
@@ -92,41 +90,53 @@ public class Simulation {
 			}
 		}
 		return subset;
-	}
+	}*/
 
 
-	//mapase without permutations
-	public void mapASE(String filename) throws IOException{
+	/**
+	 * Calls ASE based on randomly chosen SNP for sample size n.  Runs ASE mapping algorithm on simulated data. Outputs p-value for all possible numbers of errors using closed form solution for all possible p-values.
+	 * @param filename Output file name for simulation p-values
+	 * @throws IOException
+	 */
+	public void mapASE(String filename, int n) throws IOException{
 
+		//choose random SNP for simulation
 		Random rand = new Random(17);
 		int randInt = rand.nextInt(snps.size());
 		SNP s = snps.get(randInt);
+		
+		//minor allele frequency of SNP s
 		double f = calculateMAF(s);
 		
-		List<ExpSample> ase = aseCall(s);
-		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
-
-
-		//subset of genosamples that have expression samples
-		List<GenoSample> subset = getSubset(ase.size(), s, ase);
-		if(subset==null){
-			System.out.println("Subset size 0");
+		List<GenoSample> allGenotypes = s.getGenosamples();
+		
+		//Put random sample of size n in subset
+		List<Integer> indices = getSubset(s.getGenosamples().size(), n);
+		List<GenoSample> subset = new ArrayList<GenoSample>();
+		for(int i:indices){
+			subset.add(allGenotypes.get(i));
+		}
+		//ASE calls for subset of individuals
+		List<ExpSample> ase = aseCall(subset);
+		if(ase.size()!=subset.size()){
+			System.out.println("Subset function malfunction");
 			System.exit(1);
 		}
+		
+		System.out.println("Number of individuals: "+ase.size());
+		
+		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
 
-		//m and k are used to approximate significance
 		//number of ones in ase samples
 		int m=0;
 		//number of ones in genotype samples
 		int k=0;
-
-		int correct=0;
+		//number of mismatches between ASE status and genotype
 		int incorrect=0;
 		for (int i=0; i<subset.size();i++) {
 			GenoSample g = subset.get(i);
-			String sampleID = g.getID();
-
 			int hasASE = ase.get(i).getASE();
+			
 			if(hasASE==1){
 				m=m+1;
 			}
@@ -135,39 +145,35 @@ public class Simulation {
 				k=k+1;
 			}
 
-			if(isHetero == hasASE){
-				correct++;
-			}
-			else if(isHetero != hasASE){
+			if(isHetero != hasASE){
 				incorrect++;
 			}	
-			else{
-				System.out.println("Missing data: "+sampleID );
-			}
-		}
 
+		}
+		System.out.println("Incorrect: "+incorrect);
+		//set state for ComputeSig state
+		System.out.println(subset.size()+"\t"+m+"\t"+k+"\t"+incorrect);
+		
 		ComputeSig sig = new ComputeSig(subset.size(), m, k, incorrect);
+		//p-values for all possible numbers of errors
 		double[] poss = sig.significance();
 		for(int j=0 ; j< poss.length ; j ++){
+			//number of mismatches
 			int inc = 2*j + Math.abs(m-k);
+			//p-value for inc mismatches
 			double p = poss[j];
-			String line = gene.toString()+"\t"+s.toString()+"\t"+f+"\t"+inc+"\t"+p;
+			String line = gene.toString()+"\t"+s.getId()+"\t"+f+"\t"+m+"\t"+k+"\t"+ase.size()+"\t"+inc+"\t"+p;
 			outfile.write(line+"\n");
 		}
 		outfile.close();
 
 	}
 
-	public boolean isSignificant(int e, int incorrect, double z){
-		if(incorrect<=e){
-			if(z<=.0000025){
-				return true;
-			}
-		}
-		return false;
-	}
-
-
+	/**
+	 * Use Hardy Weinburg to find minor allele frequency of SNP
+	 * @param s SNP
+	 * @return minor allele frequency of SNP
+	 */
 	public double calculateMAF(SNP s){
 		int hetero=0;
 		
@@ -177,7 +183,6 @@ public class Simulation {
 				hetero++;
 			}
 		}
-		
 
 		double pq = 0.5*hetero/genos.size();
 		double discriminant = Math.sqrt(1-4*pq);
@@ -201,8 +206,12 @@ public class Simulation {
 		return -1;
 	}
 	
-	public List<ExpSample> aseCall(SNP s){
-		List<GenoSample> genos = s.getGenosamples();
+	/**
+	 * Use genotypes of a SNP to call ASE for individuals with zero errors
+	 * @param genos List of genotypes
+	 * @return List of ASE calls
+	 */
+	public List<ExpSample> aseCall(List<GenoSample> genos){
 		List<ExpSample> ret = new ArrayList<ExpSample>();
 		for(int i=0; i<genos.size();i++){
 			GenoSample g = genos.get(i);
@@ -210,5 +219,13 @@ public class Simulation {
 		}
 		return ret;
 	}
+	
+	public List<SNP> getSnps(){
+		return snps;
+	}
+	public Gene getGene(){
+		return gene;
+	}
+
 
 }

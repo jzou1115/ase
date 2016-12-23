@@ -19,7 +19,7 @@ public class CommandLine implements CommandLineParams{
 	private static final String SIM_FCN = "simulation";
 	private static final String ASE_FCN = "mapase";
 	private static final String PERM_TAG = "-p";
-	
+	private static final String SAMPLE_TAG = "-n";
 
 	private InputStream genotypes;
 	private InputStream expressions;
@@ -30,6 +30,7 @@ public class CommandLine implements CommandLineParams{
 	private String function;
 	private File output = new File(DEFAULT_OUTPUT_DIR);
 	private String outfile;
+	private int samples; 
 	
 	@Override
 	public void parse(String ... args) throws Exception{
@@ -76,6 +77,10 @@ public class CommandLine implements CommandLineParams{
 			case EXPRESSIONS_TAG:
 				assertNextArg(EXPRESSIONS_TAG, i, args);
 				expressions = parseDataFile(args[++i]);
+				break;
+			case SAMPLE_TAG:
+				assertNextArg(SAMPLE_TAG, i, args);
+				samples = parseIntArg(args[++i]);
 				break;
 			default:
 				throw new Exception("Unrecognized flag: "+cur);
@@ -172,6 +177,11 @@ public class CommandLine implements CommandLineParams{
 	@Override
 	public String getFilename() {
 		return outfile;
+	}
+
+	@Override
+	public int getSampleSize() {
+		return samples;
 	}
 
 

@@ -25,8 +25,11 @@ public class ParseMap {
 	Map<String, SNP> snpLoc;
 	Map<String, SNP> snpmap;
 	
-
-	// get list of SNPs objects
+	/**
+	 * Get list of SNP objects for a gene
+	 * @param in Contains data in the map file
+	 * @param gene Gene id
+	 */
 	public void parseMap(InputStream in, String gene){
 		snpLoc = new HashMap<String, SNP>();
 		snpmap = new HashMap<String, SNP>();
