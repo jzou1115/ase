@@ -1,31 +1,20 @@
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-//import parse.ParseSNP;
 import functions.*;
-import genome.Gene;
-import genome.SNP;
-import parse.ParseCausalVariants;
-import parse.ParseMap;
-import parse.ParseSNP;
 
 
 public class ASE {
 	
 	
 
-	private void startSimulation(InputStream map2, InputStream genotypes,
-			String gene2, File outdir, String filename) throws IOException {
+	private void startSimulation(InputStream map, InputStream genotypes,
+			String gene, File outdir, String filename) throws IOException {
+		if(filename==null){
+			filename=gene+"_simulation.txt";
+		}
 		Simulation sim = new Simulation();
-		sim.setTestGene(map2, gene2, genotypes, outdir);
+		sim.setTestGene(map, gene, genotypes, outdir);
 		sim.mapASE(filename);
 	}
 	
@@ -66,7 +55,7 @@ public class ASE {
 		if(fcn.equals("simulation")){
 			InputStream map = cmdArgs.getMap();
 			InputStream genotypes = cmdArgs.getGenotypeData();
-			String gene = cmdArgs.getTestGene();
+			String gene = cmdArgs.getGene();
 			File outdir = cmdArgs.getOutputDir();
 			String filename = cmdArgs.getFilename();
 			
@@ -80,32 +69,12 @@ public class ASE {
 
 
 		}
-		/**
-		else if(fcn.equals("mapase")){
-			InputStream map = cmdArgs.getMap();
-			InputStream genotypes = cmdArgs.getGenotypeData();
-			InputStream expressions = cmdArgs.getExpressionData();
-			String gene = cmdArgs.getTestGene();
-			int error = cmdArgs.getErrorNum();
-			int n = cmdArgs.getSampleNum();
-			int perm = cmdArgs.getPermNum();
-			File outdir = cmdArgs.getOutputDir();
-			String filename = cmdArgs.getFilename();
-			
-			if(map!=null && genotypes!=null && gene!=null){
-				a.mapASE(map, genotypes, expressions, gene, error, n, perm, outdir, filename);
 
-			} else{
-				cmdArgs.printHelp(System.err);
-				System.exit(0);
-			}
-		}
-		**/
 		else if(fcn.equals("mapase")){
 			InputStream map = cmdArgs.getMap();
 			InputStream genotypes = cmdArgs.getGenotypeData();
 			InputStream expressions = cmdArgs.getExpressionData();
-			String gene = cmdArgs.getTestGene();
+			String gene = cmdArgs.getGene();
 			int perm = cmdArgs.getPermNum();
 			File outdir = cmdArgs.getOutputDir();
 			String filename = cmdArgs.getFilename();

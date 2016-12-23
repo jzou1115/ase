@@ -19,8 +19,6 @@ import java.util.Set;
 
 import parse.ParseGenotypes;
 import parse.ParseMap;
-import parse.ParseSNP;
-import parse.ParseSamples;
 import sample.ExpSample;
 import sample.GenoSample;
 
@@ -41,12 +39,9 @@ public class Simulation {
 		gene = parsemap.getGene();
 		snps = parsemap.getSNPs();
 		snpMap = parsemap.getSnpMap();
-		for(String k:snpMap.keySet()){
-			System.out.println(k);
-		}
 
 		ParseGenotypes.parseGenotypes(genotypes,snps, snpMap);
-		System.out.println(gene.toString()+"\t"+snps.size());
+
 	}
 	
 	
@@ -59,8 +54,7 @@ public class Simulation {
 
 
 	
-	public Object[] getSubset(int total, int num){
-		//System.out.println(total);
+/*	public Object[] getSubset(int total, int num){
 		Random rand = new Random();
 		List<Integer> ret = new ArrayList<Integer>();
 		int i=0;
@@ -74,7 +68,7 @@ public class Simulation {
 		}
 
 		return ret.toArray();
-	}
+	}*/
 	
 	//return subset of genosamples that also have expsamples
 	public List<GenoSample> getSubset(int total, SNP s, List<ExpSample> exp){
@@ -172,10 +166,6 @@ public class Simulation {
 		double f = calculateMAF(s);
 		
 		List<ExpSample> ase = aseCall(s);
-		System.out.println("ASE");
-		for(int i=0; i<ase.size(); i++){
-			System.out.println(ase.get(i).toString());
-		}
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
 
 
@@ -261,26 +251,21 @@ public class Simulation {
 
 	public double calculateMAF(SNP s){
 		int hetero=0;
-		System.out.println(s.getId());
 		
 		List<GenoSample> genos = s.getGenosamples();
 		for(int i=0; i<genos.size();i++){
-			System.out.println(genos.get(i).getHetero());
 			if(genos.get(i).getHetero()==1){
 				hetero++;
 			}
 		}
 		
 
-		System.out.println("hetero: "+hetero);
 		double pq = 0.5*hetero/genos.size();
-		System.out.println("pq: "+pq);
 		double discriminant = Math.sqrt(1-4*pq);
 		
 		double root = (1+discriminant)/2;
 		double root2 = (1-discriminant)/2;
-		System.out.println("root1: "+root);
-		System.out.println("root2: "+root2);
+
 		if(root>=0 && root<=1){
 			if(root<1-root){
 				return root;

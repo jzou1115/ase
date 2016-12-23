@@ -9,7 +9,7 @@ public class CommandLine implements CommandLineParams{
 	
 	private static final String DEFAULT_OUTPUT_DIR = "ase_output";
 	
-	private static final String TEST_TAG = "-t";
+	private static final String GENE_TAG = "-g";
 	private static final String GENOTYPES_TAG = "-a";
 	private static final String EXPRESSIONS_TAG = "-b";
 	private static final String HELP_TAG = "-h";
@@ -18,37 +18,15 @@ public class CommandLine implements CommandLineParams{
 	private static final String MAP_TAG = "-m";
 	private static final String SIM_FCN = "simulation";
 	private static final String ASE_FCN = "mapase";
-	
-	private static final String MAP_FCN = "genestosnps";
-	private static final String APPROX_FCN = "approximation";
-	private static final String COMB_FCN = "combinations";
-	private static final String CHROM_FCN = "chromatin";
-	private static final String FDR_FCN = "fdr";
-	private static final String CHROM_FILE = "-q";
-	private static final String CHROM_TAG = "-c";
-	private static final String VAR_TAG = "-v";
-	private static final String TSS_TAG ="-z";
-	private static final String SAMPLE_TAG = "-n";
 	private static final String PERM_TAG = "-p";
-	private static final String ERROR_TAG = "-e";
-	private static final String SNP_TAG = "-s";
-	private static final String GENE_TAG = "-g";
 	
-	private InputStream snps;
-	private InputStream genes;
+
 	private InputStream genotypes;
 	private InputStream expressions;
 	private InputStream map;
-	private InputStream samples;
-	private InputStream cf;
-	private File chrom;
-	private InputStream variant;
-	private InputStream tss;
 	private boolean help = false;
 	private int perm;
-	private int errors;
-	private String test;
-	private int sampleNum;
+	private String gene;
 	private String function;
 	private File output = new File(DEFAULT_OUTPUT_DIR);
 	private String outfile;
@@ -62,54 +40,23 @@ public class CommandLine implements CommandLineParams{
 		for( int i = 0 ; i < args.length ; ++i ){
 			String cur = args[i];
 			switch(cur){
-			case MAP_FCN: 
-				function = MAP_FCN;
-				break;
 			case SIM_FCN: 
 				function = SIM_FCN;
 				break;
 			case ASE_FCN:
 				function = ASE_FCN;
 				break;
-			case APPROX_FCN:
-				function = APPROX_FCN;
-				break;
-			case COMB_FCN:
-				function = COMB_FCN;
-				break;
-			case CHROM_FCN:
-				function = CHROM_FCN;
-				break;
-			case FDR_FCN:
-				function = FDR_FCN;
-				break;
-			case SNP_TAG: 
-				assertNextArg(SNP_TAG, i, args);
-				snps = parseDataFile(args[++i]);
-				break;
-			case GENE_TAG: 
-				assertNextArg(GENE_TAG, i, args);
-				genes = parseDataFile(args[++i]);
-				break;
 			case MAP_TAG: 
 				assertNextArg(MAP_TAG, i, args);
 				map = parseDataFile(args[++i]);
 				break;
 			case PERM_TAG: 
-				assertNextArg(PERM_TAG, i, args);
+				assertNextArg(MAP_TAG, i, args);
 				perm = parseIntArg(args[++i]);
 				break;
-			case ERROR_TAG: 
-				assertNextArg(ERROR_TAG, i, args);
-				errors = parseIntArg(args[++i]);
-				break;
-			case SAMPLE_TAG: 
-				assertNextArg(SAMPLE_TAG, i, args);
-				sampleNum = parseIntArg(args[++i]);
-				break;
-			case TEST_TAG: 
-				assertNextArg(TEST_TAG, i, args);
-				test = parseStringArg(args[++i]);
+			case GENE_TAG: 
+				assertNextArg(GENE_TAG, i, args);
+				gene = parseStringArg(args[++i]);
 				break;
 			case HELP_TAG:
 				help = true;
@@ -129,21 +76,6 @@ public class CommandLine implements CommandLineParams{
 			case EXPRESSIONS_TAG:
 				assertNextArg(EXPRESSIONS_TAG, i, args);
 				expressions = parseDataFile(args[++i]);
-				break;
-			case CHROM_TAG:
-				assertNextArg(CHROM_TAG, i, args);
-				chrom = new File(args[++i]);
-				break;
-			case VAR_TAG:
-				assertNextArg(VAR_TAG,i,args);
-				variant = parseDataFile(args[++i]);
-				break;
-			case TSS_TAG:
-				assertNextArg(TSS_TAG,i,args);
-				tss = parseDataFile(args[++i]);
-			case CHROM_FILE:
-				assertNextArg(CHROM_FILE, i ,args);
-				cf = parseDataFile(args[++i]);
 				break;
 			default:
 				throw new Exception("Unrecognized flag: "+cur);
@@ -178,15 +110,10 @@ public class CommandLine implements CommandLineParams{
 		out.println("<simulation>\tThis function starts a simulation for one gene.");
 		out.println("<mapase>\tThis function maps variants to ASE.");
 		out.println("\nOptions:");
-		out.println("-s\tSNP Locations");
-		out.println("-g\tGene Locations");
 		out.println("-m\tMap from gene to SNPs");
 		out.println("-a\tGenotype file");
 		out.println("-b\tExpression file");
 		out.println("-p\tNumber of permutations");
-		out.println("-e\tMaximum number of errors allowed");
-		out.println("-v\tVariants");
-		out.println("-n\tNumber of samples used");
 		out.println("-o\tOutput directory");
 		out.println("-f\tFilename");
 		out.println("-h\thelp statement");
@@ -194,15 +121,6 @@ public class CommandLine implements CommandLineParams{
 	}
 	
 
-	@Override
-	public InputStream getSNPsInput() {
-		return snps;
-	}
-	
-	@Override
-	public InputStream getGenesInput() {
-		return genes;
-	}
 	
 	@Override
 	public File getOutputDir() {
@@ -222,20 +140,14 @@ public class CommandLine implements CommandLineParams{
 		return perm;
 	}
 
-	@Override
-	public int getErrorNum() {
-		return errors;
-	}
+
 
 	@Override
-	public String getTestGene() {
-		return test;
+	public String getGene() {
+		return gene;
 	}
 
-	@Override
-	public int getSampleNum() {
-		return sampleNum;
-	}
+
 
 
 	@Override
@@ -261,32 +173,6 @@ public class CommandLine implements CommandLineParams{
 	@Override
 	public String getFilename() {
 		return outfile;
-	}
-
-	@Override
-	public InputStream getSamples() {
-		return samples;
-	}
-
-
-	@Override
-	public File getChrom() {
-		return chrom;
-	}
-
-	@Override
-	public InputStream getVariants() {
-		return variant;
-	}
-
-	@Override
-	public InputStream getTss() {
-		return tss;
-	}
-
-	@Override
-	public InputStream getChromFile() {
-		return cf;
 	}
 
 
