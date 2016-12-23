@@ -106,18 +106,17 @@ public class CommandLine implements CommandLineParams{
 	public void printHelp(PrintStream out){
 		out.println("Usage: ase <function> [<args>] \n");
 		out.println("Functions:");
-		out.println("<genestosnps>\tThis function takes a list of genes and a list of snps.  It creates a map from each gene to a list of snps.");
-		out.println("<simulation>\tThis function starts a simulation for one gene.");
+		out.println("<simulation>\tThis function performs a simulation for one gene and a randomly chosen SNP with all possible numbers of errors.");
 		out.println("<mapase>\tThis function maps variants to ASE.");
 		out.println("\nOptions:");
 		out.println("-m\tMap from gene to SNPs");
 		out.println("-a\tGenotype file");
 		out.println("-b\tExpression file");
+		out.println("-g\tGene name");
 		out.println("-p\tNumber of permutations");
 		out.println("-o\tOutput directory");
-		out.println("-f\tFilename");
+		out.println("-f\tOutput file name");
 		out.println("-h\thelp statement");
-
 	}
 	
 
