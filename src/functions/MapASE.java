@@ -2,24 +2,15 @@ package functions;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-
-import org.apache.commons.math3.stat.inference.AlternativeHypothesis;
-import org.apache.commons.math3.stat.inference.BinomialTest;
-
 
 
 import genome.Gene;
@@ -28,9 +19,7 @@ import parse.ParseExpressions;
 import parse.ParseGenotypes;
 import parse.ParseMap;
 import sample.ExpMatrix;
-import sample.ExpSample;
 import sample.GenoMatrix;
-import sample.GenoSample;
 
 public class MapASE {
 	int[][] genotypes;
@@ -50,13 +39,24 @@ public class MapASE {
 	File outdir;
 	String filename;
 	
-	
+	/**
+	 * Read data and set state
+	 * @param map Map of genes to SNPs
+	 * @param genotypesInput Genotype data file
+	 * @param expressionsInput ASE expression data
+	 * @param g Gene ID
+	 * @param p Number of permutations
+	 * @param o Output directory
+	 * @param f Output file
+	 * @throws IOException
+	 */
 	public MapASE(InputStream map, InputStream genotypesInput,
 			InputStream expressionsInput, String g, int p, File o, String f) throws IOException{
 		perm=p;
 		outdir = o;
 		filename=f;
 		
+		//Get SNPs in cis with gene
 		ParseMap parsemap = new ParseMap();
 		parsemap.parseMap(map, g);
 		Gene gene = parsemap.getGene();
@@ -70,6 +70,7 @@ public class MapASE {
 		//Gene gene = new Gene(g);
 		List<String> expsampleIDs = ParseExpressions.parseExpressions(expressionsInput, gene, outdir);
 	
+		//genosampleIDs contains all individals with both ASE and genotype data
 		genosampleIDs.retainAll(expsampleIDs);
 		numSamples = genosampleIDs.size();
 		
@@ -88,7 +89,10 @@ public class MapASE {
 
 	}
 
-	
+	/**
+	 * Runs ASE mapping algorithm on real data and creates output file
+	 * @throws IOException
+	 */
 	public void mapase() throws IOException {
 		pmap = new HashMap<String, double[]>(); //possible p-values for all SNPs
 		
@@ -111,8 +115,10 @@ public class MapASE {
 	}
 
 
-
-	//Calculates pointwise p-values and populates $realPValues and $lines
+	/**
+	 * Calculates pointwise p-values and creates output lines
+	 * @return Array of strings corresponding to lines of output
+	 */
 	public String[] pointwisePValue(){
 		String[] line=new String[numSNPs];
 		for(int i=0; i<numSNPs; i++){
@@ -156,7 +162,10 @@ public class MapASE {
 
 	}
 	
-	//returns minimum pointwise p-value from permuted data
+	/**
+	 * Permutes ASE data and reruns ASE mapping algorithm
+	 * @return minimum pointwise p-value from permuted data
+	 */
 	public double permutationPValue(){
 		double min=1;
 		shuffleArray(expressions);
@@ -200,18 +209,17 @@ public class MapASE {
 
 
 	static void shuffleArray(int[] ar)
-	  {
-	    // If running on Java 6 or older, use `new Random()` on RHS here
-	    Random rnd = ThreadLocalRandom.current();
-	    for (int i = ar.length - 1; i > 0; i--)
-	    {
-	      int index = rnd.nextInt(i + 1);
-	      // Simple swap
-	      int a = ar[index];
-	      ar[index] = ar[i];
-	      ar[i] = a;
-	    }
-	  }
+	{
+		Random rnd = ThreadLocalRandom.current();
+		for (int i = ar.length - 1; i > 0; i--)
+		{
+			int index = rnd.nextInt(i + 1);
+			// Simple swap
+			int a = ar[index];
+			ar[index] = ar[i];
+			ar[i] = a;
+		}
+	}
 
 	private double[] calcPValues(double[] permPValues) {
 		int perm = permPValues.length;

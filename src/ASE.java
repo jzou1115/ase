@@ -13,22 +13,24 @@ public class ASE {
 		if(filename==null){
 			filename=gene+"_simulation.txt";
 		}
+		
 		Simulation sim = new Simulation();
 		sim.setTestGene(map, gene, genotypes, outdir);
+		
+		System.out.println("Starting simulation for "+n+" individuals");
 		sim.mapASE(filename, n);
 	}
 	
 	void mapase(InputStream map, InputStream genotypes,
 			InputStream expressions, String gene, int perm, File outdir, String filename) throws IOException {
 		if(filename==null){
-			MapASE ase = new MapASE( map,  genotypes, expressions,  gene,  perm,  outdir,  gene+"_mapase.txt");
-			ase.mapase();
-		}
-		else{
-			MapASE ase = new MapASE( map,  genotypes, expressions,  gene,  perm,  outdir,  filename);
-			ase.mapase();
+			filename=gene+"_mapase.txt";
 		}
 
+		MapASE ase = new MapASE( map,  genotypes, expressions,  gene,  perm,  outdir,  filename);
+		
+		System.out.println("Starting ASE mapping algorithm");
+		ase.mapase();
 	}
 	
 

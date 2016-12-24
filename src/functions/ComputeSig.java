@@ -11,7 +11,6 @@ public class ComputeSig {
 	//Maximum number of errors allowed
 	int e;
 	
-	int upper;
 	ComputeSig(int size, int ase, int geno, int errors){
 		n=size;
 		m=ase;
@@ -27,8 +26,8 @@ public class ComputeSig {
 		double sig=0.0;
 		int min = Math.min(m, k);
 		int max = Math.max(m, k);
-		upper = Math.max(min, n-max);
-
+		int upper = Math.min(min, n-max);
+		
 		double[] possible = new double[upper+1];
 		for(int i=0; i<=upper;i++){
 			double logw1 = logchoose(max, min-i);
@@ -82,7 +81,4 @@ public class ComputeSig {
 		return lc;
 	}
 	
-	public int getUpper(){
-		return upper;
-	}
 }

@@ -53,6 +53,11 @@ public class Simulation {
 
 	
 	public List<Integer> getSubset(int total, int num){
+		if(num>total){
+			System.out.println(num+" larger than total number or individuals, "+total);
+			System.exit(1);
+		}
+		
 		Random rand = new Random();
 		List<Integer> ret = new ArrayList<Integer>();
 		int i=0;
@@ -67,30 +72,7 @@ public class Simulation {
 
 		return ret;
 	}
-/*	
-	//return subset of genosamples that also have expsamples
-	public List<GenoSample> getSubset(int total, SNP s, List<ExpSample> exp){
-		Set<String> sampleids = new HashSet<String>();
-		for(ExpSample e:exp){
-			sampleids.add(e.getID());
-		}
-		
-		List<GenoSample> geno = new ArrayList<GenoSample>(s.getGenosamples());
-		Set<String> sampleids2 = new HashSet<String>();
-		for(int j=0; j< geno.size(); j++){
-			sampleids2.add(geno.get(j).getID());
-		}
-		
-		sampleids.retainAll(sampleids2);
-		
-		List<GenoSample> subset = new ArrayList<GenoSample>();
-		for(GenoSample g:geno){
-			if(sampleids.contains(g.getID())){
-				subset.add(g);
-			}
-		}
-		return subset;
-	}*/
+
 
 
 	/**
@@ -150,10 +132,8 @@ public class Simulation {
 			}	
 
 		}
-		System.out.println("Incorrect: "+incorrect);
+
 		//set state for ComputeSig state
-		System.out.println(subset.size()+"\t"+m+"\t"+k+"\t"+incorrect);
-		
 		ComputeSig sig = new ComputeSig(subset.size(), m, k, incorrect);
 		//p-values for all possible numbers of errors
 		double[] poss = sig.significance();
