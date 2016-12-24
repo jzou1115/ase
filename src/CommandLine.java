@@ -109,7 +109,7 @@ public class CommandLine implements CommandLineParams{
 	
 	@Override
 	public void printHelp(PrintStream out){
-		out.println("Usage: ase <function> [<args>] \n");
+		out.println("Usage:\njava -jar ase.jar <function> [<args>] \n");
 		out.println("Functions:");
 		out.println("<simulation>\tThis function performs a simulation for one gene and a randomly chosen SNP with all possible numbers of errors.");
 		out.println("<mapase>\tThis function maps variants to ASE.");
@@ -119,6 +119,7 @@ public class CommandLine implements CommandLineParams{
 		out.println("-b\tExpression file");
 		out.println("-g\tGene name");
 		out.println("-p\tNumber of permutations");
+		out.println("-n\tNumber of samples");
 		out.println("-o\tOutput directory");
 		out.println("-f\tOutput file name");
 		out.println("-h\thelp statement");
