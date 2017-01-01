@@ -33,11 +33,11 @@ public class ParseExpressions {
 					String[] tokens = line.split("\\s+");
 					String gtexid = tokens[6].trim();
 					
-					int refAllele = Integer.parseInt(tokens[8]);
-					int totalReads = Integer.parseInt(tokens[10]);
+					int refAllele = Integer.parseInt(tokens[1]);
+					int altAllele = Integer.parseInt(tokens[2]);
+					int totalReads = refAllele+altAllele;
 					
 					if(totalReads>=10){
-						ret.add(gtexid);
 						//initialize individual to have 0 reference reads and 0 total reads
 						if(!reads.containsKey(gtexid)){
 							reads.put(gtexid, 0);
@@ -72,24 +72,31 @@ public class ParseExpressions {
 			for(String sample: reads.keySet()){
 				ExpSample expsamp;
 				double allelicRatio = 1.0*ref.get(sample) / reads.get(sample);
-				int hasASE;
 				
-				if(allelicRatio>0.65){
-					expsamp = new ExpSample(sample, 1);
-					hasASE=1;
-					totalASE++;
-				}
-				else if(allelicRatio<0.35){
-					expsamp = new ExpSample(sample, 1);
-					hasASE=1;
-					totalASE++;
-				}
-				else{
-					expsamp = new ExpSample(sample, 0);
-					hasASE=0;
-				}
+				//only add sample if at least 20 reads total
+				if(reads.get(sample)>=20){
+					ret.add(sample);
+					
+					int hasASE;
+					
+					if(allelicRatio>0.65){
+						expsamp = new ExpSample(sample, 1);
+						hasASE=1;
+						totalASE++;
+					}
+					else if(allelicRatio<0.35){
+						expsamp = new ExpSample(sample, 1);
+						hasASE=1;
+						totalASE++;
+					}
+					else{
+						expsamp = new ExpSample(sample, 0);
+						hasASE=0;
+					}
 
-				g.addSample(expsamp);
+					g.addSample(expsamp);
+					
+				}
 				
 				//outfile.write(sample+"\t"+allelicRatio+"\t"+hasASE+"\n");
 		
