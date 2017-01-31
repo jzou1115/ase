@@ -34,7 +34,9 @@ public class ParseExpressions {
 					String gtexid = tokens[6].trim();
 					
 					int refAllele = Integer.parseInt(tokens[8]);
+					int altAllele = Integer.parseInt(tokens[9]);
 					int totalReads = Integer.parseInt(tokens[10]);
+					boolean isLeft = isLeft(tokens[18]);
 					
 					if(totalReads>=10){
 						ret.add(gtexid);
@@ -45,9 +47,16 @@ public class ParseExpressions {
 						}
 						
 						//Update read count
-						int refKey = ref.get(gtexid) + refAllele;
+						if(isLeft){
+							int refKey = ref.get(gtexid) + altAllele;
+							ref.put(gtexid, refKey);
+						}
+						else{
+							int refKey = ref.get(gtexid) + refAllele;
+							ref.put(gtexid, refKey);
+						}
+						
 						int readsKey = reads.get(gtexid) + totalReads;
-						ref.put(gtexid, refKey);
 						reads.put(gtexid, readsKey);	
 					}
 
@@ -104,5 +113,27 @@ public class ParseExpressions {
 		}
 		return ret;
 		
+	}
+
+	private static boolean isLeft(String string) {
+		String[] tokens = string.split(";");
+		String[] tokens2 = tokens[1].split("|");
+		if(!isInteger(string)){
+			System.exit(1);
+		}
+		if(Integer.parseInt(tokens2[0])==1){
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean isInteger( String input ) {
+	    try {
+	        Integer.parseInt( input );
+	        return true;
+	    }
+	    catch( Exception e ) {
+	        return false;
+	    }
 	}
 }
