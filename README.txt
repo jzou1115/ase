@@ -27,7 +27,7 @@ The map file contains a list of SNPs in the first column.  For the simulations, 
 
 The genotype file contains the phrase "ID" followed by sample IDs separated with whitespace in the first line.  In subsequent lines, the first column contains a SNP id, and the following columns contains a genotype, which is assumed to be a value in [0,2] representing the number of reference alleles.  The genotype values may be floating point numbers if the genotypes are imputed.
 
-The expression file contains the number of reads mapping to the reference and alternative allele for each heterozygous SNP in each individual.  The 7th column contains the subject ID.  The 9th column contains the number of reads mapping to the alternative allele.  The 11th column contains the total number of reads.  All reads must correspond to the gene of interest.
+The expression file contains the number of reads mapping to the reference and alternative allele for each heterozygous SNP in each individual.  The 7th column contains the subject ID.  The 9th column contains the number of reads mapping to the alternative allele.  The 11th column contains the total number of reads.  All reads must correspond to the gene of interest.  The 19th column contains phased genotype information in the form "GT:GL:DS;0|1:0.000,1.000,0.000:1.000", where '0|1' indicates one alternative allele on the 2nd haplotype. 
 
 The gene name is a string identifying the gene tested.  This is used for defaut output naming.
 
