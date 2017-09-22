@@ -78,8 +78,8 @@ public class MapASE {
 		ExpMatrix expmat = new ExpMatrix(gene.getExpsamples(), genosampleIDs);
 		
 		//write genotype and expression matrices
-		genomat.write(new File(o+File.separator+"genotypes"+File.separator+g+"_genotypes.txt") );
-		expmat.write(new File(o+File.separator+"expressions"+File.separator+g+"_expression.txt"), g);
+		//genomat.write(new File(o+File.separator+"genotypes"+File.separator+g+"_genotypes.txt") );
+		//expmat.write(new File(o+File.separator+"expressions"+File.separator+g+"_expression.txt"), g);
 		
 		genotypes = genomat.getGenotypes();
 		expressions = expmat.getExpressions();
@@ -105,11 +105,12 @@ public class MapASE {
 			permPValues[p-1]= permutationPValue();
 		}
 
-		double[] permutationPValue = calcPValues(permPValues);
+		//double[] permutationPValue = calcPValues(permPValues);
 		
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
 		for(int i=0; i<numSNPs; i++){
-			outfile.write(line[i]+"\t"+permutationPValue[i]+"\n");
+			//outfile.write(line[i]+"\t"+permutationPValue[i]+"\n");
+			outfile.write(line[i]+"\n");
 		}
 		outfile.close();
 
@@ -168,18 +169,40 @@ public class MapASE {
 			pointwise[i] = p; // store pointwise p-value
 			
 			//proportion of heterozygous individuals w/i ASE subset
-			double p1 = a*1.0/m;
+			double p1;
+			if(m==0){
+				p1=0;
+			}
+			else{
+				p1 = a*1.0/m;	
+			}
 			int n1 = m*2;
 			
 			//proportion of heterozygous individuals w/i balanced subset
-			double p2 = b*1.0/(numSamples - m);
+			double p2;
+			if(numSamples-m==0){
+				p2=0;
+			}
+			else{
+				p2 = b*1.0/(numSamples - m);	
+			}
 			int n2 = 2*(numSamples-m);
 			
 			//calculate statistic
 			double p3 = (p1+p2)/2;
+			if(p3==0){
+				p3=.0000001;
+			}
+			if(p3==1){
+				p3=.9999999;
+			}
 			double s = (p1 - p2) / Math.sqrt((p3*(1-p3))*(n1+n2)/(n1*n2));
 			
-			line[i] = geneName+"\t"+snpids[i]+"\t"+a+"\t"+b+"\t"+p1+"\t"+p2+"\t"+s+"\t"+m+"\t"+k+"\t"+numSamples+"\t"+incorrect+"\t"+p; //create line of output for SNP
+		//	line[i] = geneName+"\t"+snpids[i]+"\t"+a+"\t"+b+"\t"+p1+"\t"+p2+"\t"+s+"\t"+m+"\t"+k+"\t"+numSamples+"\t"+incorrect+"\t"+p; //create line of output for SNP
+			line[i] = snpids[i]+"\t"+s;
+			int numBal = numSamples - m;
+			int numHom = numSamples - k;
+		//	line[i] = geneName+"\t"+snpids[i]+"\t"+m+"\t"+numBal+"\t"+k+"\t"+numHom;
 		}
 		
 		return line;

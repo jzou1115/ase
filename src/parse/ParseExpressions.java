@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math3.stat.inference.AlternativeHypothesis;
+import org.apache.commons.math3.stat.inference.BinomialTest;
+
 import genome.Gene;
 import sample.ExpSample;
 
@@ -21,7 +24,7 @@ public class ParseExpressions {
 	public static List<String> parseExpressions(InputStream expressions, Gene g, File outdir) throws IOException{
 		System.out.println("Reading expressions");
 		BufferedReader br = new BufferedReader(new InputStreamReader(expressions));
-		String line;
+		String line = br.readLine(); //skip header
 		
 		Map<String, Integer> reads = new HashMap<String,Integer>(); //Map GTEx id of individual to total number of reads for individual
 		Map<String, Integer> ref = new HashMap<String,Integer>(); //Map GTEx id of individual to number of reference reads for individual
@@ -37,8 +40,9 @@ public class ParseExpressions {
 					int altAllele = Integer.parseInt(tokens[9]);
 					int totalReads = Integer.parseInt(tokens[10]);
 					boolean isLeft = isLeft(tokens[18]);
+					//boolean isLeft=true;
 					
-					if(totalReads>=10){
+					if(totalReads>=20){
 						ret.add(gtexid);
 						//initialize individual to have 0 reference reads and 0 total reads
 						if(!reads.containsKey(gtexid)){
@@ -106,6 +110,34 @@ public class ParseExpressions {
 			//outfile.write(g.getId()+"\t"+totalASE+"\t"+reads.size()+"\t"+totalASE*1.0/reads.size());
 			//outfile.close();
 		
+			
+			
+			//binomial test
+			/*int numSamples = reads.keySet().size();
+			double alpha = .05/numSamples;
+			
+			for(String sample: reads.keySet()){
+				int refReads = ref.get(sample);
+				int totalReads = reads.get(sample);
+				
+				if(totalReads>20){
+					BinomialTest bt = new BinomialTest();
+					boolean ase = bt.binomialTest(totalReads, refReads, .5, AlternativeHypothesis.TWO_SIDED, alpha);
+					
+					ExpSample expsamp;
+					if(ase){
+						expsamp = new ExpSample(sample, 1);
+					}
+					else{
+						expsamp = new ExpSample(sample, 0);
+					}
+					
+					g.addSample(expsamp);	
+				}
+				
+				//outfile.write(sample+"\t"+allelicRatio+"\t"+hasASE+"\n");	
+			}
+			*/	
 
 		} catch (IOException e) {
 			e.printStackTrace();
