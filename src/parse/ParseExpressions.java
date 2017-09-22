@@ -32,32 +32,31 @@ public class ParseExpressions {
 		try {
 			//iterate over lines in file (SNPs used to call ASE)
 			while((line = br.readLine()) != null){
-				try{
-					String[] tokens = line.split("\\s+");
+				String[] tokens = line.split("\\s+");
+				if(tokens.length==24){
 					String gtexid = tokens[6].trim();
 					
-					double p = Double.parseDouble(tokens[15]);
-					int totalReads = Integer.parseInt(tokens[10]);
+					if(!tokens[15].equals("NA")){
+						double p = Double.parseDouble(tokens[15]);
+						int totalReads = Integer.parseInt(tokens[10]);
 
-					if(!reads.containsKey(gtexid)){
-						reads.put(gtexid, 0);
+						if(!reads.containsKey(gtexid)){
+							reads.put(gtexid, 0);
+						}
+						
+						if(totalReads > reads.get(gtexid)){
+							reads.put(gtexid, totalReads);
+							if(p<.05){
+								aseCall.put(gtexid, 1);
+							}
+							else{
+								aseCall.put(gtexid, 0);
+							}
+						}	
 					}
 					
-					if(totalReads > reads.get(gtexid)){
-						reads.put(gtexid, totalReads);
-						if(p<.05){
-							aseCall.put(gtexid, 1);
-						}
-						else{
-							aseCall.put(gtexid, 0);
-						}
-					}
-					
 
-				} catch (Exception e){
-					e.printStackTrace();
-					System.exit(1);
-				}
+				} 
 			}
 
 			br.close();
@@ -65,7 +64,7 @@ public class ParseExpressions {
 
 			//determine whether each individual has ASE or not
 			BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+g.getId()+"_ase.txt")));		
-			
+		
 			for(String sample: aseCall.keySet()){
 				ExpSample expsamp;
 				int call = aseCall.get(sample);
@@ -76,7 +75,7 @@ public class ParseExpressions {
 					expsamp = new ExpSample(sample, 1);
 				}
 				g.addSample(expsamp);
-				
+				ret.add(sample);
 				outfile.write(sample+"\t"+call+"\n");
 		
 			}

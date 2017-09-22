@@ -72,14 +72,15 @@ public class MapASE {
 	
 		genosampleIDs.retainAll(expsampleIDs);
 		numSamples = genosampleIDs.size();
+		System.out.println("Numer of samples: "+numSamples);
 		
 		//get subset of genotype and ASE data that have matching samples
 		GenoMatrix genomat = new GenoMatrix(snps, genosampleIDs);
 		ExpMatrix expmat = new ExpMatrix(gene.getExpsamples(), genosampleIDs);
 		
 		//write genotype and expression matrices
-		//genomat.write(new File(o+File.separator+"genotypes"+File.separator+g+"_genotypes.txt") );
-		//expmat.write(new File(o+File.separator+"expressions"+File.separator+g+"_expression.txt"), g);
+		//genomat.write(new File(o+File.separator+g+"_genotypes.txt") );
+		//expmat.write(new File(o+File.separator+g+"_expression.txt"), g);
 		
 		genotypes = genomat.getGenotypes();
 		expressions = expmat.getExpressions();
@@ -196,7 +197,9 @@ public class MapASE {
 			if(p3==1){
 				p3=.9999999;
 			}
-			double s = (p1 - p2) / Math.sqrt((p3*(1-p3))*(n1+n2)/(n1*n2));
+			//System.out.println(p1+"\t"+p2+"\t"+a+"\t"+b+"\t"+n1+"\t"+n2+"\t"+m+"\t"+k);
+
+			double s = (p1 - p2) * Math.sqrt(n1*n2) / Math.sqrt((p3*(1-p3))*(n1+n2));
 			
 		//	line[i] = geneName+"\t"+snpids[i]+"\t"+a+"\t"+b+"\t"+p1+"\t"+p2+"\t"+s+"\t"+m+"\t"+k+"\t"+numSamples+"\t"+incorrect+"\t"+p; //create line of output for SNP
 			line[i] = snpids[i]+"\t"+s;
