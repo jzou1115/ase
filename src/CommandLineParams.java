@@ -14,6 +14,6 @@ public interface CommandLineParams {
 	public InputStream getGenotypeData();
 	public InputStream getExpressionData();
 	public String getFilename();
-	public String getASEDataFormat();
-	
+	public boolean isGTExFormat();
+	public boolean isMatrixFormat();
 }

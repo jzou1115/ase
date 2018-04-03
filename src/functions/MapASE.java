@@ -2,101 +2,73 @@ package functions;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
-
-import org.apache.commons.math3.stat.inference.AlternativeHypothesis;
-import org.apache.commons.math3.stat.inference.BinomialTest;
 
 
 
-import genome.Gene;
-import genome.SNP;
-import parse.ParseExpressions;
-import parse.ParseGenotypes;
-import parse.ParseMap;
-import sample.ExpMatrix;
-import sample.ExpSample;
-import sample.GenoMatrix;
-import sample.GenoSample;
+import parse.ParseMatrix;
+
 
 public class MapASE {
 	int[][] genotypes;
-	int numSNPs;
+	int[][] expressions;
+	
 	String[] snpids;
-	
-	int[] expressions;
-	String geneName;
-	
-	String[] sampleids;
+	int numSNPs;
 	int numSamples;
 	
-	Map<String, double[]> pmap;
+	
+
 	double[] pointwise;
 	
-	int perm;
 	File outdir;
 	String filename;
 	
 	
-	public MapASE(InputStream map, InputStream genotypesInput,
-			InputStream expressionsInput, String g, int p, File o, String f) throws IOException{
-		perm=p;
+	public MapASE(InputStream genotypesInput,
+			InputStream expressionsInput, File o, String f) throws IOException{
+
 		outdir = o;
 		filename=f;
 		
-		ParseMap parsemap = new ParseMap();
-		parsemap.parseMap(map, g);
-		Gene gene = parsemap.getGene();
-		geneName = gene.getId();
-		List<SNP> snps = parsemap.getSNPs();
-		numSNPs = snps.size();
-		Map<String, SNP> snpMap = parsemap.getSnpMap();	
-
 		//parse genotype and ASE data
-		List<String> genosampleIDs = ParseGenotypes.parseGenotypes(genotypesInput,snps, snpMap);
-		//Gene gene = new Gene(g);
-		List<String> expsampleIDs = ParseExpressions.parseExpressions(expressionsInput, gene, outdir);
-	
-		genosampleIDs.retainAll(expsampleIDs);
-		numSamples = genosampleIDs.size();
+		ParseMatrix parseGeno = new ParseMatrix(genotypesInput);
+		genotypes = parseGeno.getMat();
+		snpids = parseGeno.getRowIDs();
 		
-		//get subset of genotype and ASE data that have matching samples
-		GenoMatrix genomat = new GenoMatrix(snps, genosampleIDs);
-		ExpMatrix expmat = new ExpMatrix(gene.getExpsamples(), genosampleIDs);
+		ParseMatrix parseASE = new ParseMatrix(expressionsInput);
+		expressions = parseASE.getMat();
 		
-		//write genotype and expression matrices
-		//genomat.write(new File(o+File.separator+"genotypes"+File.separator+g+"_genotypes.txt") );
-		//expmat.write(new File(o+File.separator+"expressions"+File.separator+g+"_expression.txt"), g);
-		
-		genotypes = genomat.getGenotypes();
-		expressions = expmat.getExpressions();
-		sampleids = expmat.getSampleids();
-		snpids = genomat.getSnpids();
-		
-		if(genotypes[0].length!=expressions.length){
-			System.out.println("Sample subset not working");
+		int numGenoSamples = parseGeno.getNumCols();
+		int numASESamples = parseASE.getNumCols();
+
+		if(numGenoSamples==numASESamples){
+			numSamples = numGenoSamples;
+		}
+		else{
+			System.out.println("Unequal number of samples in genotype and ASE input");
 			System.exit(1);
 		}
+		
+		int numGenoSNPs = parseGeno.getNumRows();
+		int numExpSNPs = parseASE.getNumRows();
+		if(numGenoSNPs == numExpSNPs){
+			numSNPs = numGenoSNPs;
+		}
+		else{
+			System.out.println("Unequal number of SNPs in genotype and ASE input");
+			System.exit(1);
+		}
+		
 
 	}
 
 	
 	public void mapase() throws IOException {
-		pmap = new HashMap<String, double[]>(); //possible p-values for all SNPs
-		
+	
 		pointwise = new double[numSNPs]; //array to store pointwise p-values
 		String[] line = pointwisePValue(); //populate pointwise array and return array of output for each snp
 
@@ -126,7 +98,7 @@ public class MapASE {
 			int b = 0;
 			
 			for (int j=0; j<numSamples;j++) {
-				int hasASE = expressions[j];
+				int hasASE = expressions[j][j];
 				int isHetero = genotypes[i][j];
 				
 				if(hasASE==1){
@@ -136,9 +108,6 @@ public class MapASE {
 					k=k+1; //increment count of number of individuals that are heterozygous
 				}
 
-				if(isHetero != hasASE){
-					incorrect++; //increment counter for number of mismatches
-				}	
 
 				if(hasASE==1 && isHetero==1){
 					a=a+1;

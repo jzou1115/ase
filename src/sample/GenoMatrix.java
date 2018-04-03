@@ -11,15 +11,13 @@ import genome.SNP;
 
 public class GenoMatrix {
 	int[][] genotypes;
-	String[] sampleids;
 	String[] snpids;
+	int numSamples;
+	int numSNPs;
+	String[] sampleids;
 	
 	public GenoMatrix(List<SNP> snps, List<String> samples){
-		sampleids = new String[samples.size()];
-		for(int j=0; j<samples.size(); j++){
-			sampleids[j] = samples.get(j);
-		}
-		
+
 		snpids = new String[snps.size()];
 		genotypes = new int[snps.size()][samples.size()];
 		for(int i=0; i<snps.size(); i++){

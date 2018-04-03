@@ -9,10 +9,16 @@ import java.util.List;
 
 
 public class ParseMatrix {
-	public static int[][] parseMatrix(InputStream genotypes) throws IOException{
+	private String[] rowids; 
+	private int[][] mat;
+	private int numRows;
+	private int numCols;
+	
+	public ParseMatrix(InputStream genotypes) {
+		
 		BufferedReader br = new BufferedReader(new InputStreamReader(genotypes));
 		List<String> lines = new ArrayList<String>();
-	
+		
 		String line;
 
 		try {
@@ -29,15 +35,41 @@ public class ParseMatrix {
 		
 		String[] linetokens = lines.get(0).split("\\s+");
 		System.out.println("Reading matrix: "+lines.size()+"x"+linetokens.length);
-		int[][] ret = new int[lines.size()][linetokens.length];
-		for(int i=0; i<lines.size(); i++){
+		numRows = lines.size();
+		numCols = linetokens.length - 1;
+		
+		int[][] ret = new int[numRows][numCols];
+		rowids = new String[numRows];
+		for(int i=0; i<numRows; i++){
 			String l = lines.get(i);
+			
 			String[] tokens = l.split("\\s+");
-			for(int j=0; j<tokens.length;j++){
+			//add rowid to list
+			rowids[i] = tokens[0];
+			//
+			for(int j=1; j<numCols ;j++){
 				ret[i][j] = Integer.parseInt(tokens[j]);
 			}
 		}
 		
-		return ret;
+		mat = ret;
+		
+		
+	}
+	
+	public String[] getRowIDs(){
+		return rowids;
+	}
+	
+	public int[][] getMat(){
+		return mat;
+	}
+	
+	public int getNumRows(){
+		return numRows;
+	}
+	
+	public int getNumCols(){
+		return numCols;
 	}
 }

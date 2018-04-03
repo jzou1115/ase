@@ -123,19 +123,21 @@ public class CommandLine implements CommandLineParams{
 		return outfile;
 	}
 
-	@Override
-	public String getASEDataFormat(){
-		if(inputFormat.equals(GTEX_FORMAT)){
-			return GTEX_FORMAT;
-		}
-		else if(inputFormat.equals(MATRIX_FORMAT)){
-			return MATRIX_FORMAT;
-		}
 
-		System.out.println(inputFormat);
-		System.exit(1);
-		
-		return inputFormat;
+	@Override
+	public boolean isGTExFormat() {
+		if(inputFormat.equals(GTEX_FORMAT)){
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isMatrixFormat() {
+		if(inputFormat.equals(MATRIX_FORMAT)){
+			return true;
+		}
+		return false;
 	}
 
 

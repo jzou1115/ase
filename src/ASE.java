@@ -22,20 +22,6 @@ import parse.ParseSNP;
 
 public class ASE {
 	
-	void mapase(InputStream map, InputStream genotypes,
-			InputStream expressions, String gene, int perm, File outdir, String filename) throws IOException {
-		if(filename==null){
-			MapASE ase = new MapASE( map,  genotypes, expressions,  gene,  perm,  outdir,  gene+"_mapase");
-			ase.mapase();
-		}
-		else{
-			MapASE ase = new MapASE( map,  genotypes, expressions,  gene,  perm,  outdir,  filename);
-			ase.mapase();
-		}
-
-	}
-	
-
 	public static void main(String args[]) throws IOException{
 		
 		CommandLineParams cmdArgs = new CommandLine();
@@ -53,25 +39,15 @@ public class ASE {
 		
 		ASE a= new ASE();
 
-		
-
-		if(fcn.equals("mapase")){
-
+		if(cmdArgs.isMatrixFormat()){
 			InputStream genotypes = cmdArgs.getGenotypeData();
 			InputStream expressions = cmdArgs.getExpressionData();
 
 			File outdir = cmdArgs.getOutputDir();
 			String filename = cmdArgs.getFilename();
 			
-			if(){
-				
-
-			} else{
-				cmdArgs.printHelp(System.err);
-				System.exit(0);
-			}
+			a.mapase(genotypes, expressions, outdir, filename);
 		}
-		
 
 
 		else{
@@ -80,6 +56,17 @@ public class ASE {
 			System.exit(0);
 		}
 
+		
+	}
+
+	//for matrix format
+	private void mapase(InputStream genotypes, InputStream expressions, File outdir, String filename) {
+		try {
+			MapASE ase = new MapASE(genotypes, expressions, outdir, filename);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	}
 
