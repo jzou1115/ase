@@ -99,17 +99,10 @@ public class MapASE {
 		
 		pointwise = new double[numSNPs]; //array to store pointwise p-values
 		String[] line = pointwisePValue(); //populate pointwise array and return array of output for each snp
-		
-		double[] permPValues = new double[perm]; //list of minimum p-value for each permutation
-		for(int p=1; p<=perm; p++){
-			permPValues[p-1]= permutationPValue();
-		}
 
-		//double[] permutationPValue = calcPValues(permPValues);
 		
 		BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+filename)));
 		for(int i=0; i<numSNPs; i++){
-			//outfile.write(line[i]+"\t"+permutationPValue[i]+"\n");
 			outfile.write(line[i]+"\n");
 		}
 		outfile.close();
@@ -200,106 +193,14 @@ public class MapASE {
 			
 		//	line[i] = geneName+"\t"+snpids[i]+"\t"+a+"\t"+b+"\t"+p1+"\t"+p2+"\t"+s+"\t"+m+"\t"+k+"\t"+numSamples+"\t"+incorrect+"\t"+p; //create line of output for SNP
 			line[i] = snpids[i]+"\t"+s;
-			int numBal = numSamples - m;
-			int numHom = numSamples - k;
-		//	line[i] = geneName+"\t"+snpids[i]+"\t"+m+"\t"+numBal+"\t"+k+"\t"+numHom;
 		}
 		
 		return line;
 
 	}
 	
-	//returns minimum pointwise p-value from permuted data
-	public double permutationPValue(){
-		double min=1;
-		shuffleArray(expressions);
-		for(int i=0; i<numSNPs; i++){
-		
-			//number of ones in ase samples
-			int m=0;
-			//number of ones in genotype samples
-			int k=0;
-
-			int incorrect=0;
-			for (int j=0; j<numSamples;j++) {
-				
-				int hasASE = expressions[j];
-				int isHetero = genotypes[i][j];
-				if(hasASE==1){
-					m=m+1;
-				}
-				if(isHetero==1){
-					k=k+1;
-				}
-
-				if(isHetero != hasASE){
-					incorrect++;
-				}	
-			}
-			int j = (incorrect - Math.abs(m-k))/2;
-			if(pmap.get(snpids[i]).length-1<j){
-				System.out.println("permutation p value wrong");
-				System.exit(1);
-			}
-			double p = pmap.get(snpids[i])[j];
-			if(p<min){
-				min=p;
-			}
-		}
-		return min;
-	}
 	
-
-
-
-	static void shuffleArray(int[] ar)
-	  {
-	    // If running on Java 6 or older, use `new Random()` on RHS here
-	    Random rnd = ThreadLocalRandom.current();
-	    for (int i = ar.length - 1; i > 0; i--)
-	    {
-	      int index = rnd.nextInt(i + 1);
-	      // Simple swap
-	      int a = ar[index];
-	      ar[index] = ar[i];
-	      ar[i] = a;
-	    }
-	  }
-/**
-//For e-gene style calculation
-	private double calcPValues(double minPointwise, double[] permPValues) {
-		if(permPValues.length!=perm){
-			System.out.println("Not all permutations completed");
-			System.exit(1);
-		}
-		
-		int count = 0; //number of permuted p-values that are equal to or lower than $p
-		for(int j=0; j<perm; j++){
-			if(permPValues[j]<=minPointwise){
-				count++;
-			}
-		}
-		
-		return(count*1.0/perm);
-	}
 	
-
-**/
-	private double[] calcPValues(double[] permPValues) {
-		int perm = permPValues.length;
-		double[] permutationPValues = new double[numSNPs];
-		for(int i=0; i<numSNPs; i++){
-			double point = pointwise[i];
-			int sig = 0;
-			for(int j=0; j<perm; j++){
-				if(permPValues[j]<=point){
-					sig++;
-				}
-			}
-			permutationPValues[i] = sig*1.0/perm;
-		}
-		return permutationPValues;
-	}
 
 
 }

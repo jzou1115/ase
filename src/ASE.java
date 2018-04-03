@@ -52,20 +52,19 @@ public class ASE {
 		}
 		
 		ASE a= new ASE();
-		String fcn = cmdArgs.getFunction();
+
 		
 
 		if(fcn.equals("mapase")){
-			InputStream map = cmdArgs.getMap();
+
 			InputStream genotypes = cmdArgs.getGenotypeData();
 			InputStream expressions = cmdArgs.getExpressionData();
-			String gene = cmdArgs.getTestGene();
-			int perm = cmdArgs.getPermNum();
+
 			File outdir = cmdArgs.getOutputDir();
 			String filename = cmdArgs.getFilename();
 			
-			if(map!=null && genotypes!=null && expressions!=null && gene!=null){
-				a.mapase(map, genotypes, expressions, gene, perm, outdir, filename);
+			if(){
+				
 
 			} else{
 				cmdArgs.printHelp(System.err);
