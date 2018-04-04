@@ -1,23 +1,10 @@
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
 
 //import parse.ParseSNP;
 import functions.*;
-import genome.ChromState;
-import genome.Gene;
-import genome.SNP;
-import parse.ParseCausalVariants;
-import parse.ParseChromState;
-import parse.ParseMap;
-import parse.ParseSNP;
 
 
 public class ASE {
