@@ -22,7 +22,7 @@ public class CommandLine implements CommandLineParams{
 	private InputStream expressions;
 	private File output = new File(DEFAULT_OUTPUT_DIR);
 	private String outfile;
-	private Boolean help;
+	private Boolean help = false;
 	private String inputFormat;
 	
 	@Override

@@ -33,7 +33,9 @@ public class ASE {
 			File outdir = cmdArgs.getOutputDir();
 			String filename = cmdArgs.getFilename();
 			
-			a.mapase(genotypes, expressions, outdir, filename);
+			MapASE ase = new MapASE(genotypes, expressions, outdir, filename);
+			ase.mapase();
+	
 		}
 
 

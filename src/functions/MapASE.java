@@ -63,7 +63,6 @@ public class MapASE {
 			System.exit(1);
 		}
 		
-
 	}
 
 	
@@ -98,7 +97,7 @@ public class MapASE {
 			int b = 0;
 			
 			for (int j=0; j<numSamples;j++) {
-				int hasASE = expressions[j][j];
+				int hasASE = expressions[i][j];
 				int isHetero = genotypes[i][j];
 				
 				if(hasASE==1){
