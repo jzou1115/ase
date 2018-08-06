@@ -58,6 +58,10 @@ public class ParseExpressions {
 							int newLeftReads = left.get(gtexid) + altReads;
 							left.put(gtexid, newLeftReads);
 						}
+						else{
+							int newLeftReads = left.get(gtexid) + refReads;
+							left.put(gtexid, newLeftReads);
+						}
 					
 					}
 					
@@ -69,31 +73,37 @@ public class ParseExpressions {
 
 
 			//determine whether each individual has ASE or not
-			//BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+g.getId()+"_ase.txt")));		
+			BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+g.getId()+"_ase.txt")));		
 		
 			for(String sample: reads.keySet()){
 				int totalReads = reads.get(sample);
 				int leftReads = left.get(sample);
 				
-				//binomial test for ASE call
-				//binomialTest(int numberOfTrials, int numberOfSuccesses, double probability, AlternativeHypothesis alternativeHypothesis)
-				BinomialTest bt = new BinomialTest();
-				double p = bt.binomialTest(totalReads, leftReads, 0.05, AlternativeHypothesis.TWO_SIDED);
-				
-				ExpSample expsamp;
-				if(p < .05){
-					expsamp = new ExpSample(sample, 1);
+				//require at least 20 reads to make ASE call for sample
+				if(totalReads > 20){
+					//binomial test for ASE call
+					//binomialTest(int numberOfTrials, int numberOfSuccesses, double probability, AlternativeHypothesis alternativeHypothesis)
+					BinomialTest bt = new BinomialTest();
+					double p = bt.binomialTest(totalReads, leftReads, 0.05, AlternativeHypothesis.TWO_SIDED);
+					
+					int aseCall = -1;
+					ExpSample expsamp;
+					if(p < .05){
+						expsamp = new ExpSample(sample, 1);
+						aseCall = 1;
+					}
+					else{
+						expsamp = new ExpSample(sample, 0);
+						aseCall = 0;
+					}
+					
+					g.addSample(expsamp);
+					ret.add(sample);
+					outfile.write(sample+"\t"+totalReads+"\t"+leftReads+"\t"+p+"\t"+aseCall+"\n");	
 				}
-				else{
-					expsamp = new ExpSample(sample, 0);
-				}
-				
-				g.addSample(expsamp);
-				ret.add(sample);
-				//outfile.write(sample+"\t"+call+"\n");
 		
 			}
-			//outfile.close();
+			outfile.close();
 		
 
 		} catch (IOException e) {
@@ -115,6 +125,16 @@ public class ParseExpressions {
 			return true;
 		}
 		return false;
+	}
+	
+	public static boolean isInteger( String input ) {
+	    try {
+	        Integer.parseInt( input );
+	        return true;
+	    }
+	    catch( Exception e ) {
+	        return false;
+	    }
 	}
 
 }
