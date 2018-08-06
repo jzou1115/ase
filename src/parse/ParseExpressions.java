@@ -27,7 +27,7 @@ public class ParseExpressions {
 		String line = br.readLine(); //skip header
 		
 		Map<String, Integer> reads = new HashMap<String,Integer>(); //Map GTEx id of individual to total number of reads for individual
-		Map<String, Integer> aseCall = new HashMap<String,Integer>(); //Map GTEx id of individual to ase call based on binomial test
+		Map<String, Integer> left = new HashMap<String,Integer>(); //Map GTEx id of individual to ase call based on binomial test
 		List<String> ret = new ArrayList<String>();
 		try {
 			//iterate over lines in file (SNPs used to call ASE)
@@ -39,20 +39,26 @@ public class ParseExpressions {
 					if(!tokens[15].equals("NA")){
 						double p = Double.parseDouble(tokens[15]);
 						int totalReads = Integer.parseInt(tokens[10]);
-
+						int refReads = Integer.parseInt(tokens[8]);
+						int altReads = Integer.parseInt(tokens[9]);
+						
+						//initialize total reads and hap 1 reads to zero
 						if(!reads.containsKey(gtexid)){
 							reads.put(gtexid, 0);
+							left.put(gtexid, 0);
 						}
 						
-						if(totalReads > reads.get(gtexid)){
-							reads.put(gtexid, totalReads);
-							if(p<.05){
-								aseCall.put(gtexid, 1);
-							}
-							else{
-								aseCall.put(gtexid, 0);
-							}
-						}	
+						//add total read count
+						int newTotalReads = reads.get(gtexid) + totalReads;
+						reads.put(gtexid, newTotalReads);
+						
+						//add reads to left (hap 1)
+						String genotype = tokens[18];
+						if(isLeft(genotype)){
+							int newLeftReads = left.get(gtexid) + altReads;
+							left.put(gtexid, newLeftReads);
+						}
+					
 					}
 					
 
@@ -63,23 +69,31 @@ public class ParseExpressions {
 
 
 			//determine whether each individual has ASE or not
-			BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+g.getId()+"_ase.txt")));		
+			//BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outdir+File.separator+g.getId()+"_ase.txt")));		
 		
-			for(String sample: aseCall.keySet()){
+			for(String sample: reads.keySet()){
+				int totalReads = reads.get(sample);
+				int leftReads = left.get(sample);
+				
+				//binomial test for ASE call
+				//binomialTest(int numberOfTrials, int numberOfSuccesses, double probability, AlternativeHypothesis alternativeHypothesis)
+				BinomialTest bt = new BinomialTest();
+				double p = bt.binomialTest(totalReads, leftReads, 0.05, AlternativeHypothesis.TWO_SIDED);
+				
 				ExpSample expsamp;
-				int call = aseCall.get(sample);
-				if(call==0){
-					expsamp = new ExpSample(sample, 0);
-				}
-				else{
+				if(p < .05){
 					expsamp = new ExpSample(sample, 1);
 				}
+				else{
+					expsamp = new ExpSample(sample, 0);
+				}
+				
 				g.addSample(expsamp);
 				ret.add(sample);
-				outfile.write(sample+"\t"+call+"\n");
+				//outfile.write(sample+"\t"+call+"\n");
 		
 			}
-			outfile.close();
+			//outfile.close();
 		
 
 		} catch (IOException e) {
