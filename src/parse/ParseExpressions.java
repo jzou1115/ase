@@ -104,5 +104,17 @@ public class ParseExpressions {
 		
 	}
 
+	private static boolean isLeft(String string) {
+		String[] tokens = string.split(";");
+		String[] tokens2 = tokens[1].split("|");
+		if(!isInteger(tokens2[0])){
+			System.out.println("Error: Cannot parse genotype "+string);
+			System.exit(1);
+		}
+		if(Integer.parseInt(tokens2[0])==1){
+			return true;
+		}
+		return false;
+	}
 
 }
