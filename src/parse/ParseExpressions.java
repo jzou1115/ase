@@ -33,7 +33,7 @@ public class ParseExpressions {
 			//iterate over lines in file (SNPs used to call ASE)
 			while((line = br.readLine()) != null){
 				try{
-					String[] tokens = line.split("\\s+");
+					String[] tokens = line.split("\t");
 					String gtexid = tokens[6].trim();
 					
 					int refAllele = Integer.parseInt(tokens[8]);
